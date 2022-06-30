@@ -13,10 +13,13 @@
     <properties>
         <evalex.version>2.7</evalex.version>
         <java.version>17</java.version>
+        <junit4-version>4.13.2</junit4-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <mxparxer.version>5.0.2</mxparxer.version>
+        <maven.shade.plugin.version>3.4.1</maven.shade.plugin.version>
+        <mxparxer.version>5.2.1</mxparxer.version>
+        <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -32,25 +35,36 @@
             <artifactId>MathParser.org-mXparser</artifactId>
             <version>${mxparxer.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit4-version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven.shade.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <finalName>calc-shaded</finalName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.dummy.App</mainClass>
+                                    <mainClass>org.dummy.calc.App</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -59,4 +73,44 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>native</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>calc-native</imageName>
+                            <fallback>false</fallback>
+                            <quickBuild>false</quickBuild>
+                            <verbose>true</verbose>
+                            <buildArgs>
+                                <arg>-J--add-modules</arg>
+                                <arg>-JALL-SYSTEM</arg>
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

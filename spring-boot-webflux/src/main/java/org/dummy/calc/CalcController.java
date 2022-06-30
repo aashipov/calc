@@ -7,11 +7,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/*")
 public class CalcController {
 
     private static final Logger LOGGER = Logger.getLogger(CalcController.class.getSimpleName());
     public static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
+
+    public CalcController() {
+        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
+    }
 
     @GetMapping()
     public Mono<String> get() {

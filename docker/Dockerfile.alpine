@@ -1,0 +1,116 @@
+FROM alpine:3.18 AS dummy
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.alpine --target=dummy --tag=aashipov/calc:alpine-dummy && docker push aashipov/calc:alpine-dummy
+ARG DUMMY_USER=dummy
+ARG UID_GID=10001
+RUN apk update && apk upgrade && apk add --no-cache file curl wget && \
+addgroup -g ${UID_GID} ${DUMMY_USER} && adduser -u ${UID_GID} -h /${DUMMY_USER}/ -G ${DUMMY_USER} -D ${DUMMY_USER}
+
+FROM aashipov/calc:alpine-dummy AS java
+ENV JAVA_HOME=/opt/java
+ENV PATH=${JAVA_HOME}/bin:${PATH}
+RUN mkdir -p ${JAVA_HOME}
+
+FROM java as jre17
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.alpine --target=jre17 --tag=aashipov/calc:alpine-jre17 && docker push aashipov/calc:alpine-jre17
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jre17u-linux-x86_64-jdk-17.0.7+7-alpine.tar.gz && \
+tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
+find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
+find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
+rm -rf ${JAVA_HOME}/demo/ ${JAVA_HOME}/lib/src.zip ${JAVA_HOME}/man/ /tmp/java.tar.gz && \
+java -version && file ${JAVA_HOME}/bin/java
+
+FROM aashipov/calc:alpine-dummy AS dotnet
+ENV DOTNET_ROOT=/opt/dotnet DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV PATH=${DOTNET_ROOT}:${PATH}
+RUN mkdir -p ${DOTNET_ROOT} && apk add --no-cache build-base
+
+FROM dotnet AS dotnet6
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.alpine --target=dotnet6 --tag=aashipov/calc:alpine-dotnet6 && docker push aashipov/calc:alpine-dotnet6
+RUN curl -L -o /tmp/dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.420/dotnet-sdk-6.0.420-linux-musl-x64.tar.gz && \
+tar -xzf /tmp/dotnet.tar.gz -C ${DOTNET_ROOT} && \
+rm -rf /tmp/dotnet.tar.gz && \
+dotnet --info && file ${DOTNET_ROOT}/dotnet
+
+FROM aashipov/calc:alpine-dummy AS nodejs16
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.alpine --target=nodejs16 --tag=aashipov/calc:alpine-nodejs16 && docker push aashipov/calc:alpine-nodejs16
+ARG NODEJS_VERSION=v16.20.2
+ADD https://unofficial-builds.nodejs.org/download/release/${NODEJS_VERSION}/node-${NODEJS_VERSION}-linux-x64-musl.tar.gz /tmp/
+ENV NODE_HOME=/opt/nodejs
+ENV PATH=${NODE_HOME}/bin:${PATH}
+RUN apk add --no-cache build-base && mkdir -p ${NODE_HOME} && tar -xzf /tmp/node-${NODEJS_VERSION}-linux-x64-musl.tar.gz -C ${NODE_HOME} --strip-components=1 && rm -rf /tmp/node-${NODEJS_VERSION}-linux-x64-musl.tar.gz && npm i -g node-prune && node --version
+
+FROM aashipov/calc:alpine-dummy AS rust-toolset
+# DOCKER_BUILDKIT=1 docker build docker --file=docker/Dockerfile.alpine --target=rust-toolset --tag=aashipov/calc:alpine-rust-toolset && docker push aashipov/calc:alpine-rust-toolset
+ARG DUMMY_USER=dummy
+ENV RUSTUP_HOME=/${DUMMY_USER}/rustup
+ENV CARGO_HOME=/${DUMMY_USER}/cargo
+ENV PATH=${CARGO_HOME}/bin:${PATH}
+RUN apk add --no-cache build-base
+WORKDIR /${DUMMY_USER}/
+USER ${DUMMY_USER}
+RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x rustup-init.sh && \
+    ./rustup-init.sh -y --no-modify-path --profile minimal && \
+    rm rustup-init.sh && \
+    rustup --version && \
+    cargo --version && \
+    rustc --version
+
+FROM aashipov/calc:alpine-jre17 AS javaresult
+# DOCKER_BUILDKIT=1 docker build pure-java --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-pure && docker push aashipov/calc:alpine-pure
+# DOCKER_BUILDKIT=1 docker build spring-boot-web --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-spring-boot-web && docker push aashipov/calc:alpine-spring-boot-web
+# DOCKER_BUILDKIT=1 docker build spring-boot-webflux --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-spring-boot-webflux && docker push aashipov/calc:alpine-spring-boot-webflux
+# DOCKER_BUILDKIT=1 docker build tomcat --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-tomcat && docker push aashipov/calc:alpine-tomcat
+# DOCKER_BUILDKIT=1 docker build jetty --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-jetty && docker push aashipov/calc:alpine-jetty
+# DOCKER_BUILDKIT=1 docker build undertow --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-undertow && docker push aashipov/calc:alpine-undertow
+# DOCKER_BUILDKIT=1 docker build quarkus --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-quarkus && docker push aashipov/calc:alpine-quarkus
+# DOCKER_BUILDKIT=1 docker build quarkus-reactive --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-quarkus-reactive && docker push aashipov/calc:alpine-quarkus-reactive
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} target/calc-shaded.jar /dummy/app.jar
+WORKDIR /${DUMMY_USER}/
+EXPOSE 8080
+USER ${DUMMY_USER}
+CMD java -jar app.jar
+
+FROM aashipov/calc:alpine-dotnet6 AS dotnet6builder
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
+WORKDIR /${DUMMY_USER}/
+USER ${DUMMY_USER}
+RUN dotnet restore --use-current-runtime && dotnet publish -c Release --use-current-runtime --self-contained false --no-restore -o /dummy/app
+
+FROM aashipov/calc:alpine-dotnet6 AS dotnet6result
+# DOCKER_BUILDKIT=1 docker build dotnet --file=docker/Dockerfile.alpine --target=dotnet6result --tag=aashipov/calc:alpine-dotnet && docker push aashipov/calc:alpine-dotnet
+ARG DUMMY_USER=dummy
+COPY --from=dotnet6builder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/app /dummy/
+WORKDIR /${DUMMY_USER}
+EXPOSE 8080
+USER ${DUMMY_USER}
+CMD ./calc
+
+FROM aashipov/calc:alpine-nodejs16 AS nodejsresult
+# DOCKER_BUILDKIT=1 docker build nodejs --file=docker/Dockerfile.alpine --target=nodejsresult --tag=aashipov/calc:alpine-nodejs && docker push aashipov/calc:alpine-nodejs
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
+RUN apk add --no-cache bash
+WORKDIR /${DUMMY_USER}/
+EXPOSE 8080
+USER ${DUMMY_USER}
+RUN npm install --production --omit=dev && npm prune --production --omit=dev && node-prune
+CMD node server.js
+
+FROM aashipov/calc:alpine-rust-toolset AS rustbuilder
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /${DUMMY_USER}/
+WORKDIR /${DUMMY_USER}/
+USER ${DUMMY_USER}
+RUN cargo build --release
+
+FROM aashipov/calc:alpine-rust-toolset AS rust
+# DOCKER_BUILDKIT=1 docker build rust-actix --file=docker/Dockerfile.alpine --target=rust --tag=aashipov/calc:alpine-rust-actix && docker push aashipov/calc:alpine-rust-actix
+# DOCKER_BUILDKIT=1 docker build rust-tiny-http --file=docker/Dockerfile.alpine --target=rust --tag=aashipov/calc:alpine-rust-tiny-http && docker push aashipov/calc:alpine-rust-tiny-http
+ARG DUMMY_USER=dummy
+COPY --from=rustbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/target/release/calc /dummy/calc
+WORKDIR /${DUMMY_USER}/
+EXPOSE 8080
+USER ${DUMMY_USER}
+CMD /dummy/calc

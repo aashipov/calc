@@ -1,0 +1,103 @@
+FROM centos:7 AS dummy
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.centos --target=dummy --tag=aashipov/calc:centos-dummy && docker push aashipov/calc:centos-dummy
+ARG DUMMY_USER=dummy
+ARG UID_GID=10001
+RUN yum -y update && yum -y upgrade && yum -y install file curl wget && yum -y clean all && \
+groupadd -g ${UID_GID} ${DUMMY_USER} && useradd -m -u ${UID_GID} -d /${DUMMY_USER}/ -g ${DUMMY_USER} ${DUMMY_USER}
+
+FROM aashipov/calc:centos-dummy AS java
+ENV JAVA_HOME=/opt/java
+ENV PATH=${JAVA_HOME}/bin:${PATH}
+RUN mkdir -p ${JAVA_HOME}
+
+FROM java as jre17
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.centos --target=jre17 --tag=aashipov/calc:centos-jre17 && docker push aashipov/calc:centos-jre17
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jre17u-linux-x86_64-jdk-17.0.7+7.tar.gz && \
+tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
+find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
+find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
+rm -rf ${JAVA_HOME}/demo/ ${JAVA_HOME}/lib/src.zip ${JAVA_HOME}/man/ /tmp/java.tar.gz && \
+java -version && file ${JAVA_HOME}/bin/java
+
+FROM aashipov/calc:centos-dummy AS dotnet
+ENV DOTNET_ROOT=/opt/dotnet DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV PATH=${DOTNET_ROOT}:${PATH}
+RUN mkdir -p ${DOTNET_ROOT}
+
+FROM dotnet AS dotnet6
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.centos --target=dotnet6 --tag=aashipov/calc:centos-dotnet6 && docker push aashipov/calc:centos-dotnet6
+RUN curl -L -o /tmp/dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.420/dotnet-sdk-6.0.420-linux-x64.tar.gz && \
+tar -xzf /tmp/dotnet.tar.gz -C ${DOTNET_ROOT} && \
+rm -rf /tmp/dotnet.tar.gz && \
+dotnet --info && file ${DOTNET_ROOT}/dotnet
+
+FROM aashipov/calc:centos-dummy AS nodejs16
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.centos --target=nodejs16 --tag=aashipov/calc:centos-nodejs16 && docker push aashipov/calc:centos-nodejs16
+ARG NODEJS_VERSION=v16.20.2
+ADD https://nodejs.org/dist/${NODEJS_VERSION}/node-${NODEJS_VERSION}-linux-x64.tar.gz /tmp/
+ENV NODE_HOME=/opt/nodejs
+ENV PATH=${NODE_HOME}/bin:${PATH}
+RUN mkdir -p ${NODE_HOME} && tar -xzf /tmp/node-${NODEJS_VERSION}-linux-x64.tar.gz -C ${NODE_HOME} --strip-components=1 && rm -rf /tmp/node-${NODEJS_VERSION}-linux-x64.tar.gz && npm i -g node-prune && node --version
+
+FROM aashipov/calc:centos-dummy AS rust-toolset
+# DOCKER_BUILDKIT=1 docker build docker --file=docker/Dockerfile.centos --target=rust-toolset --tag=aashipov/calc:centos-rust-toolset
+RUN yum -y install centos-release-scl && yum -y install rust-toolset-7 && yum -y clean all
+
+FROM aashipov/calc:centos-jre17 AS javaresult
+# DOCKER_BUILDKIT=1 docker build pure-java --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-pure && docker push aashipov/calc:centos-pure
+# DOCKER_BUILDKIT=1 docker build spring-boot-web --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-spring-boot-web && docker push aashipov/calc:centos-spring-boot-web
+# DOCKER_BUILDKIT=1 docker build spring-boot-webflux --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-spring-boot-webflux && docker push aashipov/calc:centos-spring-boot-webflux
+# DOCKER_BUILDKIT=1 docker build tomcat --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-tomcat && docker push aashipov/calc:centos-tomcat
+# DOCKER_BUILDKIT=1 docker build jetty --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-jetty && docker push aashipov/calc:centos-jetty
+# DOCKER_BUILDKIT=1 docker build undertow --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-undertow && docker push aashipov/calc:centos-undertow
+# DOCKER_BUILDKIT=1 docker build quarkus --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-quarkus && docker push aashipov/calc:centos-quarkus
+# DOCKER_BUILDKIT=1 docker build quarkus-reactive --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-quarkus-reactive && docker push aashipov/calc:centos-quarkus-reactive
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} target/calc-shaded.jar /dummy/app.jar
+WORKDIR /${DUMMY_USER}/
+EXPOSE 8080
+USER ${DUMMY_USER}
+CMD java -jar app.jar
+
+FROM aashipov/calc:centos-dotnet6 AS dotnet6builder
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
+WORKDIR /${DUMMY_USER}/
+USER ${DUMMY_USER}
+RUN dotnet restore --use-current-runtime && dotnet publish -c Release --use-current-runtime --self-contained false --no-restore -o /dummy/app
+
+FROM aashipov/calc:centos-dotnet6 AS dotnet6result
+# DOCKER_BUILDKIT=1 docker build dotnet --file=docker/Dockerfile.centos --target=dotnet6result --tag=aashipov/calc:centos-dotnet && docker push aashipov/calc:centos-dotnet
+ARG DUMMY_USER=dummy
+COPY --from=dotnet6builder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/app /dummy/
+WORKDIR /${DUMMY_USER}
+EXPOSE 8080
+USER ${DUMMY_USER}
+CMD ./calc
+
+FROM aashipov/calc:centos-nodejs16 AS nodejsresult
+# DOCKER_BUILDKIT=1 docker build nodejs --file=docker/Dockerfile.centos --target=nodejsresult --tag=aashipov/calc:centos-nodejs && docker push aashipov/calc:centos-nodejs
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
+WORKDIR /${DUMMY_USER}/
+EXPOSE 8080
+USER ${DUMMY_USER}
+RUN npm install --production --omit=dev && npm prune --production --omit=dev && node-prune
+CMD node server.js
+
+FROM aashipov/calc:centos-rust-toolset AS rustbuilder
+ARG DUMMY_USER=dummy
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /${DUMMY_USER}/
+WORKDIR /${DUMMY_USER}/
+USER ${DUMMY_USER}
+RUN source scl_source enable rust-toolset-7 && cargo build --release
+
+FROM aashipov/calc:centos-dummy AS rust
+# DOCKER_BUILDKIT=1 docker build rust-actix --file=docker/Dockerfile.centos --target=rust --tag=aashipov/calc:centos-rust-actix && docker push aashipov/calc:centos-rust-actix
+# DOCKER_BUILDKIT=1 docker build rust-tiny-http --file=docker/Dockerfile.centos --target=rust --tag=aashipov/calc:centos-rust-tiny-http && docker push aashipov/calc:centos-rust-tiny-http
+ARG DUMMY_USER=dummy
+COPY --from=rustbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/target/release/calc /dummy/calc
+WORKDIR /${DUMMY_USER}/
+EXPOSE 8080
+USER ${DUMMY_USER}
+CMD /dummy/calc

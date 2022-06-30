@@ -4,7 +4,7 @@
 
 Common: bash, curl
 
-Runtime: Docker
+Runtime: Docker, docker-compose
 
 Development: OpenJDK 17+
 
@@ -23,9 +23,19 @@ Rust
 
 ## How to use
 
-```curl -X POST -H "Content-Type: text/plain" --data "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2" http://localhost:8080``` prints 19.9884
+```shell
+curl -X POST -H "Content-Type: text/plain" --data "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2" http://localhost:8080
+printf "\n"
+curl -X POST -H "Content-Type: text/plain" --data "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2" http://localhost:8080/mxparser
+printf "\n"
+```
 
-```curl -X POST -H "Content-Type: text/plain" --data "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2" http://localhost:8080/mxparser``` prints 19.98843289048526
+prints
+
+```shell
+19.9884
+19.98843289048526
+```
 
 OpenAPI UI ```http://localhost:8080/openapi-ui```
 
