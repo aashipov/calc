@@ -10,9 +10,9 @@ ENV JAVA_HOME=/opt/java
 ENV PATH=${JAVA_HOME}/bin:${PATH}
 RUN mkdir -p ${JAVA_HOME}
 
-FROM java as jre17
-# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.centos --target=jre17 --tag=aashipov/calc:centos-jre17 && docker push aashipov/calc:centos-jre17
-RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jre17u-linux-x86_64-jdk-17.0.7+7.tar.gz && \
+FROM java as openjdk17
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.centos --target=openjdk17 --tag=aashipov/calc:centos-openjdk17 && docker push aashipov/calc:centos-openjdk17
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk17u-linux-x86_64-jdk-17.0.11+9.tar.gz && \
 tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
 find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
 find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
@@ -43,7 +43,7 @@ FROM aashipov/calc:centos-dummy AS rust-toolset
 # DOCKER_BUILDKIT=1 docker build docker --file=docker/Dockerfile.centos --target=rust-toolset --tag=aashipov/calc:centos-rust-toolset
 RUN yum -y install centos-release-scl && yum -y install rust-toolset-7 && yum -y clean all
 
-FROM aashipov/calc:centos-jre17 AS javaresult
+FROM aashipov/calc:centos-openjdk17 AS javaresult
 # DOCKER_BUILDKIT=1 docker build pure-java --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-pure && docker push aashipov/calc:centos-pure
 # DOCKER_BUILDKIT=1 docker build spring-boot-web --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-spring-boot-web && docker push aashipov/calc:centos-spring-boot-web
 # DOCKER_BUILDKIT=1 docker build spring-boot-webflux --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-spring-boot-webflux && docker push aashipov/calc:centos-spring-boot-webflux

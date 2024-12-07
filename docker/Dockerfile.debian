@@ -12,9 +12,9 @@ ENV JAVA_HOME=/opt/java
 ENV PATH=${JAVA_HOME}/bin:${PATH}
 RUN mkdir -p ${JAVA_HOME}
 
-FROM java as jre17
-# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=jre17 --tag=aashipov/calc:debian-jre17 && docker push aashipov/calc:debian-jre17
-RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jre17u-linux-x86_64-jdk-17.0.7+7.tar.gz && \
+FROM java as openjdk17
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=openjdk17 --tag=aashipov/calc:debian-openjdk17 && docker push aashipov/calc:debian-openjdk17
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk17u-linux-x86_64-jdk-17.0.11+9.tar.gz && \
     tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
     find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
     find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
@@ -58,7 +58,7 @@ RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x ru
     cargo --version && \
     rustc --version
 
-FROM aashipov/calc:debian-jre17 AS javaresult
+FROM aashipov/calc:debian-openjdk17 AS javaresult
 # DOCKER_BUILDKIT=1 docker build pure-java --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-pure && docker push aashipov/calc:debian-pure
 # DOCKER_BUILDKIT=1 docker build spring-boot-web --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-web && docker push aashipov/calc:debian-spring-boot-web
 # DOCKER_BUILDKIT=1 docker build spring-boot-webflux --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-webflux && docker push aashipov/calc:debian-spring-boot-webflux

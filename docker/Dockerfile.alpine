@@ -10,9 +10,9 @@ ENV JAVA_HOME=/opt/java
 ENV PATH=${JAVA_HOME}/bin:${PATH}
 RUN mkdir -p ${JAVA_HOME}
 
-FROM java as jre17
-# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.alpine --target=jre17 --tag=aashipov/calc:alpine-jre17 && docker push aashipov/calc:alpine-jre17
-RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jre17u-linux-x86_64-jdk-17.0.7+7-alpine.tar.gz && \
+FROM java as openjdk17
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.alpine --target=openjdk17 --tag=aashipov/calc:alpine-openjdk17 && docker push aashipov/calc:alpine-openjdk17
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk17u-linux-x86_64-jdk-17.0.11+9-alpine.tar.gz && \
 tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
 find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
 find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
@@ -55,7 +55,7 @@ RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x ru
     cargo --version && \
     rustc --version
 
-FROM aashipov/calc:alpine-jre17 AS javaresult
+FROM aashipov/calc:alpine-openjdk17 AS javaresult
 # DOCKER_BUILDKIT=1 docker build pure-java --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-pure && docker push aashipov/calc:alpine-pure
 # DOCKER_BUILDKIT=1 docker build spring-boot-web --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-spring-boot-web && docker push aashipov/calc:alpine-spring-boot-web
 # DOCKER_BUILDKIT=1 docker build spring-boot-webflux --file=docker/Dockerfile.alpine --target=javaresult --tag=aashipov/calc:alpine-spring-boot-webflux && docker push aashipov/calc:alpine-spring-boot-webflux

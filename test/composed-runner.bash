@@ -45,7 +45,7 @@ main() {
     done
 
     cd ${_SCRIPT_DIR}/stats
-    ./do-stats.bash
+    ./do-stats.sh
 }
 
 # Main procedure

@@ -8,14 +8,14 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  * Common ancestor {@link Test}.
  */
-public class AppTestBase {
+public abstract class AppTestBase {
     protected static final Logger LOG = Logger.getLogger(AppTestBase.class.getSimpleName());
     protected static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     protected static final int DEFAULT_HTTP_PORT = 8080;
