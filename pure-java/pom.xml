@@ -18,7 +18,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.shade.plugin.version>3.4.1</maven.shade.plugin.version>
-        <mxparxer.version>5.2.1</mxparxer.version>
+        <mxparxer.version>6.1.0</mxparxer.version>
         <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

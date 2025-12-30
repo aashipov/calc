@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.4</version>
+		<version>3.5.9</version>
 	</parent>
 
 	<groupId>org.dummy</groupId>
@@ -21,10 +21,10 @@
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
-		<mxparxer.version>5.2.1</mxparxer.version>
+		<mxparxer.version>6.1.0</mxparxer.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<springdoc-verision>2.4.0</springdoc-verision>
+		<springdoc-verision>2.8.14</springdoc-verision>
 	</properties>
 	<dependencies>
 		<dependency>

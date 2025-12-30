@@ -1,4 +1,4 @@
-FROM debian:12 AS dummy
+FROM debian:13 AS dummy
 # DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=dummy --tag=aashipov/calc:debian-dummy && docker push aashipov/calc:debian-dummy
 ARG DUMMY_USER=dummy
 ARG UID_GID=10001
@@ -12,9 +12,9 @@ ENV JAVA_HOME=/opt/java
 ENV PATH=${JAVA_HOME}/bin:${PATH}
 RUN mkdir -p ${JAVA_HOME}
 
-FROM java as openjdk17
+FROM java AS openjdk17
 # DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=openjdk17 --tag=aashipov/calc:debian-openjdk17 && docker push aashipov/calc:debian-openjdk17
-RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk17u-linux-x86_64-jdk-17.0.11+9.tar.gz && \
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk17u-linux-x86_64-jdk-17.0.17+10.tar.gz && \
     tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
     find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
     find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
@@ -26,16 +26,16 @@ ENV DOTNET_ROOT=/opt/dotnet DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 DOTNET_CLI_T
 ENV PATH=${DOTNET_ROOT}:${PATH}
 RUN mkdir -p ${DOTNET_ROOT}
 
-FROM dotnet AS dotnet6
-# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=dotnet6 --tag=aashipov/calc:debian-dotnet6 && docker push aashipov/calc:debian-dotnet6
-RUN curl -L -o /tmp/dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/6.0.420/dotnet-sdk-6.0.420-linux-x64.tar.gz && \
+FROM dotnet AS dotnet10
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=dotnet10 --tag=aashipov/calc:debian-dotnet10 && docker push aashipov/calc:debian-dotnet10
+RUN curl -L -o /tmp/dotnet.tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.101/dotnet-sdk-10.0.101-linux-x64.tar.gz && \
     tar -xzf /tmp/dotnet.tar.gz -C ${DOTNET_ROOT} && \
     rm -rf /tmp/dotnet.tar.gz && \
     dotnet --info && file ${DOTNET_ROOT}/dotnet
 
-FROM aashipov/calc:debian-dummy AS nodejs16
-# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=nodejs16 --tag=aashipov/calc:debian-nodejs16 && docker push aashipov/calc:debian-nodejs16
-ARG NODEJS_VERSION=v16.20.2
+FROM aashipov/calc:debian-dummy AS nodejs22
+# DOCKER_BUILDKIT=1 docker build . --file=docker/Dockerfile.debian --target=nodejs22 --tag=aashipov/calc:debian-nodejs22 && docker push aashipov/calc:debian-nodejs22
+ARG NODEJS_VERSION=v22.21.1
 ADD https://nodejs.org/dist/${NODEJS_VERSION}/node-${NODEJS_VERSION}-linux-x64.tar.gz /tmp/
 ENV NODE_HOME=/opt/nodejs
 ENV PATH=${NODE_HOME}/bin:${PATH}
@@ -67,6 +67,7 @@ FROM aashipov/calc:debian-openjdk17 AS javaresult
 # DOCKER_BUILDKIT=1 docker build undertow --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-undertow && docker push aashipov/calc:debian-undertow
 # DOCKER_BUILDKIT=1 docker build quarkus --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-quarkus && docker push aashipov/calc:debian-quarkus
 # DOCKER_BUILDKIT=1 docker build quarkus-reactive --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-quarkus-reactive && docker push aashipov/calc:debian-quarkus-reactive
+# DOCKER_BUILDKIT=1 docker build ktor --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-ktor && docker push aashipov/calc:debian-ktor
 ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} target/calc-shaded.jar /dummy/app.jar
 WORKDIR /${DUMMY_USER}/
@@ -74,23 +75,23 @@ EXPOSE 8080
 USER ${DUMMY_USER}
 CMD java -jar app.jar
 
-FROM aashipov/calc:debian-dotnet6 AS dotnet6builder
+FROM aashipov/calc:debian-dotnet10 AS dotnet10builder
 ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
 WORKDIR /${DUMMY_USER}/
 USER ${DUMMY_USER}
 RUN dotnet restore --use-current-runtime && dotnet publish -c Release --use-current-runtime --self-contained false --no-restore -o /dummy/app
 
-FROM aashipov/calc:debian-dotnet6 AS dotnet6result
-# DOCKER_BUILDKIT=1 docker build dotnet --file=docker/Dockerfile.debian --target=dotnet6result --tag=aashipov/calc:debian-dotnet && docker push aashipov/calc:debian-dotnet
+FROM aashipov/calc:debian-dotnet10 AS dotnet10result
+# DOCKER_BUILDKIT=1 docker build dotnet --file=docker/Dockerfile.debian --target=dotnet10result --tag=aashipov/calc:debian-dotnet && docker push aashipov/calc:debian-dotnet
 ARG DUMMY_USER=dummy
-COPY --from=dotnet6builder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/app /dummy/
+COPY --from=dotnet10builder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/app /dummy/
 WORKDIR /${DUMMY_USER}
 EXPOSE 8080
 USER ${DUMMY_USER}
 CMD ./calc
 
-FROM aashipov/calc:debian-nodejs16 AS nodejsresult
+FROM aashipov/calc:debian-nodejs22 AS nodejsresult
 # DOCKER_BUILDKIT=1 docker build nodejs --file=docker/Dockerfile.debian --target=nodejsresult --tag=aashipov/calc:debian-nodejs && docker push aashipov/calc:debian-nodejs
 ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/

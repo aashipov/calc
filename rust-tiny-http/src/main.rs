@@ -1,5 +1,7 @@
 extern crate tiny_http;
 
+use std::thread;
+
 use tiny_http::{Method, Request, Response, Server};
 
 const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression / (via meval)";
@@ -18,10 +20,6 @@ fn read_body_as_string(request: &mut Request) -> Result<String, std::io::Error> 
         Ok(f) => Ok(f),
         Err(e) => Err(std::io::Error::new(std::io::ErrorKind::Other, e)),
     }
-}
-
-fn string_response(request: Request, response_string: String) -> Result<(), std::io::Error> {
-    request.respond(Response::from_string(response_string))
 }
 
 fn str_response(request: Request, response_str: &str) -> Result<(), std::io::Error> {
@@ -43,7 +41,7 @@ fn handler(server: std::sync::Arc<Server>) {
                 }
                 Err(body_error) => response_text = body_error.to_string(),
             }
-            string_response(request, response_text).ok();
+            str_response(request, &response_text).ok();
         } else {
             str_response(request, WELCOME).ok();
         }
@@ -52,9 +50,9 @@ fn handler(server: std::sync::Arc<Server>) {
 
 fn main() {
     let server = std::sync::Arc::new(Server::http("0.0.0.0:8080").unwrap());
-    let num_threads = std::cmp::max(1, num_cpus::get()) * 8;
-    let mut handles = Vec::with_capacity(num_threads);
-    for _ in 0..num_threads {
+    let num_workers = std::cmp::max(1, thread::available_parallelism().unwrap().get()) * 8;
+    let mut handles = Vec::with_capacity(num_workers);
+    for _ in 0..num_workers {
         let server = server.clone();
         handles.push(std::thread::spawn(move || handler(server)));
     }

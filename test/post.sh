@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 closure() {
     local BASE_URL="http://0.0.0.0:8080"
