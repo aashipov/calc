@@ -24,7 +24,7 @@ launch_container() {
 
 main() {
     local TAKES_COUNT=5
-    local IMPLEMENTATIONS="pure tomcat spring-boot-web spring-boot-webflux ktor nodejs dotnet"
+    local IMPLEMENTATIONS="pure tomcat jetty undertow spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor dotnet nodejs nodejs-nestjs nodejs-expressjs rust-actix rust-tiny-http"
     local DISTROS="debian"
     for d in ${DISTROS}
     do

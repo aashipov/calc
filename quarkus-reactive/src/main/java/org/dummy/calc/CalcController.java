@@ -1,12 +1,20 @@
 package org.dummy.calc;
 
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-
+import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.smallrye.mutiny.Uni;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+
 @Path("/")
+@ApplicationScoped
 public class CalcController {
 
     private static final Logger LOGGER = Logger.getLogger(CalcController.class.getSimpleName());
@@ -18,19 +26,20 @@ public class CalcController {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String welcome() {
-        return WELCOME;
+    public Uni<String> welcome() {
+        return Uni.createFrom().item(WELCOME);
     }
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    public String evalex(String expression) {
+    public Uni<String> evalex(String expression) {
         try {
-            return new com.udojava.evalex.Expression(expression).eval().toString();
+            BigDecimal result = new com.udojava.evalex.Expression(expression).eval();
+            return Uni.createFrom().item(result.toString());
         } catch (Exception e) {
             LOGGER.log(Level.INFO, null, e);
-            return e.getMessage();
+            return Uni.createFrom().item(e.getMessage());
         }
     }
 
@@ -38,7 +47,8 @@ public class CalcController {
     @Path("/mxparser")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    public String mxparser(String expression) {
-        return String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expression).calculate());
+    public Uni<String> mxparser(String expression) {
+        double result = new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
+        return Uni.createFrom().item(String.valueOf(result));
     }
 }

@@ -1,0 +1,11 @@
+{
+  "module": "nodenext",
+  "moduleResolution": "nodenext",
+  "allowJs": true,
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./",
+    "esModuleInterop": true
+  },
+  "exclude": ["node_modules", "dist"]
+}

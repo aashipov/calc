@@ -10,16 +10,23 @@ Development: OpenJDK 17+
 
 ## Flavors
 
-Pure java
+Pure java 
 
-Helidon SE & MP
+Tomcat, Undertow & Jetty
 
 Quarkus & Quarcus reactive
 
 Spring Boot web & webflux
 
+Ktor
+
+Node.js (pure, express, nestjs)
+
 Rust
 
+.NET
+
+Julia
 
 ## How to use
 
@@ -37,7 +44,13 @@ prints
 19.98843289048526
 ```
 
-OpenAPI UI ```http://localhost:8080/openapi-ui```
+OpenAPI UI is available with several flavors at ```http://localhost:8080/openapi-ui```
+
+## Load test ##
+
+Check `test` directory
+
+[Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
 
 ## License
 

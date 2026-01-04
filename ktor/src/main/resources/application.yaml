@@ -1,0 +1,6 @@
+ktor:
+  application:
+    modules:
+      - org.dummy.calc.CalcModuleKt.calcModule
+  deployment:
+    port: 8080

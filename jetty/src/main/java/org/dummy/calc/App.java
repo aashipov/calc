@@ -1,9 +1,9 @@
 package org.dummy.calc;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletHandler;
 
 /**
  * App.
@@ -16,9 +16,9 @@ public class App {
         ServerConnector connector = new ServerConnector(server);
         connector.setPort(HTTP_PORT);
         server.setConnectors(new Connector[]{connector});
-        ServletHandler servletHandler = new ServletHandler();
-        servletHandler.addServletWithMapping(CalcServlet.class, "/");
-        server.setHandler(servletHandler);
+        ServletContextHandler ctxHandler = new ServletContextHandler();
+        ctxHandler.addServlet(CalcServlet.class, "/");
+        server.setHandler(ctxHandler);
         return server;
     }
 

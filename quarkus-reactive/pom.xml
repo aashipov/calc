@@ -1,25 +1,28 @@
-<?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" ?>
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dummy</groupId>
     <artifactId>calc-quarkus-reactive</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+    
     <properties>
-        <compiler-plugin.version>3.12.1</compiler-plugin.version>
+        <compiler-plugin.version>3.14.1</compiler-plugin.version>
         <evalex.version>2.7</evalex.version>
         <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
-        <mxparxer.version>5.2.1</mxparxer.version>
+        <mxparxer.version>6.1.0</mxparxer.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.8.3</quarkus.platform.version>
-        <surefire-plugin.version>3.2.5</surefire-plugin.version>
+        <quarkus.platform.version>3.30.5</quarkus.platform.version>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -39,7 +42,11 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-reactive</artifactId>
+            <artifactId>quarkus-rest-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>com.udojava</groupId>
