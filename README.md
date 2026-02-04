@@ -1,24 +1,16 @@
-# Algebraic Expression Evaluation Service
+# Algebraic Expression Evaluation Service #
 
-## Requirements
+## Requirements ##
 
 Common: bash, curl
 
 Runtime: Docker, docker-compose
 
-Development: OpenJDK 17+
+Development: OpenJDK 17+, .NET, Rust, Python
 
-## Flavors
+## Flavors ##
 
-Pure java 
-
-Tomcat, Undertow & Jetty
-
-Quarkus & Quarcus reactive
-
-Spring Boot web & webflux
-
-Ktor
+Java (pure), (Tomcat, Undertow & Jetty), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor)
 
 Node.js (pure, express, nestjs)
 
@@ -28,27 +20,27 @@ Rust
 
 Julia
 
-## How to use
+Python
+
+## Showcase ##
 
 ```shell
-curl -X POST -H "Content-Type: text/plain" --data "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2" http://localhost:8080
-printf "\n"
-curl -X POST -H "Content-Type: text/plain" --data "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2" http://localhost:8080/mxparser
-printf "\n"
+./test/post.bash
 ```
 
-prints
-
-```shell
-19.9884
-19.98843289048526
-```
-
-OpenAPI UI is available with several flavors at ```http://localhost:8080/openapi-ui```
+[OpenAPI UI](http://localhost:8080/openapi-ui) (a few flavors)
 
 ## Load test ##
 
-Check `test` directory
+### Apache Benchmark ###
+
+```shell
+./test/benchmark.sh
+```
+
+### Apache JMeter ###
+
+Harness `./test/composed-runner.sh`
 
 [Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
 

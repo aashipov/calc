@@ -5,15 +5,16 @@ closure() {
     # Consistent across Linux bash, Cygwin terminal and Git Bash
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
-    
+
     local SAMPLE_EXPRESSION="sample.expression"
-    
+
     local BASE_URL="http://0.0.0.0:8080"
-    curl ${BASE_URL}/abc
-    printf "\n"
-    curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}
-    printf "\n"
-    curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/mxparser
+    printf "health\n"
+    ab -n 100000 -c 1000 ${BASE_URL}/health
+    printf "evalex\n"
+    ab -n 100000 -c 1000 -p ${SAMPLE_EXPRESSION} ${BASE_URL}/
+    printf "mxparser\n"
+    ab -n 100000 -c 1000 -p ${SAMPLE_EXPRESSION} ${BASE_URL}/mxparser
     printf "\n"
 }
 
