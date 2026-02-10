@@ -1,12 +1,16 @@
 [package]
 name = "calc-actix"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-actix-web = "4"
 meval = "0.2.0"
+actix-web = "4"
+serde = { version = "1", features = ["derive"] }
+utoipa = { version = "5", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "9", features = ["actix-web", "debug-embed"] }
+exprtk_rs = "0.1.0"
 
 [[bin]]
 name = "calc"
-path = "src/main.rs"
+path = "src/calc.rs"
