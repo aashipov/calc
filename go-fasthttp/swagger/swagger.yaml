@@ -1,0 +1,32 @@
+info:
+  contact: {}
+paths:
+  /:
+    get:
+      description: Responds Welcome
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Welcome
+    post:
+      description: Responds Calculation Result
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Evaluate
+swagger: "2.0"
