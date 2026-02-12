@@ -47,7 +47,7 @@ async fn via_meval(expr: String) -> impl Responder {
     }
 }
 
-fn build_symbol_table() -> exprtk_rs::SymbolTable {
+pub fn build_symbol_table() -> exprtk_rs::SymbolTable {
     match SYMBOL_TABLE.get() {
         None => {
             let mut st = exprtk_rs::SymbolTable::new();

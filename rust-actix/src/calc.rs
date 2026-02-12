@@ -7,6 +7,8 @@ use actix_web::{App, HttpServer, middleware, web};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
+const SOCKET: &'static str = "0.0.0.0:8080";
+
 fn config(app_under_configuration: &mut web::ServiceConfig) {
     app_under_configuration
         .service(
@@ -19,7 +21,7 @@ fn config(app_under_configuration: &mut web::ServiceConfig) {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let ip = "0.0.0.0:8080";
+    handler::build_symbol_table();
     let num_workers = std::cmp::max(1, thread::available_parallelism()?.get()) * 8;
     let server = HttpServer::new(|| {
         App::new()
@@ -27,6 +29,6 @@ async fn main() -> std::io::Result<()> {
             .configure(|app_under_configuration| config(app_under_configuration))
     })
     .workers(num_workers)
-    .bind(ip)?;
+    .bind(SOCKET)?;
     return server.run().await;
 }
