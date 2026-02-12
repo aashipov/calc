@@ -33,6 +33,9 @@ const docTemplate = `{
             },
             "post": {
                 "description": "Responds Calculation Result",
+                "consumes": [
+                    "text/plain"
+                ],
                 "produces": [
                     "text/plain"
                 ],

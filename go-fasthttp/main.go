@@ -1,8 +1,6 @@
 package main
 
-// #cgo CFLAGS: -O3 -I${SRCDIR}/go-exprtk-adapter
-// #cgo CXXFLAGS: -O3
-// #cgo LDFLAGS: -L${SRCDIR}/go-exprtk-adapter
+// #cgo CFLAGS: -I${SRCDIR}/go-exprtk-adapter
 // #include "go-exprtk-adapter.h"
 // #include <stdlib.h>
 import "C"
@@ -23,7 +21,11 @@ import (
 const (
 	SWAGGER = "swagger"
 	OPENAPI_UI = "openapi-ui"
-	WELCOME = "Welcome to calc service\nHTTP POST your expression")
+)
+
+var (
+	WELCOME = []byte("Welcome to calc service\nHTTP POST your expression")
+)
 
 func enableGracefulShutdown(server *fasthttp.Server) {
 	gracefulShutdown := make(chan os.Signal, 1)
@@ -42,13 +44,14 @@ func enableGracefulShutdown(server *fasthttp.Server) {
 // @Produce      text/plain
 // @Success      200  {string} Welcome
 func welcome(ctx *fasthttp.RequestCtx) {
-	ctx.Write([]byte(WELCOME))
+	ctx.Write(WELCOME)
 }
 
 // @Summary      Evaluate
 // @Description  Responds Calculation Result
 // @Router       / [post]
 // @Param        body body string true "body"
+// @Accept text/plain
 // @Produce      text/plain
 // @Success      200  {string} Evaluate
 func evaluate(ctx *fasthttp.RequestCtx) {

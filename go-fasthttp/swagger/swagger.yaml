@@ -13,6 +13,8 @@ paths:
             type: string
       summary: Welcome
     post:
+      consumes:
+      - text/plain
       description: Responds Calculation Result
       parameters:
       - description: body

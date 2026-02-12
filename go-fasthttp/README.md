@@ -8,7 +8,7 @@
 
 ## Build ##
 
-Debug:
+### Debug ###
 
 ```shell
 swag init --output ./swagger && go build -gcflags "all=-N -l" -o app-debug
@@ -20,7 +20,7 @@ dlv exec --listen=:2345 --headless --api-version=2 --accept-multiclient --contin
 
 Use remote debug
 
-Release
+### Release ###
 
 ```shell
 swag init --output ./swagger && go build -o app
