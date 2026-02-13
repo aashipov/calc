@@ -9,12 +9,12 @@ closure() {
     local SAMPLE_EXPRESSION="sample.expression"
     
     local BASE_URL="http://0.0.0.0:8080"
-    curl ${BASE_URL}/abc
+    curl ${BASE_URL}
     printf "\n"
     curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}
     printf "\n"
-    curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/mxparser
-    printf "\n"
+    #curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/mxparser
+    #printf "\n"
 }
 
 closure
