@@ -1,8 +1,6 @@
 package go_exprtk_adapter
 
-// #cgo CFLAGS: -O3 -I${SRCDIR}
-// #cgo CXXFLAGS: -O3
-// #cgo LDFLAGS: -L${SRCDIR}
+// #cgo CFLAGS: -I${SRCDIR}
 // #include "go-exprtk-adapter.h"
 // #include <stdlib.h>
 import "C"

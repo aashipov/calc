@@ -1,5 +1,7 @@
 #include "exprtk.hpp"
 
+namespace calc {
+
 template <typename T> static exprtk::symbol_table<T> build_symbol_table() {
   typedef exprtk::symbol_table<T> symbol_table_t;
   symbol_table_t symbol_table;
@@ -23,3 +25,5 @@ template <typename T> static T calculate(std::string expression_string) {
   const T result = expression.value();
   return result;
 }
+
+} // namespace calc
