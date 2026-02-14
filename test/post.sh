@@ -13,8 +13,10 @@ closure() {
     printf "\n"
     curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}
     printf "\n"
-    #curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/mxparser
-    #printf "\n"
+    curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/mxparser
+    printf "\n"
+    curl -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/exprtk
+    printf "\n"
 }
 
 closure

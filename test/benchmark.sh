@@ -13,9 +13,11 @@ closure() {
     ab -n 100000 -c 1000 ${BASE_URL}/health
     printf "evalex\n"
     ab -n 100000 -c 1000 -p ${SAMPLE_EXPRESSION} ${BASE_URL}/
-    #printf "mxparser\n"
-    #ab -n 100000 -c 1000 -p ${SAMPLE_EXPRESSION} ${BASE_URL}/mxparser
-    #printf "\n"
+    printf "mxparser\n"
+    ab -n 100000 -c 1000 -p ${SAMPLE_EXPRESSION} ${BASE_URL}/mxparser
+    printf "exprtk\n"
+    ab -n 100000 -c 1000 -p ${SAMPLE_EXPRESSION} ${BASE_URL}/exprtk
+    printf "\n"
 }
 
 closure
