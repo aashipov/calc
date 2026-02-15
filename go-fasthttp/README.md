@@ -6,6 +6,8 @@
 
 `go`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
+Build `../c-exprtk-adapter` first
+
 ## Build ##
 
 ### Debug ###

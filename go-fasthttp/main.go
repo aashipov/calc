@@ -1,17 +1,18 @@
 package main
 
-// #cgo CFLAGS: -I${SRCDIR}/go-exprtk-adapter
-// #include "go-exprtk-adapter.h"
+// #cgo CFLAGS: -I${SRCDIR}/c-exprtk-adapter
+// #cgo LDFLAGS: -L${SRCDIR}/c-exprtk-adapter -lc-exprtk-adapter
+// #include "c-exprtk-adapter.h"
 // #include <stdlib.h>
 import "C"
 import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
-	"strconv"
-	goExprtkAdapter "bitbucket.org/anatoly_a_shipov/calc-go-fasthttp/go-exprtk-adapter"
+	"unsafe"
 
 	_ "bitbucket.org/anatoly_a_shipov/calc-go-fasthttp/swagger"
 	fastHttpSwagger "github.com/swaggo/fasthttp-swagger"
@@ -19,7 +20,7 @@ import (
 )
 
 const (
-	SWAGGER = "swagger"
+	SWAGGER    = "swagger"
 	OPENAPI_UI = "openapi-ui"
 )
 
@@ -56,7 +57,9 @@ func welcome(ctx *fasthttp.RequestCtx) {
 // @Success      200  {string} Evaluate
 func evaluate(ctx *fasthttp.RequestCtx) {
 	expression := string(ctx.Request.Body())
-	result := goExprtkAdapter.Evaluate(expression)
+	expressionCString := C.CString(expression)
+	defer C.free(unsafe.Pointer(expressionCString))
+	result := float64(C.calculate(expressionCString))
 	resultString := strconv.FormatFloat(result, 'f', -1, 64)
 	ctx.Write([]byte(resultString))
 }
@@ -70,10 +73,10 @@ func main() {
 			fastHttpSwagger.WrapHandler(fastHttpSwagger.InstanceName(SWAGGER))(ctx)
 		default:
 			switch method {
-				case "POST":
-					evaluate(ctx)
-				default:
-				    welcome(ctx)
+			case "POST":
+				evaluate(ctx)
+			default:
+				welcome(ctx)
 			}
 		}
 	}
