@@ -2,7 +2,6 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rustc-link-search=.");
     println!("cargo:rustc-link-lib=c-exprtk-adapter");
     let bindings = bindgen::Builder::default()
         .header("c-exprtk-adapter.h")
