@@ -15,13 +15,12 @@ fn config(app_under_configuration: &mut web::ServiceConfig) {
             SwaggerUi::new("/openapi-ui/{_:.*}").url("/api-docs/openapi.json", ApiDoc::openapi()),
         )
         .service(handler::index)
-        .service(handler::via_exprkt_rs)
+        .service(handler::via_exprkt)
         .service(handler::via_meval);
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    handler::build_symbol_table();
     let num_workers = std::cmp::max(1, thread::available_parallelism()?.get()) * 8;
     let server = HttpServer::new(|| {
         App::new()

@@ -1,4 +1,10 @@
-# Actix Web Flavor #
+# Actix Web Flavor
+
+## Requirements
+
+Build `../c-exprtk-adapter`
+
+## Build & run
 
 ```shell
 cargo build && ./target/debug/calc

@@ -1,8 +1,13 @@
+#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+use std::ffi::{CString, c_char};
+
 use actix_web::{HttpResponse, Responder, get, post};
 
-const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression / (via meval)";
-
-static SYMBOL_TABLE: std::sync::OnceLock<exprtk_rs::SymbolTable> = std::sync::OnceLock::new();
+const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
 #[utoipa::path(
     path = "/",
@@ -16,18 +21,19 @@ async fn index() -> impl Responder {
 }
 
 #[utoipa::path(
-    path = "/mxparser",
+    path = "/exprtk",
     request_body = String,
     responses(
         (status = 200, description = "OK")
     )
 )]
-#[post("/mxparser")]
-async fn via_exprkt_rs(expr: String) -> impl Responder {
-    let expression = exprtk_rs::Expression::new(&expr, build_symbol_table());
-    match expression {
-        Ok(mut result) => HttpResponse::Ok().body((result.value()).to_string()),
-        Err(err) => HttpResponse::BadRequest().body(err.to_string()),
+#[post("/exprtk")]
+async fn via_exprkt(expr: String) -> impl Responder {
+    let expr_c_string = CString::new(expr).expect("CString::new failed");
+    let expr_c_ptr: *const c_char = expr_c_string.as_ptr();
+    unsafe {
+        let result = calculate(expr_c_ptr);
+        return HttpResponse::Ok().body((result).to_string());
     }
 }
 
@@ -44,17 +50,5 @@ async fn via_meval(expr: String) -> impl Responder {
     match eval {
         Ok(result) => HttpResponse::Ok().body((result).to_string()),
         Err(err) => HttpResponse::BadRequest().body(err.to_string()),
-    }
-}
-
-pub fn build_symbol_table() -> exprtk_rs::SymbolTable {
-    match SYMBOL_TABLE.get() {
-        None => {
-            let mut st = exprtk_rs::SymbolTable::new();
-            let _ = st.add_constant("pi", std::f64::consts::PI);
-            let _ = st.add_constant("e", std::f64::consts::E);
-            return SYMBOL_TABLE.get_or_init(|| st).clone();
-        }
-        Some(st) => return st.clone(),
     }
 }
