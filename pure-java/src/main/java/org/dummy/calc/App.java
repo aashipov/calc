@@ -20,7 +20,7 @@ public class App {
 
     static HttpServer launch() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(HTTP_PORT), 0);
-        server.createContext("/", new CommonHandler());
+        server.createContext("/", new CalcHandler());
         server.setExecutor(HTTP_EXECUTOR_SERVICE);
         server.start();
         return server;

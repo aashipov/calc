@@ -19,9 +19,9 @@ import java.util.logging.Logger;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-public class CommonHandler implements HttpHandler {
+public class CalcHandler implements HttpHandler {
 
-    private static final Logger LOGGER = Logger.getLogger(CommonHandler.class.getSimpleName());
+    private static final Logger LOGGER = Logger.getLogger(CalcHandler.class.getSimpleName());
     private static final String EXPRTK_SHARED_LIBRARY_NAME = "libc-exprtk-adapter.so";
     private static final String EXPRTK_SHARED_LIBRARY_FUNCTION = "calculate";
     private static final String POST = "POST";
@@ -34,6 +34,16 @@ public class CommonHandler implements HttpHandler {
     static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String MXPARSER = "mxparser";
     private static final String EXPRTK = "exprtk";
+    private static final String JNI = "JNI";
+    private static final Boolean IS_C_EXPRTK_ADAPTER_HARNESS_JNI = isCExprtkAdapterJniHarness();
+
+    static String getCExprtkAdapterHarnessName() {
+        return (System.getenv("C_EXPRTK_ADAPTER_HARNESS") == null || System.getenv("C_EXPRTK_ADAPTER_HARNESS").isBlank()) ? JNI : System.getenv("C_EXPRTK_ADAPTER_HARNESS");
+    }
+
+    static boolean isCExprtkAdapterJniHarness() {
+        return JNI.equalsIgnoreCase(getCExprtkAdapterHarnessName());
+    }
 
     static double calculateFfm(String expression) throws Throwable {
         FunctionDescriptor functionDescriptor = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
@@ -48,8 +58,9 @@ public class CommonHandler implements HttpHandler {
         return (double) linker.downcallHandle(memorySegmentOptional.get(), functionDescriptor).invoke(funcArg);
     }
 
-    public CommonHandler() {
+    public CalcHandler() {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
+        LOGGER.log(Level.INFO, "C_EXPRTK_ADAPTER_HARNESS {0}", getCExprtkAdapterHarnessName());
     }
 
     @Override
@@ -66,8 +77,11 @@ public class CommonHandler implements HttpHandler {
                     if (exchange.getRequestURI().toString().contains(MXPARSER)) {
                         result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
                     } else if (exchange.getRequestURI().toString().contains(EXPRTK)) {
-                        //result = "" + ExprtkAdapter.calculate(expr);
-                        result = "" + calculateFfm(expr);
+                        if (IS_C_EXPRTK_ADAPTER_HARNESS_JNI) {
+                            result = "" + ExprtkAdapter.calculate(expr);
+                        } else {
+                            result = "" + calculateFfm(expr);
+                        }
                     } else {
                         result = (new com.udojava.evalex.Expression(expr).eval()).toString();
                     }
