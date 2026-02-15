@@ -1,6 +1,14 @@
-#ifndef C_EXPRTK_ADAPTER
-#define C_EXPRTK_ADAPTER
+#ifndef C_EXPRTK_ADAPTER_H
+#define C_EXPRTK_ADAPTER_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 double calculate(const char *expression);
 
-#endif // C_EXPRTK_ADAPTER
+#ifdef __cplusplus
+}
+#endif
+
+#endif // C_EXPRTK_ADAPTER_H
