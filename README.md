@@ -6,7 +6,7 @@ Common: bash, curl
 
 Runtime: Docker, docker-compose
 
-Development: OpenJDK 17+, .NET, Rust, Python
+Development: OpenJDK 25, .NET, Rust, Python
 
 Environment configured for unprivileged installation:
 
