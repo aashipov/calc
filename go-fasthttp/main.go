@@ -1,7 +1,6 @@
 package main
 
-// #cgo CFLAGS: -I${SRCDIR}/c-exprtk-adapter
-// #cgo LDFLAGS: -L${SRCDIR}/c-exprtk-adapter -lc-exprtk-adapter
+// #cgo LDFLAGS: -lc-exprtk-adapter
 // #include "c-exprtk-adapter.h"
 // #include <stdlib.h>
 import "C"

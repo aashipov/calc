@@ -8,6 +8,16 @@ Runtime: Docker, docker-compose
 
 Development: OpenJDK 17+, .NET, Rust, Python
 
+Environment configured for unprivileged installation:
+
+```shell
+LIBRARY_PATH=${HOME}/.local/lib
+LD_LIBRARY_PATH=${HOME}/.local/lib
+C_INCLUDE_PATH=${HOME}/.local/include:${JAVA_HOME}/include:${JAVA_HOME}/include/linux
+CPLUS_INCLUDE_PATH=${HOME}/.local/include:${JAVA_HOME}/include:${JAVA_HOME}/include/linux
+CMAKE_POLICY_VERSION_MINIMUM=3.5
+```
+
 ## Flavors ##
 
 Java (pure), (Tomcat, Undertow & Jetty), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor)
