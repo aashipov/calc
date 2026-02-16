@@ -13,7 +13,7 @@ Build `../c-exprtk-adapter` first
 ### Debug ###
 
 ```shell
-swag init --output ./swagger && go build -gcflags "all=-N -l" -o app-debug
+swag init --output ./swagger && go build -gcflags "all=-N -l" -o app-debug && go test
 ```
 
 ```shell
@@ -25,7 +25,7 @@ Use remote debug
 ### Release ###
 
 ```shell
-swag init --output ./swagger && go build -o app
+swag init --output ./swagger && go build -o app && go test
 ```
 
 ## Run ##

@@ -63,22 +63,23 @@ func evaluate(ctx *fasthttp.RequestCtx) {
 	ctx.Write([]byte(resultString))
 }
 
-func main() {
-	handler := func(ctx *fasthttp.RequestCtx) {
-		path := string(ctx.RequestURI())
-		method := string(ctx.Method())
-		switch {
-		case strings.Contains(path, OPENAPI_UI):
-			fastHttpSwagger.WrapHandler(fastHttpSwagger.InstanceName(SWAGGER))(ctx)
+func handler(ctx *fasthttp.RequestCtx) {
+	path := string(ctx.RequestURI())
+	method := string(ctx.Method())
+	switch {
+	case strings.Contains(path, OPENAPI_UI):
+		fastHttpSwagger.WrapHandler(fastHttpSwagger.InstanceName(SWAGGER))(ctx)
+	default:
+		switch method {
+		case "POST":
+			evaluate(ctx)
 		default:
-			switch method {
-			case "POST":
-				evaluate(ctx)
-			default:
-				welcome(ctx)
-			}
+			welcome(ctx)
 		}
 	}
+}
+
+func main() {
 	server := &fasthttp.Server{
 		Handler: handler,
 	}

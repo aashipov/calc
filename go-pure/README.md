@@ -13,7 +13,7 @@ Build `../c-exprtk-adapter` first
 ### Debug ###
 
 ```shell
-go build -gcflags "all=-N -l" -o app-debug
+go build -gcflags "all=-N -l" -o app-debug && go test
 ```
 
 ```shell
@@ -25,7 +25,7 @@ Use remote debug
 ### Release ###
 
 ```shell
-go build -o app
+go build -o app && go test
 ```
 
 ## Run ##
