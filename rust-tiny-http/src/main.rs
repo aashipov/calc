@@ -1,10 +1,15 @@
+#![allow(non_upper_case_globals)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
 extern crate tiny_http;
-
+use std::ffi::{CString, c_char};
 use std::thread;
-
 use tiny_http::{Method, Request, Response, Server};
 
 const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression / (via meval)";
+const EXPRTK: &'static str = "exprtk";
 
 fn pass_body_to_string(request: &mut Request, body: &mut String) -> std::io::Result<usize> {
     request.as_reader().read_to_string(body)
@@ -29,14 +34,24 @@ fn str_response(request: Request, response_str: &str) -> Result<(), std::io::Err
 fn handler(server: std::sync::Arc<Server>) {
     for mut request in server.incoming_requests() {
         if let &Method::Post = request.method() {
+            request.url();
             let body = read_body_as_string(&mut request);
             let response_text: String;
             match body {
                 Ok(body_string) => {
-                    let eval = meval::eval_str(body_string);
-                    match eval {
-                        Ok(eval_result) => response_text = (eval_result).to_string(),
-                        Err(eval_error) => response_text = eval_error.to_string(),
+                    if request.url().contains(EXPRTK) {
+                        let expr_c_string = CString::new(body_string).expect("CString::new failed");
+                        let expr_c_ptr: *const c_char = expr_c_string.as_ptr();
+                        unsafe {
+                            let result = calculate(expr_c_ptr);
+                            response_text = result.to_string();
+                        }
+                    } else {
+                        let eval = meval::eval_str(body_string);
+                        match eval {
+                            Ok(eval_result) => response_text = (eval_result).to_string(),
+                            Err(eval_error) => response_text = eval_error.to_string(),
+                        }
                     }
                 }
                 Err(body_error) => response_text = body_error.to_string(),
