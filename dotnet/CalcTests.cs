@@ -10,6 +10,7 @@
     {
         private const string Expression = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
         private const string ExpressionResult = "19.98843289048500";
+        private const string ExprtkExpressionResult = "19.98843289048523";
 
         private const string NotAnExpression = "abc";
         private readonly HttpClient _client;
@@ -61,6 +62,24 @@
         {
             StringContent content = ToStringContent(NotAnExpression);
             HttpResponseMessage response = await _client.PostAsync("/", content);
+            Check(HttpStatusCode.OK, Calc.NaN, response);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task EvaluateExpressionViaExprtk()
+        {
+            StringContent content = ToStringContent(Expression);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
+            Check(HttpStatusCode.OK, ExprtkExpressionResult, response);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task EvaluateNotAnExpressionViaExprtk()
+        {
+            StringContent content = ToStringContent(NotAnExpression);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
             Check(HttpStatusCode.OK, Calc.NaN, response);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

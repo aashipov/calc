@@ -1,12 +1,18 @@
 namespace Calc
 {
     using System.Net.Mime;
+    using Microsoft.AspNetCore.Http.Extensions;
 
     public static class Calc
     {
+        [System.Runtime.InteropServices.DllImport("c-exprtk-adapter")]
+        static extern double calculate(string expression);
+
         public const string Welcome = "Welcome to calc service\nHTTP POST your expression\n";
 
         public const string NaN = "NaN";
+
+        public const string EXPRTK = "exprtk";
 
         static async Task<IResult> Get()
         {
@@ -20,7 +26,15 @@ namespace Calc
             {
                 using StreamReader stream = new(request.Body, System.Text.Encoding.UTF8);
                 string expr = await stream.ReadToEndAsync();
-                double result = new org.mariuszgromada.math.mxparser.Expression(expr).calculate();
+                double result = double.NaN;
+                if (request.GetDisplayUrl().Contains(EXPRTK))
+                {
+                    result = calculate(expr);
+                }
+                else
+                {
+                    result = new org.mariuszgromada.math.mxparser.Expression(expr).calculate();
+                }
                 responseText = result.ToString("F14");
             }
             catch (Exception e)
