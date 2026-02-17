@@ -1,56 +1,68 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 )
 
-var (
-	expression       = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2"
-	expressionResult = "19.988432890485228"
-	NaN              = "NaN"
-)
+var baseUrl = NaN
 
-func checkResponse(t *testing.T, response *http.Response, expected string) {
-	data, err := io.ReadAll(response.Body)
+func request(t *testing.T, url string, method string, statusCode int, reqBody io.Reader) (body string) {
+	req, _ := http.NewRequest(method, url, reqBody)
+	if reqBody != nil {
+		req.Header.Add("Content-Type", TEXT_PLAIN)
+	}
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
-		t.Errorf("Error: %v", err)
+		t.Errorf("Error making request: %v", err)
 	}
-	if string(data) != expected {
-		t.Errorf("Expected %s but got %v", expected, string(data))
+	defer resp.Body.Close()
+	if resp.StatusCode != statusCode {
+		t.Errorf("API request failed with status code: %s", fmt.Errorf("%+v", resp))
 	}
-	if response.StatusCode != http.StatusOK {
-		t.Errorf("Expected status OK but got %v", response.StatusCode)
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Errorf("Error reading response body: %s", err)
+	}
+	body = string(bodyBytes)
+	return
+}
+
+func TestMain(m *testing.M) {
+	http.HandleFunc("/", CalcHandler)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		CalcHandler(w, req)
+	}))
+	baseUrl = server.Listener.Addr().String()
+	defer server.Close()
+	exitCode := m.Run()
+	os.Exit(exitCode)
+}
+
+func TestE2eWelcome(t *testing.T) {
+	expected := string(Welcome)
+	actual := request(t, fmt.Sprintf("http://%s/", baseUrl), "GET", 200, nil)
+	if actual != expected {
+		t.Errorf("Expected %s but got %v", expected, actual)
 	}
 }
 
-func TestWelcome(t *testing.T) {
-	expected := string(welcome)
-	r := httptest.NewRequest(http.MethodGet, "/", nil)
-	w := httptest.NewRecorder()
-	handler(w, r)
-	response := w.Result()
-	defer response.Body.Close()
-	checkResponse(t, response, expected)
+func TestE2eExpression(t *testing.T) {
+	actual := request(t, fmt.Sprintf("http://%s/", baseUrl), "POST", 200, strings.NewReader(expression))
+	if actual != expressionResult {
+		t.Errorf("Expected %s but got %v", expressionResult, actual)
+	}
 }
 
-func TestExpression(t *testing.T) {
-	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(expression))
-	w := httptest.NewRecorder()
-	handler(w, r)
-	response := w.Result()
-	defer response.Body.Close()
-	checkResponse(t, response, expressionResult)
-}
-
-func TestNaN(t *testing.T) {
-	r := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(NaN))
-	w := httptest.NewRecorder()
-	handler(w, r)
-	response := w.Result()
-	defer response.Body.Close()
-	checkResponse(t, response, NaN)
+func TestE2eNan(t *testing.T) {
+	actual := request(t, fmt.Sprintf("http://%s/", baseUrl), "POST", 200, strings.NewReader(NaN))
+	if actual != NaN {
+		t.Errorf("Expected %s but got %v", NaN, actual)
+	}
 }
