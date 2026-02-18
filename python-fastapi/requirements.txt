@@ -1,4 +1,3 @@
 fastapi[standard]==0.128.4
 gunicorn==25.0.2
-cexprtk==0.4.2
 pytest==9.0.2

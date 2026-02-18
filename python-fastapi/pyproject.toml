@@ -13,4 +13,4 @@ build-backend = "hatchling.build"
 files = ["requirements.txt"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["calc", "tests"]
+packages = ["src", "tests"]

@@ -26,7 +26,7 @@ distro() {
 }
 
 run() {
-    gunicorn --chdir calc calc:calc
+    gunicorn --chdir src app:app
 }
 
 closure() {
@@ -34,11 +34,13 @@ closure() {
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
 
+    set -e
+
     local DOT_VENV=.venv
 
     enter_venv
     build
-    test   
+    test
     distro
     run
 }

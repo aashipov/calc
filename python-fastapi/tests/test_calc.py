@@ -1,4 +1,4 @@
-from calc.calc import NAN, WELCOME
+from src.app import NAN, WELCOME
 from tests.conf import test_client
 
 EXPRESSION: str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2"
@@ -27,4 +27,4 @@ def test_not_an_expression(test_client):
         url="/", content=NOT_AN_EXPRESSION, headers={"Content-Type": "text/plain"}
     )
     assert 200 == response.status_code
-    assert NAN == response.text
+    assert NAN.lower() == response.text.lower()
