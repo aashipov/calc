@@ -1,30 +1,17 @@
 package main
 
-// #cgo LDFLAGS: -lc-exprtk-adapter
-// #include "c-exprtk-adapter.h"
-// #include <stdlib.h>
-import "C"
 import (
 	"log"
 	"os"
 	"os/signal"
-	"strconv"
-	"strings"
 	"syscall"
-	"unsafe"
 
 	_ "bitbucket.org/anatoly_a_shipov/calc-go-fasthttp/swagger"
-	fastHttpSwagger "github.com/swaggo/fasthttp-swagger"
 	"github.com/valyala/fasthttp"
 )
 
 const (
-	SWAGGER    = "swagger"
-	OPENAPI_UI = "openapi-ui"
-)
-
-var (
-	WELCOME = []byte("Welcome to calc service\nHTTP POST your expression")
+	httpPort = "8080"
 )
 
 func enableGracefulShutdown(server *fasthttp.Server) {
@@ -38,51 +25,13 @@ func enableGracefulShutdown(server *fasthttp.Server) {
 	}()
 }
 
-// @Summary      Welcome
-// @Description  Responds Welcome
-// @Router       / [get]
-// @Produce      text/plain
-// @Success      200  {string} Welcome
-func welcome(ctx *fasthttp.RequestCtx) {
-	ctx.Write(WELCOME)
-}
-
-// @Summary      Evaluate
-// @Description  Responds Calculation Result
-// @Router       / [post]
-// @Param        body body string true "body"
-// @Accept text/plain
-// @Produce      text/plain
-// @Success      200  {string} Evaluate
-func evaluate(ctx *fasthttp.RequestCtx) {
-	expression := string(ctx.Request.Body())
-	expressionCString := C.CString(expression)
-	defer C.free(unsafe.Pointer(expressionCString))
-	result := float64(C.calculate(expressionCString))
-	resultString := strconv.FormatFloat(result, 'f', -1, 64)
-	ctx.Write([]byte(resultString))
-}
-
-func handler(ctx *fasthttp.RequestCtx) {
-	path := string(ctx.RequestURI())
-	method := string(ctx.Method())
-	switch {
-	case strings.Contains(path, OPENAPI_UI):
-		fastHttpSwagger.WrapHandler(fastHttpSwagger.InstanceName(SWAGGER))(ctx)
-	default:
-		switch method {
-		case "POST":
-			evaluate(ctx)
-		default:
-			welcome(ctx)
-		}
-	}
-}
-
 func main() {
 	server := &fasthttp.Server{
-		Handler: handler,
+		Handler: CalcHandler,
 	}
 	enableGracefulShutdown(server)
-	server.ListenAndServe("0.0.0.0:8080")
+	err := server.ListenAndServe("0.0.0.0:" + httpPort)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
