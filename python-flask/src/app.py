@@ -1,21 +1,14 @@
 import cexprtk
 from flask import Flask, request
+from src.c_exprtk_adapter import calculate_via_exprtk
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-
-SYMBOL_TABLE = cexprtk.Symbol_Table(
-    {
-        "pi": 3.14159265358979323846264338327950288419716939937510,
-        "e": 2.71828182845904523536028747135266249775724709369996,
-    }
-)
-
-NAN = "NaN"
+NAN: str = "nan"
 
 
 def create_calc(is_testing: bool) -> Flask:
     calc: Flask = Flask(__name__)
-    
+
     if is_testing:
         calc.config.update({"TESTING": True})
 
@@ -30,8 +23,7 @@ def create_calc(is_testing: bool) -> Flask:
         result = NAN
         try:
             body_string: str = request.data.decode("utf-8")
-            expression = cexprtk.Expression(body_string, SYMBOL_TABLE)
-            result = str(expression())
+            result = calculate_via_exprtk(body_string)
         except:
             pass
         return result
@@ -39,8 +31,8 @@ def create_calc(is_testing: bool) -> Flask:
     return calc
 
 
-calc = create_calc(False)
+app = create_calc(False)
 
 
 if __name__ == "__main__":
-    calc.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080)

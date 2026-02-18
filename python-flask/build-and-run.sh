@@ -26,13 +26,15 @@ distro() {
 }
 
 run() {
-    gunicorn --chdir calc calc:calc
+    gunicorn --chdir src app:app
 }
 
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
+    
+    set -e
 
     local DOT_VENV=.venv
 

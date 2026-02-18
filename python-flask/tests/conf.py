@@ -3,7 +3,7 @@ from flask.testing import FlaskClient
 import pytest
 from flask import Flask
 
-from calc.calc import create_calc
+from src.app import create_calc
 
 
 @pytest.fixture
