@@ -2,8 +2,8 @@
 
 build_header() {
     cd ${_SCRIPT_DIR}
-    javac -h . "${_SCRIPT_DIR}/src/main/java/org/dummy/calc/ExprtkAdapter.java"
-    rm "${_SCRIPT_DIR}/src/main/java/org/dummy/calc/ExprtkAdapter.class"
+    javac -h . "${_SCRIPT_DIR}/src/main/java/org/dummy/calc/JavaExprtkAdapter.java"
+    rm "${_SCRIPT_DIR}/src/main/java/org/dummy/calc/JavaExprtkAdapter.class"
 }
 
 build_native_library() {
@@ -19,7 +19,9 @@ build_native_library() {
 
 maven_build() {
     cd ${_SCRIPT_DIR}
-    mvn clean package
+    mvn clean package -DskipTests
+    mvn test
+    SHARED_LIBRARY_HARNESS=FFM mvn test
 }
 
 closure() {

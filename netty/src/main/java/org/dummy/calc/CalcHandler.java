@@ -37,7 +37,7 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 if (msg.uri().contains(MXPARSER)) {
                     result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
                 } else if (msg.uri().contains(EXPRTK)) {
-                    result = "" + ExprtkAdapter.calculate(expr);
+                    result = "" + JavaExprtkAdapter.calculate(expr);
                 } else {
                     result = (new com.udojava.evalex.Expression(expr).eval()).toString();
                 }

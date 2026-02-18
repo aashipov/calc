@@ -10,7 +10,7 @@ add_library(${project_name} SHARED java-exprtk-adapter.c)
 
 set_target_properties(${project_name} PROPERTIES
     VERSION ${PROJECT_VERSION}
-    PUBLIC_HEADER org_dummy_calc_ExprtkAdapter.h
+    PUBLIC_HEADER org_dummy_calc_JavaExprtkAdapter.h
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE c-exprtk-adapter)
