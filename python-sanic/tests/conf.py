@@ -3,7 +3,7 @@ from collections.abc import Generator
 import pytest
 from sanic import Sanic
 
-from calc.calc import create_calc
+from src.app import create_calc
 
 
 @pytest.fixture

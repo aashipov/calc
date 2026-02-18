@@ -1,6 +1,6 @@
 from sanic import Sanic
 
-from calc.calc import NAN, WELCOME
+from src.app import NAN, WELCOME
 from tests.conf import app
 
 EXPRESSION: str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2"
