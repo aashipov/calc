@@ -1,5 +1,5 @@
-#include "../src/CalcConstants.hpp"
-#include "../src/CalcRequestHandlerFactory.cpp"
+#include "CalcConstants.hpp"
+#include "CalcRequestHandlerFactory.cpp"
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPResponse.h"
