@@ -1,6 +1,5 @@
 #!/bin/sh
-# git clone https://github.com/drogonframework/drogon.git
-# git submodule update --init
+# git clone https://github.com/google/googletest.git
 closure() {
     # https://stackoverflow.com/a/1482133
     # Consistent across Linux bash, Cygwin terminal and Git Bash

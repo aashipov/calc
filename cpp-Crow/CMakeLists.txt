@@ -11,11 +11,12 @@ find_package(ZLIB REQUIRED)
 find_package(Crow REQUIRED)
 
 target_link_libraries(${project_name}
-        PRIVATE
-    OpenSSL::SSL
-    OpenSSL::Crypto
-    ZLIB::ZLIB
-    Crow::Crow
+    PRIVATE
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        ZLIB::ZLIB
+        Crow::Crow
+        c-exprtk-adapter
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

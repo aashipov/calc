@@ -1,5 +1,9 @@
 # Crow flavor
 
+## Requirements
+
+Build `../c-exprtk-adapter` first
+
 ## Build
 
 ```shell
