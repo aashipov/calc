@@ -29,3 +29,7 @@ install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}
 )
+
+if (ENABLE_TESTS)
+    add_subdirectory(tests)
+endif ()
