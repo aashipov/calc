@@ -1,12 +1,21 @@
-#include "exprtk-adapter.hpp"
+#include "c-exprtk-adapter.h"
 #include "httplib.h"
 
 namespace calc {
 
-static const std::string WELCOME =
+static inline const std::string WELCOME =
     "Welcome to calc service\nHTTP POST your expression";
 
-static const std::string TEXT_PLAIN = "text/plain";
+static inline const std::string TEXT_PLAIN = "text/plain";
+
+static inline const unsigned short DOUBLE_PRECISION = 40;
+
+static inline std::string doubleToStringWithPrecision(double value,
+                                                      int precision) {
+  std::ostringstream ss;
+  ss << std::fixed << std::setprecision(precision) << value;
+  return ss.str();
+}
 
 static void configure_server(httplib::Server &svr) {
   svr.Get(R"(/.*)",
@@ -21,8 +30,9 @@ static void configure_server(httplib::Server &svr) {
       expr.append(data, data_length);
       return true;
     });
-    double result = calculate<double>(expr);
-    res.set_content(std::to_string(result), TEXT_PLAIN);
+    double result = calculate(expr.c_str());
+    std::string body = doubleToStringWithPrecision(result, DOUBLE_PRECISION);
+    res.set_content(body, TEXT_PLAIN);
   });
 }
 
