@@ -1,8 +1,6 @@
 #include "CalcConstants.hpp"
 #include "CalcRequestHandlerFactory.cpp"
 #include "Poco/Net/HTTPServer.h"
-#include "Poco/Net/HTTPServerParams.h"
-#include "Poco/Net/ServerSocket.h"
 #include <gtest/gtest.h>
 #include <httplib.h>
 #include <string>
@@ -17,20 +15,10 @@ protected:
 
   const std::string NOT_AN_EXPRESSION = "nan";
 
-  Poco::Net::HTTPServer *_server;
+  Poco::Net::HTTPServer server = calc::buildHTTPServer(calc::SERVER_PORT);
 
-  void SetUp() override {
-    Poco::Net::ServerSocket svs(calc::SERVER_PORT);
-    Poco::Net::HTTPServerParams *pParams = new Poco::Net::HTTPServerParams;
-    pParams->setKeepAlive(false);
-    _server = new Poco::Net::HTTPServer(new calc::CalcRequestHandlerFactory,
-                                        svs, pParams);
-    _server->start();
-  }
-  void TearDown() override {
-    _server->stop();
-    delete _server;
-  }
+  void SetUp() override { server.start(); }
+  void TearDown() override { server.stop(); }
 
   void performRequest(std::string path, std::string requestBody,
                       std::string expected) {
