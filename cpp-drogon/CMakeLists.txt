@@ -12,6 +12,7 @@ find_package(Trantor REQUIRED)
 target_link_libraries(${project_name}
         PRIVATE Drogon::Drogon
         PRIVATE Trantor::Trantor
+        c-exprtk-adapter
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

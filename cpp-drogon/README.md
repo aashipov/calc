@@ -1,5 +1,9 @@
 # Drogon flavor
 
+## Requirements
+
+Build `../c-exprtk-adapter` first
+
 ## Build
 
 ```shell
