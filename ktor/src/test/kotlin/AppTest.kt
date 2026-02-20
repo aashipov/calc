@@ -19,6 +19,7 @@ class AppTest {
         const val EVALEX_EXPECTED: String = "19.9884"
         const val MXPARSER_EXPECTED: String = "19.98843289048526"
         const val NOT_AN_EXPRESSION: String = "abc"
+        const val EXPRTK_EXPECTED: String = "19.988432890485228"
 
         var testApp: TestApplication = TestApplication {
             application {
@@ -58,6 +59,20 @@ class AppTest {
     @Test
     fun mxparserNotAnExpressionTest() = testSuspend {
         val response = testApp.client.post(MXPARSER_PATH) { body = NOT_AN_EXPRESSION }
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertTrue(response.bodyAsText().contains("NaN"))
+    }
+
+    @Test
+    fun exprtkTest() = testSuspend {
+        val response = testApp.client.post(EXPRTK_PATH) { body = EXPRESSION }
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(EXPRTK_EXPECTED, response.bodyAsText())
+    }
+
+    @Test
+    fun exprtkNotAnExpressionTest() = testSuspend {
+        val response = testApp.client.post(EXPRTK_PATH) { body = NOT_AN_EXPRESSION }
         assertEquals(HttpStatusCode.OK, response.status)
         assertTrue(response.bodyAsText().contains("NaN"))
     }

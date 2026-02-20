@@ -10,6 +10,8 @@ const val WELCOME = "Welcome to calc service\nHTTP POST your expression / (via e
 
 const val MXPARSER_PATH = "/mxparser"
 
+const val EXPRTK_PATH = "/exprtk"
+
 fun calcRoutingConfiguration(): (Routing.() -> Unit) =
     {
         get("{...}") {
@@ -27,6 +29,14 @@ fun calcRoutingConfiguration(): (Routing.() -> Unit) =
             val expr: String = call.receiveText()
             try {
                 call.respondText(org.mariuszgromada.math.mxparser.Expression(expr).calculate().toString())
+            } catch (e: Exception) {
+                e.message?.let { call.respondText(it) }
+            }
+        }
+        post(EXPRTK_PATH) {
+            val expr: String = call.receiveText()
+            try {
+                call.respondText("" + JavaExprtkAdapter.calculate(expr))
             } catch (e: Exception) {
                 e.message?.let { call.respondText(it) }
             }
