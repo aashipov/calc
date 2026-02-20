@@ -5,8 +5,6 @@ set(project_name calc-oatpp)
 project(${project_name})
 
 add_library(${project_name}-lib
-        src/calc/exprtk.hpp
-        src/calc/exprtk-adapter.hpp
         src/calc/AppComponent.hpp
         src/calc/SwaggerComponent.hpp
         src/calc/controller/CalcController.hpp
@@ -37,4 +35,4 @@ add_definitions(-DOATPP_SWAGGER_RES_PATH="${OATPP_BASE_DIR}/bin/oatpp-swagger/re
 ## add executables
 
 add_executable(${project_name} src/calc/App.cpp)
-target_link_libraries(${project_name} ${project_name}-lib)
+target_link_libraries(${project_name} ${project_name}-lib c-exprtk-adapter)

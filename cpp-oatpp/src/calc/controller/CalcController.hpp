@@ -1,7 +1,7 @@
 #ifndef calc_calc_CalcController_hpp
 #define calc_calc_CalcController_hpp
 
-#include "calc/exprtk-adapter.hpp"
+#include "c-exprtk-adapter.h"
 
 #include "calc/Constants.hpp"
 
@@ -9,6 +9,7 @@
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
 #include "oatpp/web/server/api/ApiController.hpp"
+#include <iomanip>
 
 namespace calc {
 namespace calc {
@@ -18,6 +19,15 @@ static const std::string WELCOME =
     "Welcome to calc service\nHTTP POST your expression";
 
 static const std::string TEXT_PLAIN = "text/plain";
+
+static inline constexpr unsigned short DOUBLE_PRECISION = 40;
+
+static inline std::string doubleToStringWithPrecision(double value,
+                                                      int precision) {
+  std::ostringstream ss;
+  ss << std::fixed << std::setprecision(precision) << value;
+  return ss.str();
+}
 
 #include OATPP_CODEGEN_BEGIN(ApiController) //<--- Codegen begin
 
@@ -44,9 +54,11 @@ public:
     info->addResponse<String>(Status::CODE_200, TEXT_PLAIN);
   }
   ENDPOINT("POST", "/", evaluate, BODY_STRING(String, body)) {
-    double result = calculate<double>(body);
+    double result = calculate(body->c_str());
 
-    return createResponse(Status::CODE_200, std::to_string(result));
+    return createResponse(Status::CODE_200,
+                          doubleToStringWithPrecision(
+                              result, DOUBLE_PRECISION));
   }
 };
 
