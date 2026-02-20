@@ -1,10 +1,7 @@
 #include "CalcServer.cpp"
 #include "crow.h"
 #include <chrono>
-#include <cmath>
 #include <crow/app.h>
-#include <csignal>
-#include <exception>
 #include <gtest/gtest.h>
 #include <httplib.h>
 #include <pthread.h>
