@@ -1,5 +1,5 @@
 #include "crow.h"
-#include "src/CalcServer.cpp"
+#include "src/CalcServer.hpp"
 #include <crow/app.h>
 #include <crow/common.h>
 #include <crow/http_response.h>

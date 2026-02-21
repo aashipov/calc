@@ -1,3 +1,6 @@
+#ifndef CPP_CROW_CALC_HANDLER_H
+#define CPP_CROW_CALC_HANDLER_H
+
 #include "c-exprtk-adapter.h"
 #include "crow.h"
 #include <crow/app.h>
@@ -36,3 +39,5 @@ static inline void handler(const crow::request &req, crow::response &res) {
   res.end();
 }
 } // namespace calc
+
+#endif // CPP_CROW_CALC_HANDLER_H

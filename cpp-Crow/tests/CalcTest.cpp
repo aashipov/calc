@@ -1,4 +1,4 @@
-#include "CalcServer.cpp"
+#include "CalcServer.hpp"
 #include "crow.h"
 #include <chrono>
 #include <crow/app.h>

@@ -1,4 +1,7 @@
-#include "CalcHandler.cpp"
+#ifndef CPP_CROW_CALC_SERVER_H
+#define CPP_CROW_CALC_SERVER_H
+
+#include "CalcHandler.hpp"
 #include "crow.h"
 #include <crow/app.h>
 #include <crow/common.h>
@@ -18,3 +21,5 @@ crow::SimpleApp buildCalcApp(unsigned short httpPort) {
 }
 
 } // namespace calc
+
+#endif // CPP_CROW_CALC_SERVER_H
