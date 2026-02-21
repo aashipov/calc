@@ -1,10 +1,16 @@
 package org.dummy.calc;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/*")
@@ -35,5 +41,10 @@ public class CalcController {
     @PostMapping(value = "/mxparser", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public Mono<String> mxparser(@RequestBody String expression) {
         return Mono.just(String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expression).calculate()));
+    }
+
+    @PostMapping(value = "/exprtk", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public Mono<String> exprtk(@RequestBody String expression) {
+        return Mono.just(String.valueOf(JavaExprtkAdapter.calculate(expression)));
     }
 }
