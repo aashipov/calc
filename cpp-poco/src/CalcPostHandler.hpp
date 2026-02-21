@@ -1,3 +1,6 @@
+#ifndef CPP_POCO_CALC_POST_HANDLER_H
+#define CPP_POCO_CALC_POST_HANDLER_H
+
 #include "CalcConstants.hpp"
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPServerRequest.h"
@@ -6,20 +9,19 @@
 #include <Poco/StreamCopier.h>
 #include <iomanip>
 
-using Poco::Net::HTTPRequestHandler;
-using Poco::Net::HTTPServerRequest;
-using Poco::Net::HTTPServerResponse;
-
 namespace calc {
+
 static inline std::string doubleToStringWithPrecision(double value,
                                                       int precision) {
   std::ostringstream ss;
   ss << std::fixed << std::setprecision(precision) << value;
   return ss.str();
 }
-class CalcPostHandler : public HTTPRequestHandler {
+
+class CalcPostHandler : public Poco::Net::HTTPRequestHandler {
 public:
-  void handleRequest(HTTPServerRequest &request, HTTPServerResponse &response) {
+  void handleRequest(Poco::Net::HTTPServerRequest &request,
+                     Poco::Net::HTTPServerResponse &response) {
     std::string expression;
     Poco::StreamCopier::copyToString(request.stream(), expression);
     const char *expression_c_string = expression.c_str();
@@ -31,4 +33,7 @@ public:
     responseBodyStream << result_string;
   }
 };
+
 } // namespace calc
+
+#endif // CPP_POCO_CALC_POST_HANDLER_H

@@ -1,13 +1,13 @@
+#ifndef CPP_POCO_CALC_SERVER_H
+#define CPP_POCO_CALC_SERVER_H
+
 #include "CalcConstants.hpp"
-#include "CalcRequestHandlerFactory.cpp"
+#include "CalcRequestHandlerFactory.hpp"
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Util/ServerApplication.h"
 
-using Poco::Net::HTTPServer;
-using Poco::Util::ServerApplication;
-
 namespace calc {
-class CalcServer : public ServerApplication {
+class CalcServer : public Poco::Util::ServerApplication {
 
 public:
   CalcServer() {}
@@ -21,7 +21,7 @@ protected:
   void uninitialize() { ServerApplication::uninitialize(); }
 
   int main(const std::vector<std::string> &args) {
-    HTTPServer httpServer = buildHTTPServer(SERVER_PORT);
+    Poco::Net::HTTPServer httpServer = buildHTTPServer(SERVER_PORT);
     // start the HTTPServer
     httpServer.start();
     // wait for CTRL-C or kill
@@ -32,3 +32,5 @@ protected:
   }
 };
 } // namespace calc
+
+#endif // CPP_POCO_CALC_SERVER_H

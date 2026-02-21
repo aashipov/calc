@@ -1,4 +1,4 @@
-#include "src/CalcServer.cpp"
+#include "src/CalcServer.hpp"
 
 int main(int argc, char **argv) {
   calc::CalcServer calcServer;

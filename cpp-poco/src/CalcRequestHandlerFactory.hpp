@@ -1,21 +1,21 @@
-#include "CalcGetHandler.cpp"
-#include "CalcPostHandler.cpp"
+#ifndef CPP_POCO_CALC_REQUEST_HANDLER_FACTORY_H
+#define CPP_POCO_CALC_REQUEST_HANDLER_FACTORY_H
+
+#include "CalcGetHandler.hpp"
+#include "CalcPostHandler.hpp"
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
 #include "Poco/Net/HTTPServer.h"
 #include "Poco/Net/HTTPServerParams.h"
 #include "Poco/Net/HTTPServerRequest.h"
 
-using Poco::Net::HTTPRequestHandler;
-using Poco::Net::HTTPRequestHandlerFactory;
-using Poco::Net::HTTPServerRequest;
-
 namespace calc {
 
-class CalcRequestHandlerFactory : public HTTPRequestHandlerFactory {
+class CalcRequestHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory {
 public:
-  HTTPRequestHandler *createRequestHandler(const HTTPServerRequest &request) {
-    if (request.getMethod() == HTTPServerRequest::HTTP_POST) {
+  Poco::Net::HTTPRequestHandler *
+  createRequestHandler(const Poco::Net::HTTPServerRequest &request) {
+    if (request.getMethod() == Poco::Net::HTTPServerRequest::HTTP_POST) {
       return new CalcPostHandler();
     } else {
       return new CalcGetHandler();
@@ -34,4 +34,7 @@ Poco::Net::HTTPServer buildHTTPServer(unsigned short httpPort) {
   return Poco::Net::HTTPServer(new CalcRequestHandlerFactory(), serverSocket,
                                httpServerParams);
 }
+
 } // namespace calc
+
+#endif // CPP_POCO_CALC_REQUEST_HANDLER_FACTORY_H

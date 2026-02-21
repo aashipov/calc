@@ -1,5 +1,5 @@
 #include "CalcConstants.hpp"
-#include "CalcRequestHandlerFactory.cpp"
+#include "CalcRequestHandlerFactory.hpp"
 #include "Poco/Net/HTTPServer.h"
 #include <gtest/gtest.h>
 #include <httplib.h>
