@@ -13,6 +13,7 @@ namespace Calc
         public const string NaN = "NaN";
 
         public const string EXPRTK = "exprtk";
+        public const string MXPARSER = "mxparser";
 
         static async Task<IResult> Get()
         {
@@ -27,13 +28,13 @@ namespace Calc
                 using StreamReader stream = new(request.Body, System.Text.Encoding.UTF8);
                 string expr = await stream.ReadToEndAsync();
                 double result = double.NaN;
-                if (request.GetDisplayUrl().Contains(EXPRTK))
+                if (request.GetDisplayUrl().Contains(MXPARSER))
                 {
-                    result = calculate(expr);
+                    result = new org.mariuszgromada.math.mxparser.Expression(expr).calculate();
                 }
                 else
                 {
-                    result = new org.mariuszgromada.math.mxparser.Expression(expr).calculate();
+                    result = calculate(expr);
                 }
                 responseText = result.ToString("F14");
             }
