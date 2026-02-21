@@ -3,7 +3,7 @@
 
 #include "AppComponent.hpp"
 
-#include "controller/CalcController.hpp"
+#include "CalcController.hpp"
 
 #include "oatpp-swagger/Controller.hpp"
 

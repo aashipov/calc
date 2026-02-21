@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # git clone https://github.com/oatpp/oatpp.git && cd oatpp/
-
+# Rinse and repeat
+# git clone https://github.com/oatpp/oatpp-swagger && cd oatpp/
 closure() {
     # https://stackoverflow.com/a/1482133
     # Consistent across Linux bash, Cygwin terminal and Git Bash

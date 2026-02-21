@@ -1,6 +1,6 @@
 
-#include "calc/AppComponent.hpp"
-#include "calc/Runner.hpp"
+#include "src/AppComponent.hpp"
+#include "src/Runner.hpp"
 
 void run() {
 
