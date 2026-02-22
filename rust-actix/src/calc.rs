@@ -14,9 +14,9 @@ fn config(app_under_configuration: &mut web::ServiceConfig) {
         .service(
             SwaggerUi::new("/openapi-ui/{_:.*}").url("/api-docs/openapi.json", ApiDoc::openapi()),
         )
-        .service(handler::index)
-        .service(handler::via_exprkt)
-        .service(handler::via_meval);
+        .service(handler::respond_welcome)
+        .service(handler::respond_via_exprkt)
+        .service(handler::respond_via_meval);
 }
 
 #[actix_web::main]
