@@ -7,5 +7,5 @@ curl -L https://raw.githubusercontent.com/ArashPartow/exprtk/refs/heads/master/e
 ```
 
 ```shell
-rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${HOME}/.local/ .. && make install
+rm -rf build && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${HOME}/.local/ .. && make install && cd ..
 ```
