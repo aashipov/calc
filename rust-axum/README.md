@@ -1,4 +1,4 @@
-# ntex Flavor
+# Actix Web Flavor
 
 ## Requirements
 
