@@ -6,9 +6,9 @@ const SOCKET: &'static str = "0.0.0.0:8080";
 
 fn config(app_under_configuration: &mut ServiceConfig) {
     app_under_configuration
-        .service(handler::index)
-        .service(handler::via_exprkt)
-        .service(handler::via_meval);
+        .service(handler::respond_welcome)
+        .service(handler::respond_via_exprkt)
+        .service(handler::respond_via_meval);
 }
 
 #[ntex::main]
