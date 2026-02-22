@@ -6,5 +6,6 @@ use utoipa::OpenApi;
         super::handler::index,
         super::handler::via_exprkt,
         super::handler::via_meval
-    ))]
+    ),
+    tags((description = "Calc")))]
 pub struct ApiDoc;
