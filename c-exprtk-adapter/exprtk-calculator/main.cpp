@@ -20,7 +20,9 @@ int main(int argc, char *argv[]) {
     std::cout << doubleToStringWithPrecision(result, DOUBLE_PRECISION)
               << std::endl;
   } else {
-    std::cout << "Usage:\n exprtk-calculator 2*2" << std::endl;
+    std::cout << "Usage:\n exprtk-calculator "
+                 "\"(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2\""
+              << std::endl;
   }
   EXIT_SUCCESS;
 }
