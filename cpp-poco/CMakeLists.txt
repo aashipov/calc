@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(project_name calc-poco)
+set(project_name calc)
 
 project(${project_name} VERSION 0.1.0)
 

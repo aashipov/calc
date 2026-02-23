@@ -2,32 +2,50 @@ FROM debian:13 AS dummy
 # docker build . --file=docker/Dockerfile.debian --target=dummy --tag=aashipov/calc:debian-dummy && docker push aashipov/calc:debian-dummy
 ARG DUMMY_USER=dummy
 ARG UID_GID=10001
-RUN apt-get update && apt-get -y upgrade && \
-    apt-get -y install file curl && \
+# no ARG in runtime, ENV only
+ENV DUMMY_USER=${DUMMY_USER} UID_GID=${UID_GID}
+ENV JAVA_HOME=/opt/java 
+ENV GOROOT=/opt/go GOPATH=/${DUMMY_USER}/go
+ENV DOTNET_ROOT=/opt/dotnet DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV RUSTUP_HOME=/${DUMMY_USER}/rustup CARGO_HOME=/${DUMMY_USER}/cargo
+ENV LIBRARY_PATH=/${DUMMY_USER}/.local/lib LD_LIBRARY_PATH=/${DUMMY_USER}/.local/lib C_INCLUDE_PATH=/${DUMMY_USER}/.local/include:${JAVA_HOME}/include:${JAVA_HOME}/include/linux CPLUS_INCLUDE_PATH=/${DUMMY_USER}/.local/include:${JAVA_HOME}/include:${JAVA_HOME}/include/linux CMAKE_POLICY_VERSION_MINIMUM=3.5
+ENV PATH=${JAVA_HOME}/bin:${DOTNET_ROOT}:${CARGO_HOME}/bin:${GOROOT}/bin:${PATH}
+RUN mkdir -p ${JAVA_HOME} ${DOTNET_ROOT} ${RUSTUP_HOME} ${CARGO_HOME} ${GOROOT} ${GOPATH} \
+    /${DUMMY_USER}/.local/bin /${DUMMY_USER}/.local/include /${DUMMY_USER}/.local/lib && \
+    apt-get update && apt-get -y upgrade && \
+    apt-get -y install file curl libssl-dev zlib1g-dev libasio-dev && \
     apt-get -y autoremove && apt-get -y clean && \
-    groupadd -g ${UID_GID} ${DUMMY_USER} && useradd -m -u ${UID_GID} -d /${DUMMY_USER}/ -g ${DUMMY_USER} ${DUMMY_USER}
+    groupadd -g ${UID_GID} ${DUMMY_USER} && useradd -m -u ${UID_GID} -d /${DUMMY_USER}/ -g ${DUMMY_USER} ${DUMMY_USER} && chown -R ${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}
 
-FROM aashipov/calc:debian-dummy AS java
-ENV JAVA_HOME=/opt/java
-ENV PATH=${JAVA_HOME}/bin:${PATH}
-RUN mkdir -p ${JAVA_HOME}
-
-FROM java AS openjdk17
-# docker build . --file=docker/Dockerfile.debian --target=openjdk17 --tag=aashipov/calc:debian-openjdk17 && docker push aashipov/calc:debian-openjdk17
-RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk17u-linux-x86_64-jdk-17.0.17+10.tar.gz && \
+FROM dummy AS openjdk25base
+# docker build . --file=docker/Dockerfile.debian --target=openjdk25base --tag=aashipov/calc:debian-openjdk25base && docker push aashipov/calc:debian-openjdk25base
+RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releases/download/1.0.0/jdk25u-linux-x86_64-jdk-25.0.2+10.tar.gz && \
     tar -xzf /tmp/java.tar.gz -C ${JAVA_HOME}/ --strip-components=1 && \
     find "${JAVA_HOME}" -type f -name '*.debuginfo' -exec rm {} \; && \
     find "${JAVA_HOME}" -type f -name '*.diz' -exec rm {} \; && \
     rm -rf ${JAVA_HOME}/demo/ ${JAVA_HOME}/lib/src.zip ${JAVA_HOME}/man/ /tmp/java.tar.gz && \
     java -version && file ${JAVA_HOME}/bin/java
 
-FROM aashipov/calc:debian-dummy AS dotnet
-ENV DOTNET_ROOT=/opt/dotnet DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
-ENV PATH=${DOTNET_ROOT}:${PATH}
-RUN mkdir -p ${DOTNET_ROOT}
+FROM openjdk25base AS native
+# docker build . --file=docker/Dockerfile.debian --target=native --tag=aashipov/calc:debian-native
+RUN apt-get -y install build-essential cmake clang && \
+    apt-get -y autoremove && apt-get -y clean
 
-FROM dotnet AS dotnet10
+FROM aashipov/calc:debian-native AS exprtkbuilder
+# docker build . --file=docker/Dockerfile.debian --target=exprtkbuilder --tag=aashipov/calc:debian-exprtkbuilder
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./c-exprtk-adapter/ /${DUMMY_USER}/c-exprtk-adapter/
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./java-exprtk-adapter/ /${DUMMY_USER}/java-exprtk-adapter/
+USER ${DUMMY_USER}
+RUN /${DUMMY_USER}/c-exprtk-adapter/release.sh
+RUN /${DUMMY_USER}/java-exprtk-adapter/release.sh
+
+FROM openjdk25base AS openjdk25
+# docker build . --file=docker/Dockerfile.debian --target=openjdk25 --tag=aashipov/calc:debian-openjdk25
+COPY --from=exprtkbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local /${DUMMY_USER}/.local
+
+FROM aashipov/calc:debian-dummy AS dotnet10
 # docker build . --file=docker/Dockerfile.debian --target=dotnet10 --tag=aashipov/calc:debian-dotnet10 && docker push aashipov/calc:debian-dotnet10
+COPY --from=exprtkbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local /${DUMMY_USER}/.local
 RUN curl -L -o /tmp/dotnet.tar.gz https://builds.dotnet.microsoft.com/dotnet/Sdk/10.0.101/dotnet-sdk-10.0.101-linux-x64.tar.gz && \
     tar -xzf /tmp/dotnet.tar.gz -C ${DOTNET_ROOT} && \
     rm -rf /tmp/dotnet.tar.gz && \
@@ -41,14 +59,9 @@ ENV NODE_HOME=/opt/nodejs
 ENV PATH=${NODE_HOME}/bin:${PATH}
 RUN mkdir -p ${NODE_HOME} && tar -xzf /tmp/node-${NODEJS_VERSION}-linux-x64.tar.gz -C ${NODE_HOME} --strip-components=1 && rm -rf /tmp/node-${NODEJS_VERSION}-linux-x64.tar.gz && npm i -g node-prune && node --version
 
-FROM aashipov/calc:debian-dummy AS rust-toolset
+FROM native AS rust-toolset
 # docker build docker --file=docker/Dockerfile.debian --target=rust-toolset --tag=aashipov/calc:debian-rust-toolset && docker push aashipov/calc:debian-rust-toolset
-ARG DUMMY_USER=dummy
-ENV RUSTUP_HOME=/${DUMMY_USER}/rustup
-ENV CARGO_HOME=/${DUMMY_USER}/cargo
-ENV PATH=${CARGO_HOME}/bin:${PATH}
-RUN apt-get -y install build-essential && \
-    apt-get -y autoremove && apt-get -y clean
+COPY --from=exprtkbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local /${DUMMY_USER}/.local
 WORKDIR /${DUMMY_USER}/
 USER ${DUMMY_USER}
 RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x rustup-init.sh && \
@@ -58,8 +71,8 @@ RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x ru
     cargo --version && \
     rustc --version
 
-FROM aashipov/calc:debian-openjdk17 AS javaresult
-# docker build pure-java --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-pure && docker push aashipov/calc:debian-pure
+FROM aashipov/calc:debian-openjdk25 AS javaresult
+# docker build pure-java --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-pure-java && docker push aashipov/calc:debian-pure-java
 # docker build spring-boot-web --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-web && docker push aashipov/calc:debian-spring-boot-web
 # docker build spring-boot-webflux --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-webflux && docker push aashipov/calc:debian-spring-boot-webflux
 # docker build tomcat --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-tomcat && docker push aashipov/calc:debian-tomcat
@@ -68,7 +81,6 @@ FROM aashipov/calc:debian-openjdk17 AS javaresult
 # docker build quarkus --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-quarkus && docker push aashipov/calc:debian-quarkus
 # docker build quarkus-reactive --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-quarkus-reactive && docker push aashipov/calc:debian-quarkus-reactive
 # docker build ktor --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-ktor && docker push aashipov/calc:debian-ktor
-ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} target/calc-shaded.jar /dummy/app.jar
 WORKDIR /${DUMMY_USER}/
 EXPOSE 8080
@@ -76,7 +88,6 @@ USER ${DUMMY_USER}
 CMD java -jar app.jar
 
 FROM aashipov/calc:debian-dotnet10 AS dotnet10builder
-ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
 WORKDIR /${DUMMY_USER}/
 USER ${DUMMY_USER}
@@ -84,7 +95,7 @@ RUN dotnet restore --use-current-runtime && dotnet publish -c Release --use-curr
 
 FROM aashipov/calc:debian-dotnet10 AS dotnet10result
 # docker build dotnet --file=docker/Dockerfile.debian --target=dotnet10result --tag=aashipov/calc:debian-dotnet && docker push aashipov/calc:debian-dotnet
-ARG DUMMY_USER=dummy
+COPY --from=dotnet10builder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local/lib /${DUMMY_USER}/.local/lib
 COPY --from=dotnet10builder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/app /dummy/
 WORKDIR /${DUMMY_USER}
 EXPOSE 8080
@@ -95,7 +106,6 @@ FROM aashipov/calc:debian-nodejs22 AS nodejsresult
 # docker build nodejs --file=docker/Dockerfile.debian --target=nodejsresult --tag=aashipov/calc:debian-nodejs && docker push aashipov/calc:debian-nodejs
 # docker build nodejs-nestjs --file=docker/Dockerfile.debian --target=nodejsresult --tag=aashipov/calc:debian-nodejs-nestjs && docker push aashipov/calc:debian-nodejs-nestjs
 # docker build nodejs-expressjs --file=docker/Dockerfile.debian --target=nodejsresult --tag=aashipov/calc:debian-nodejs-expressjs && docker push aashipov/calc:debian-nodejs-expressjs
-ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /dummy/
 WORKDIR /${DUMMY_USER}/
 EXPOSE 8080
@@ -104,7 +114,6 @@ RUN /${DUMMY_USER}/build.sh
 CMD node server.js
 
 FROM aashipov/calc:debian-rust-toolset AS rustbuilder
-ARG DUMMY_USER=dummy
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ /${DUMMY_USER}/
 WORKDIR /${DUMMY_USER}/
 USER ${DUMMY_USER}
@@ -113,9 +122,44 @@ RUN cargo build --release
 FROM aashipov/calc:debian-dummy AS rust
 # docker build rust-actix --file=docker/Dockerfile.debian --target=rust --tag=aashipov/calc:debian-rust-actix && docker push aashipov/calc:debian-rust-actix
 # docker build rust-tiny-http --file=docker/Dockerfile.debian --target=rust --tag=aashipov/calc:debian-rust-tiny-http && docker push aashipov/calc:debian-rust-tiny-http
-ARG DUMMY_USER=dummy
+COPY --from=rustbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local/lib /${DUMMY_USER}/.local/lib
 COPY --from=rustbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /dummy/target/release/calc /dummy/calc
 WORKDIR /${DUMMY_USER}/
 EXPOSE 8080
 USER ${DUMMY_USER}
-CMD /dummy/calc
+CMD /${DUMMY_USER}/calc
+
+FROM aashipov/calc:debian-exprtkbuilder AS cppbuilder
+WORKDIR /${DUMMY_USER}/
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ ./
+USER ${DUMMY_USER}
+RUN /${DUMMY_USER}/build-framework.sh
+RUN /${DUMMY_USER}/release.sh
+
+FROM aashipov/calc:debian-dummy AS cpp
+WORKDIR /${DUMMY_USER}/
+COPY --from=cppbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local /${DUMMY_USER}/.local
+COPY --from=cppbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/build/calc /${DUMMY_USER}/calc
+USER ${DUMMY_USER}
+CMD /${DUMMY_USER}/calc
+
+FROM aashipov/calc:debian-exprtkbuilder AS golang
+# docker build . --file=docker/Dockerfile.debian --target=golang --tag=aashipov/calc:debian-golang
+COPY --from=exprtkbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local /${DUMMY_USER}/.local
+USER root
+RUN curl -L -o /tmp/go.tar.gz https://go.dev/dl/go1.25.7.linux-amd64.tar.gz && \
+    tar -xzf /tmp/go.tar.gz -C ${GOROOT}/ --strip-components=1 && \
+    go version && file ${GOROOT}/bin/go
+
+FROM aashipov/calc:debian-golang AS golangbuilder
+WORKDIR /${DUMMY_USER}/
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ ./
+USER ${DUMMY_USER}
+RUN go build -o app
+
+FROM aashipov/calc:debian-dummy AS golangresult
+WORKDIR /${DUMMY_USER}/
+COPY --from=golangbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.local /${DUMMY_USER}/.local
+COPY --from=golangbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/app /${DUMMY_USER}/app
+USER ${DUMMY_USER}
+CMD /${DUMMY_USER}/app

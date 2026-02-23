@@ -32,10 +32,10 @@ Julia
 
 Python
 
-## Showcase ##
+## Showcase for any flavor up & running ##
 
 ```shell
-./test/post.bash
+./test/calc-test.bash
 ```
 
 [OpenAPI UI](http://localhost:8080/openapi-ui) (a few flavors)
@@ -45,7 +45,7 @@ Python
 ### Apache Benchmark ###
 
 ```shell
-./test/benchmark.sh
+./test/calc-benchmark.sh
 ```
 
 ### Apache JMeter ###

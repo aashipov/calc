@@ -1,7 +1,7 @@
 #!/bin/sh
 
 do_get(){
-    printf "***\nGET: "
+    printf "\nGET: "
     local RESULT=`curl -s ${BASE_URL}`
     case "$RESULT" in
         *Welcome*)
@@ -12,12 +12,11 @@ do_get(){
             exit 1
         ;;
     esac
-    printf "\n***\n"
 }
 
 do_post(){
     local ENDPOINT="${1}"
-    printf "***\nPOST ${ENDPOINT}: "
+    printf "\nPOST ${ENDPOINT}: "
     local RESULT=`curl -s -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/${ENDPOINT}`
     case "$RESULT" in
         *19.9884*)
@@ -28,7 +27,6 @@ do_post(){
             exit 1
         ;;
     esac
-    printf "\n***\n"
 }
 
 closure() {
@@ -40,11 +38,13 @@ closure() {
 
     local SAMPLE_EXPRESSION="sample.expression"
     local BASE_URL="http://0.0.0.0:8080"
-
+    
+    printf "***"
     do_get
     do_post
     do_post "mxparser"
     do_post "exprtk"
+    printf "\n***\n"
 }
 
 closure

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(project_name calc-Crow)
+set(project_name calc)
 
 project(${project_name})
 

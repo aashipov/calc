@@ -33,5 +33,5 @@ rm -rf build && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. &
 ## Run
 
 ```shell
-./build/calc-poco
+./build/calc
 ```
