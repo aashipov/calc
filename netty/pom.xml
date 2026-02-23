@@ -12,7 +12,7 @@
 
     <properties>
         <evalex.version>2.7</evalex.version>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <junit4-version>4.13.2</junit4-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
