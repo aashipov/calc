@@ -51,4 +51,13 @@ public class CalcController {
         double result = new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
         return Uni.createFrom().item(String.valueOf(result));
     }
+
+    @POST
+    @Path("/exprtk")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Uni<String> exprtk(String expression) {
+        double result = JavaExprtkAdapter.calculate(expression);
+        return Uni.createFrom().item(String.valueOf(result));
+    }
 }

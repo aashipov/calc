@@ -12,7 +12,7 @@
     <properties>
         <compiler-plugin.version>3.14.1</compiler-plugin.version>
         <evalex.version>2.7</evalex.version>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
@@ -21,7 +21,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.30.5</quarkus.platform.version>
+        <quarkus.platform.version>3.31.4</quarkus.platform.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
     <dependencyManagement>

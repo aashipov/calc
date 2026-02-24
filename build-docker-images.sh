@@ -27,7 +27,7 @@ dotnet10() {
 }
 
 javaresult() {
-    local IMPLEMENTATIONS="pure-java tomcat netty spring-boot-web spring-boot-webflux quarkus ktor"
+    local IMPLEMENTATIONS="pure-java tomcat netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor"
     for implementation in ${IMPLEMENTATIONS}
     do
         ${DOCKER_BUILD_CMD} ${implementation} --file=docker/Dockerfile.${DISTRO} --target=javaresult --tag=aashipov/calc:${DISTRO}-${implementation}
@@ -70,6 +70,14 @@ golangresult(){
     done
 }
 
+pythonresult() {
+    local IMPLEMENTATIONS="python-fastapi"
+    for implementation in ${IMPLEMENTATIONS}
+    do
+        ${DOCKER_BUILD_CMD} ${implementation} --file=docker/Dockerfile.${DISTRO} --target=pythonresult --tag=aashipov/calc:${DISTRO}-${implementation}
+    done
+}
+
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
@@ -93,6 +101,7 @@ closure() {
     cpp
     golang
     golangresult
+    pythonresult
 }
 
 closure

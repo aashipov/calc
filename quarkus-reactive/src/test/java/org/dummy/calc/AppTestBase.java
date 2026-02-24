@@ -1,7 +1,5 @@
 package org.dummy.calc;
 
-import org.junit.jupiter.api.Test;
-
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -12,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * Common ancestor {@link Test}.

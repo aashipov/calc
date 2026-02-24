@@ -6,7 +6,7 @@ Common: bash, curl
 
 Runtime: Docker, docker-compose
 
-Development: OpenJDK 25, .NET, Rust, Python
+Development: OpenJDK, .NET, C++, Go, Python, Rust, Julia, Node.js
 
 Environment configured for unprivileged installation:
 
@@ -20,7 +20,7 @@ CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 ## Flavors ##
 
-Java (pure), (Tomcat, Undertow & Jetty), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor)
+Java (pure), (Tomcat, Undertow & Jetty), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor), Netty
 
 Node.js (pure, express, nestjs)
 
@@ -50,7 +50,13 @@ Python
 
 ### Apache JMeter ###
 
-Harness `./test/composed-runner.sh`
+Build local images:
+
+```shell
+./build-docker-images.sh
+```
+
+Download and extract the latest Apache JMeter distro, copy `./test` catalog to JMeter dir, run harness `./test/composed-runner.sh`
 
 [Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
 

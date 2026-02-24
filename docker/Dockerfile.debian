@@ -28,7 +28,7 @@ RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releas
 
 FROM openjdk25base AS native
 # docker build . --file=docker/Dockerfile.debian --target=native --tag=aashipov/calc:debian-native
-RUN apt-get -y install build-essential cmake clang && \
+RUN apt-get -y install build-essential cmake clang python3.13-venv python3-pip && \
     apt-get -y autoremove && apt-get -y clean
 
 FROM aashipov/calc:debian-native AS exprtkbuilder
@@ -163,3 +163,15 @@ COPY --from=golangbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/.lo
 COPY --from=golangbuilder --chown=${DUMMY_USER}:${DUMMY_USER} /${DUMMY_USER}/app /${DUMMY_USER}/app
 USER ${DUMMY_USER}
 CMD /${DUMMY_USER}/app
+
+FROM aashipov/calc:debian-exprtkbuilder AS pythonbuilder
+WORKDIR /${DUMMY_USER}/
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ ./
+USER ${DUMMY_USER}
+RUN /${DUMMY_USER}/build.sh
+
+FROM pythonbuilder AS pythonresult
+WORKDIR /${DUMMY_USER}/
+COPY --chown=${DUMMY_USER}:${DUMMY_USER} ./ ./
+USER ${DUMMY_USER}
+CMD /${DUMMY_USER}/run.sh
