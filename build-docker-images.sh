@@ -43,7 +43,7 @@ rusttoolset() {
 }
 
 rust() {
-    local IMPLEMENTATIONS="rust-actix rust-axum rust-ntex rust-tiny-http"
+    local IMPLEMENTATIONS="rust-actix rust-axum rust-ntex rust-tiny-http rust-rocket"
     for implementation in ${IMPLEMENTATIONS}
     do
         ${DOCKER_BUILD_CMD} ${implementation} --file=docker/Dockerfile.${DISTRO} --target=rust --tag=aashipov/calc:${DISTRO}-${implementation}
