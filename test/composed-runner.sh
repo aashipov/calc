@@ -17,9 +17,12 @@ stop_and_remove_container() {
 }
 
 launch_container() {
-    local DISTRO=${1}
-    local IMPLEMENTATION=${2}
-    docker run -d --name=${CALC_CONTAINER_NAME} -p 8080:8080 aashipov/calc:${DISTRO}-${IMPLEMENTATION}
+    printf "\nStarting ${distro}-${implementation}-${TAKE_NO}\n"
+    set -e
+    docker run -d --name=${CALC_CONTAINER_NAME} -p 8080:8080 aashipov/calc:${distro}-${implementation}
+    # Managed memory languages may need some initialization timeout
+    sleep 10s
+    set +e
 }
 
 main() {
@@ -42,7 +45,7 @@ main() {
             while [ ${TAKE_NO} -le ${TAKES_COUNT} ]
             do
                 stop_and_remove_container
-                launch_container ${distro} ${implementation}
+                launch_container
                 rm -rf ${_SCRIPT_DIR}/bin/calc-load-test/result
                 rm -rf ${_SCRIPT_DIR}/client
                 rm -rf ${_SCRIPT_DIR}/server
