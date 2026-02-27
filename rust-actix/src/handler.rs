@@ -1,8 +1,12 @@
-use actix_web::{HttpResponse, get, post};
+use std::convert::Infallible;
+
+use actix_web::{HttpResponse, HttpResponseBuilder, get, http::StatusCode, post};
 use calc_actix::{via_exprtk, via_meval, welcome};
 
-fn text_response(body: String) -> HttpResponse {
-    return HttpResponse::Ok().content_type("text/plain").body(body);
+fn text_response(body: String) -> Result<HttpResponse, Infallible> {
+    return Ok(HttpResponseBuilder::new(StatusCode::OK)
+        .content_type("text/plain")
+        .body(body));
 }
 
 #[utoipa::path(
@@ -12,7 +16,7 @@ fn text_response(body: String) -> HttpResponse {
     )
 )]
 #[get("{tails:.*}")]
-async fn respond_welcome() -> HttpResponse {
+async fn respond_welcome() -> Result<HttpResponse, Infallible> {
     return text_response(welcome());
 }
 
@@ -24,7 +28,7 @@ async fn respond_welcome() -> HttpResponse {
     )
 )]
 #[post("{tails:.*}")]
-async fn respond_via_meval(expr: String) -> HttpResponse {
+async fn respond_via_meval(expr: String) -> Result<HttpResponse, Infallible> {
     return text_response(via_meval(expr));
 }
 
@@ -36,6 +40,6 @@ async fn respond_via_meval(expr: String) -> HttpResponse {
     )
 )]
 #[post("/exprtk")]
-async fn respond_via_exprkt(expr: String) -> HttpResponse {
+async fn respond_via_exprkt(expr: String) -> Result<HttpResponse, Infallible> {
     return text_response(via_exprtk(expr));
 }
