@@ -1,5 +1,11 @@
 # Algebraic Expression Evaluation Service #
 
+## Why? ##
+
+Ad hoc throughput framework. Compare language-specific algebraic library to native library call. 
+
+Findings: native call is less expensive, the 'lower' the language the higher the throughput ('inconvenient convenience').
+
 ## Requirements ##
 
 Common: bash, curl
