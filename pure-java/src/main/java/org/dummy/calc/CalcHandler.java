@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -24,7 +25,10 @@ public class CalcHandler implements HttpHandler {
     private static final String NO_REQUEST_METHOD = "No request method";
     static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String MXPARSER = "mxparser";
+    private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
     private static final String EXPRTK = "exprtk";
+    private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+    private static final String NAN = "NaN";
 
     public CalcHandler() {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
@@ -37,21 +41,23 @@ public class CalcHandler implements HttpHandler {
             textResponse(exchange, OK, NO_REQUEST_METHOD);
         } else {
             if (POST.equalsIgnoreCase(exchange.getRequestMethod())) {
+                String url = exchange.getRequestURI().toString();
+                String result = NAN;
                 try (InputStream inputStream = exchange.getRequestBody(); ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                     inputStream.transferTo(byteArrayOutputStream);
                     String expr = byteArrayOutputStream.toString(DEFAULT_CHARSET);
-                    String result;
-                    if (exchange.getRequestURI().toString().contains(MXPARSER)) {
+                    if (MXPARSER_PATTERN.matcher(url).find()) {
                         result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
-                    } else if (exchange.getRequestURI().toString().contains(EXPRTK)) {
+                    } else if (EXPRTK_PATTERN.matcher(url).find()) {
                         result = "" + JavaExprtkAdapter.calculate(expr);
                     } else {
                         result = (new com.udojava.evalex.Expression(expr).eval()).toString();
                     }
-                    textResponse(exchange, OK, result);
                 } catch (Throwable e) {
                     LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-                    textResponse(exchange, OK, e.getMessage());
+                    result = e.getMessage();
+                } finally {
+                    textResponse(exchange, OK, result);
                 }
             } else {
                 textResponse(exchange, OK, WELCOME);

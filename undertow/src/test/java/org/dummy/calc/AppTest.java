@@ -1,22 +1,24 @@
 package org.dummy.calc;
 
-import io.undertow.Undertow;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+
+import io.undertow.Undertow;
+
 public class AppTest extends AppTestBase {
+
     static Undertow SERVER = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         TimeUnit.SECONDS.sleep(1L);
         SERVER = App.undertow();
         SERVER.start();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() {
         if (SERVER != null) {
             SERVER.stop();

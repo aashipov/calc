@@ -1,18 +1,19 @@
 package org.dummy.calc;
 
-import com.sun.net.httpserver.HttpServer;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+
+import com.sun.net.httpserver.HttpServer;
+
 /**
  * Docker-free {@link App} test.
  */
-public class AppTest extends AppTestBase {
+class AppTest extends AppTestBase {
 
     static ExecutorService TEST_EXECUTOR_SERVICE = null;
 
@@ -23,8 +24,8 @@ public class AppTest extends AppTestBase {
         super();
     }
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    static void setUp() {
         TEST_EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
         HTTP_SERVER_FUTURE = TEST_EXECUTOR_SERVICE.submit(() -> {
             try {
@@ -35,8 +36,8 @@ public class AppTest extends AppTestBase {
         });
     }
 
-    @AfterClass
-    public static void tearDown() {
+    @AfterAll
+    static void tearDown() {
         if (SERVER != null) {
             SERVER.stop(0);
         }

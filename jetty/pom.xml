@@ -14,9 +14,9 @@
 
     <properties>
         <evalex.version>2.7</evalex.version>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <jetty.version>12.1.5</jetty.version>
-        <junit4-version>4.13.2</junit4-version>
+        <junit5-version>5.14.3</junit5-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
@@ -26,6 +26,7 @@
         <project.reporting.outputEncoding
         >UTF-8</project.reporting.outputEncoding>
         <slf4j.version>2.0.9</slf4j.version>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
 
     <dependencies>
@@ -55,9 +56,9 @@
             <version>${slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit4-version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5-version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -66,7 +67,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

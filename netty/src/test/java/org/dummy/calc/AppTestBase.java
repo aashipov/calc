@@ -1,7 +1,5 @@
 package org.dummy.calc;
 
-import org.junit.Test;
-
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,13 +9,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * Common ancestor {@link Test}.
  */
 public class AppTestBase {
-
     protected static final Logger LOG = Logger.getLogger(AppTestBase.class.getSimpleName());
     protected static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     protected static final int DEFAULT_HTTP_PORT = 8080;
@@ -55,7 +53,7 @@ public class AppTestBase {
 
     @Test
     public void mxparserNotAnExpressionTest() {
-        evaluatePost(BASE_URL + MXPARSER_ENDPOINT, NOT_AN_EXPRESSION, NAN);
+        evaluatePost(BASE_URL + MXPARSER_ENDPOINT, NOT_AN_EXPRESSION, "NaN");
     }
 
     @Test

@@ -1,10 +1,5 @@
 package org.dummy.calc;
 
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,12 +8,23 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "CalcServlet", urlPatterns = "/*", loadOnStartup = 1)
 public class CalcServlet extends HttpServlet {
+
     private static final Logger LOGGER = Logger.getLogger(CalcServlet.class.getSimpleName());
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String MXPARSER = "mxparser";
+    private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
+    private static final String EXPRTK = "exprtk";
+    private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+    private static final String NAN = "NaN";
 
     public CalcServlet() {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
@@ -31,20 +37,23 @@ public class CalcServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
-        try (InputStream inputStream = req.getInputStream();
-             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+        String url = req.getRequestURI();
+        String result = NAN;
+        try (InputStream inputStream = req.getInputStream(); ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             inputStream.transferTo(byteArrayOutputStream);
             String expr = byteArrayOutputStream.toString(DEFAULT_CHARSET);
-            String result;
-            if (req.getRequestURI().toString().contains(MXPARSER)) {
+            if (MXPARSER_PATTERN.matcher(url).find()) {
                 result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
+            } else if (EXPRTK_PATTERN.matcher(url).find()) {
+                result = "" + JavaExprtkAdapter.calculate(expr);
             } else {
                 result = (new com.udojava.evalex.Expression(expr).eval()).toString();
             }
-            textResponse(resp, HttpServletResponse.SC_OK, result);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-            textResponse(resp, HttpServletResponse.SC_OK, e.getMessage());
+            result = e.getMessage();
+        } finally {
+            textResponse(resp, HttpServletResponse.SC_OK, result);
         }
     }
 

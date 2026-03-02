@@ -8,8 +8,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,34 +21,39 @@ public class CalcServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(CalcServlet.class.getSimpleName());
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String MXPARSER = "mxparser";
+    private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
     private static final String EXPRTK = "exprtk";
+    private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+    private static final String NAN = "NaN";
 
     public CalcServlet() {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         textResponse(resp, HttpServletResponse.SC_OK, "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)");
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        String url = req.getRequestURI();
+        String result = NAN;
         try (InputStream inputStream = req.getInputStream(); ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             inputStream.transferTo(byteArrayOutputStream);
             String expr = byteArrayOutputStream.toString(DEFAULT_CHARSET);
-            String result;
-            if (req.getRequestURI().toString().contains(MXPARSER)) {
+            if (MXPARSER_PATTERN.matcher(url).find()) {
                 result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
-            } else if (req.getRequestURI().toString().contains(EXPRTK)) {
+            } else if (EXPRTK_PATTERN.matcher(url).find()) {
                 result = "" + JavaExprtkAdapter.calculate(expr);
             } else {
                 result = (new com.udojava.evalex.Expression(expr).eval()).toString();
             }
-            textResponse(resp, HttpServletResponse.SC_OK, result);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-            textResponse(resp, HttpServletResponse.SC_OK, e.getMessage());
+            result = e.getMessage();
+        } finally {
+            textResponse(resp, HttpServletResponse.SC_OK, result);
         }
     }
 
