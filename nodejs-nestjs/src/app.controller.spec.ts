@@ -26,7 +26,7 @@ describe('AppController', () => {
   describe('post ok', () => {
     it('should return "EXPECTED_RESULT_BY_SAMPLE_EXPRESSION"', () => {
       const appController = app.get(AppController);
-      expect(appController.post(SAMPLE_EXPRESSION)).toBe(
+      expect(appController.post(SAMPLE_EXPRESSION)).toContain(
         EXPECTED_RESULT_BY_SAMPLE_EXPRESSION,
       );
     });

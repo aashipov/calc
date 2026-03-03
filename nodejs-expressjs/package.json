@@ -7,7 +7,7 @@
     "lint": "eslint --fix .",
     "build": "npx esbuild src/index.ts --bundle --outfile=dist/main.js --platform=node --target=node22",
     "dev": "tsx --watch src/index.ts",
-    "start": "node dist/src/index.js"
+    "start": "node dist/main.js"
   },
   "dependencies": {
     "body-parser": "^2.2.1",

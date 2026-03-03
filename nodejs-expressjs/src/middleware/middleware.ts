@@ -9,7 +9,7 @@ export const CAN_NOT_EVALUATE = 'Can not evaluate';
 const evaluate = (expr: string) => {
   let result: string = CAN_NOT_EVALUATE;
   try {
-    result = '' + math.evaluate(expr);
+    result = '' + math.evaluate(expr).entries[0];
   } catch (exc) {
     result += ' ' + expr + ': ' + exc.message;
   }

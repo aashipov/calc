@@ -14,7 +14,7 @@ const server = http.createServer((request, response) => {
             })
             .on('end', () => {
                 try {
-                    result = '' + math.evaluate(expr);
+                    result = '' + math.evaluate(expr).entries[0];
                 } catch (exc) {
                     result += ' ' + expr + ': ' + exc.message;
                 } finally {

@@ -18,7 +18,7 @@ const handler = async (req: Request): Promise<Response> => {
   let result: string = NAN;
   if (req.method === "POST") {
     expr = await req.text();
-    result = "" + evaluate(expr);
+    result = evaluate(expr).entries[0];
     return textResponse(result);
   } else {
     return textResponse(WELCOME);
