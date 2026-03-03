@@ -1,12 +1,11 @@
 import { evaluate } from "mathjs";
+import { via_meval } from "./lib/rs_lib.js";
 
 const WELCOME: string =
   "Welcome to calc service\nHTTP POST your expression / (via mathjs)";
-
 const NAN: string = "NaN";
-
 const EXPRTK: string = "exprtk";
-
+const MXPARSER: string = "mxparser";
 const C_EXPRTK_ADAPTER_NAME: string = "libc-exprtk-adapter.so";
 
 const getExprtkAdapter = () =>
@@ -38,9 +37,14 @@ const handler = async (req: Request): Promise<Response> => {
   let result: string = NAN;
   if (req.method === "POST") {
     expr = await req.text();
-    result = req.url.includes(EXPRTK)
-      ? "" + viaExprtk(expr)
-      : "" + viaMathJs(expr);
+    const url: string = req.url;
+    if (url.includes(MXPARSER)) {
+      result = "" + via_meval(expr);
+    } else if (url.includes(EXPRTK)) {
+      result = "" + viaExprtk(expr);
+    } else {
+      result = "" + viaMathJs(expr);
+    }
     return textResponse(result);
   } else {
     return textResponse(WELCOME);

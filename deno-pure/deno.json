@@ -2,7 +2,9 @@
   "tasks": {
     "dev": "deno run --allow-all --watch calc.ts",
     "start": "deno run --allow-all calc.ts",
-    "build": "deno compile --allow-all calc.ts"
+    "compile": "deno compile --allow-all calc.ts",
+    "wasmbuild": "deno run --allow-all jsr:@deno/wasmbuild@0.21.1",
+    "build": "deno run --allow-all jsr:@deno/wasmbuild@0.21.1 && deno compile --allow-all calc.ts"
   },
   "imports": {
     "mathjs": "npm:mathjs@^15.1.0"
