@@ -1,4 +1,4 @@
-# ntex Flavor
+# Tiny Http Flavor
 
 ## Requirements
 

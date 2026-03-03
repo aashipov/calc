@@ -1,4 +1,4 @@
-# Actix Web Flavor
+# Rocket Flavor
 
 ## Requirements
 

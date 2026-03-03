@@ -55,11 +55,9 @@ startServer();
 
 Deno.addSignalListener("SIGTERM", () => {
   console.log("SIGTERM signal received.");
-  // Perform cleanup here (e.g., close DB connections)
   Deno.exit(0);
 });
 
-// Gracefully handle SIGINT (e.g., Ctrl+C)
 Deno.addSignalListener("SIGINT", () => {
   console.log("SIGINT signal received.");
   Deno.exit(0);
