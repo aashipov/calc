@@ -7,9 +7,12 @@ edition = "2024"
 tiny_http = "0.12.0"
 meval = "0.2.0"
 
+[dev-dependencies]
+ureq = "3.2.0"
+
 [build-dependencies]
 bindgen = "0.72.1"
 
 [[bin]]
 name = "calc"
-path = "src/main.rs"
+path = "src/calc.rs"
