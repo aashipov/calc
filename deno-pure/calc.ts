@@ -5,7 +5,27 @@ const WELCOME: string =
 
 const NAN: string = "NaN";
 
-const textResponse = (body: string) =>
+const EXPRTK: string = "exprtk";
+
+const C_EXPRTK_ADAPTER_NAME: string = "libc-exprtk-adapter.so";
+
+const getExprtkAdapter = () =>
+  Deno.dlopen(C_EXPRTK_ADAPTER_NAME, {
+    calculate: { parameters: ["buffer"], result: "f64" },
+  });
+
+const viaMathJs = (expr: string): number => {
+  return evaluate(expr).entries[0];
+};
+
+const viaExprtk = (expr: string): number => {
+  const enc = new TextEncoder();
+  const c_string_buf = enc.encode(expr + "\0");
+  const result: number = getExprtkAdapter().symbols.calculate(c_string_buf);
+  return result;
+};
+
+const textResponse = (body: string): Response =>
   new Response(body, {
     status: 200,
     headers: {
@@ -18,7 +38,9 @@ const handler = async (req: Request): Promise<Response> => {
   let result: string = NAN;
   if (req.method === "POST") {
     expr = await req.text();
-    result = evaluate(expr).entries[0];
+    result = req.url.includes(EXPRTK)
+      ? "" + viaExprtk(expr)
+      : "" + viaMathJs(expr);
     return textResponse(result);
   } else {
     return textResponse(WELCOME);
