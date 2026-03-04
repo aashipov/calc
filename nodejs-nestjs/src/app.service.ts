@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import * as math from 'mathjs';
+import { evaluate } from 'mathjs';
 
 export const WELCOME =
   'Welcome to calc service\nHTTP POST your expression / (via mathjs)';
 export const CAN_NOT_EVALUATE = 'Can not evaluate';
 
-const evaluate = (expr: string): string => {
+const evaluateInner = (expr: string): string => {
   let result: string = CAN_NOT_EVALUATE;
   try {
-    result = '' + math.evaluate(expr);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const evaluateResult = evaluate(expr);
+    if (Array.isArray(evaluateResult)) {
+      result = '' + evaluateResult.entries[0];
+    } else {
+      result = '' + evaluateResult;
+    }
   } catch (exc) {
-    result += ' ' + expr + ': ' + exc.message;
+    result += '' + expr + ': ' + exc.message;
   }
   return result;
 };
@@ -21,6 +27,6 @@ export class AppService {
     return WELCOME;
   }
   doEval(expr: string): string {
-    return evaluate(expr);
+    return evaluateInner(expr);
   }
 }
