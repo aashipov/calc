@@ -8,6 +8,7 @@ closure() {
     
     local RS_LIBRARY_DIR=${_SCRIPT_DIR}/rs_expr_adapter
     cd ${RS_LIBRARY_DIR}
+    cargo test
     cargo build --release
 
     local LIBRARY_PATH_PREFIX=${HOME}/.local/lib
