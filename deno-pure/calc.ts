@@ -8,10 +8,9 @@ const EXPRTK: string = "exprtk";
 const MXPARSER: string = "mxparser";
 const C_EXPRTK_ADAPTER_NAME: string = "libc-exprtk-adapter.so";
 
-const getExprtkAdapter = () =>
-  Deno.dlopen(C_EXPRTK_ADAPTER_NAME, {
-    calculate: { parameters: ["buffer"], result: "f64" },
-  });
+const C_EXPRTK_ADAPTER = Deno.dlopen(C_EXPRTK_ADAPTER_NAME, {
+  calculate: { parameters: ["buffer"], result: "f64" },
+});
 
 const viaMathJs = (expr: string): number => {
   return evaluate(expr).entries[0];
@@ -20,7 +19,7 @@ const viaMathJs = (expr: string): number => {
 const viaExprtk = (expr: string): number => {
   const enc = new TextEncoder();
   const c_string_buf = enc.encode(expr + "\0");
-  const result: number = getExprtkAdapter().symbols.calculate(c_string_buf);
+  const result: number = C_EXPRTK_ADAPTER.symbols.calculate(c_string_buf);
   return result;
 };
 
@@ -33,10 +32,9 @@ const textResponse = (body: string): Response =>
   });
 
 const handler = async (req: Request): Promise<Response> => {
-  let expr: string = NAN;
-  let result: string = NAN;
   if (req.method === "POST") {
-    expr = await req.text();
+    const expr: string = await req.text();
+    let result: string = NAN;
     const url: string = req.url;
     if (url.includes(MXPARSER)) {
       result = "" + via_meval(expr);

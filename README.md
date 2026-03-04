@@ -28,7 +28,7 @@ CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 Java (pure), (Tomcat, Undertow & Jetty), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor), Netty
 
-Node.js (pure, express, nestjs), Deno (way higher throughput for js)
+Node.js (pure, express, nestjs), Bun, Deno (way higher throughput for js)
 
 Rust
 
