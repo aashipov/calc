@@ -1,19 +1,37 @@
+import { evaluate } from "mathjs";
 import { dlopen, FFIType, suffix } from "bun:ffi";
 
+const NAN: string = "NaN";
 const EXPRTK: string = "exprtk";
-const C_EXPRTK_ADAPTER_NAME: string = `libc-${EXPRTK}-adapter.${suffix}`;
+const MXPARSER: string = "mxparser";
+const C_EXPRTK_ADAPTER_NAME: string = `librs_expr_adapter.${suffix}`;
 
 const C_EXPRTK_ADAPTER = dlopen(C_EXPRTK_ADAPTER_NAME, {
-  calculate: {
+  via_exprtk: {
+    args: [FFIType.cstring],
+    returns: FFIType.double,
+  },
+  via_meval: {
     args: [FFIType.cstring],
     returns: FFIType.double,
   },
 });
 
+const viaMathJs = (expr: string): number => {
+  return evaluate(expr).entries[0];
+};
+
 const viaExprtk = (expr: string): number => {
   const enc = new TextEncoder();
   const c_string_buf = enc.encode(expr + "\0");
-  const result: number = C_EXPRTK_ADAPTER.symbols.calculate(c_string_buf);
+  const result: number = C_EXPRTK_ADAPTER.symbols.via_exprtk(c_string_buf);
+  return result;
+};
+
+const viaMeval = (expr: string): number => {
+  const enc = new TextEncoder();
+  const c_string_buf = enc.encode(expr + "\0");
+  const result: number = C_EXPRTK_ADAPTER.symbols.via_meval(c_string_buf);
   return result;
 };
 
@@ -31,8 +49,15 @@ const textResponse = (body: string): Response =>
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "POST") {
     const expr: string = await req.text();
-    let result: string = "" + viaExprtk(expr);
-    result = "" + viaExprtk(expr);
+    let result: string = NAN;
+    const url: string = req.url;
+    if (url.includes(MXPARSER)) {
+      result = "" + viaMeval(expr);
+    } else if (url.includes(EXPRTK)) {
+      result = "" + viaExprtk(expr);
+    } else {
+      result = "" + viaMathJs(expr);
+    }
     return textResponse(result);
   } else {
     return textResponse(WELCOME);
