@@ -2,12 +2,12 @@
 
 ## Requirements
 
-Build `../c-exprtk-adapter` first
+Build `../c-exprtk-adapter`, `../rs_expr_adapter` first
 
 [Bun](https://bun.com), Rust in `${PATH}`
 
 ## Build & run
 
 ```shell
-./release.sh && ./calc
+bun install && bun build calc.ts --compile && ./calc
 ```

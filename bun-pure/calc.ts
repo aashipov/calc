@@ -4,9 +4,9 @@ import { dlopen, FFIType, suffix } from "bun:ffi";
 const NAN: string = "NaN";
 const EXPRTK: string = "exprtk";
 const MXPARSER: string = "mxparser";
-const C_EXPRTK_ADAPTER_NAME: string = `librs_expr_adapter.${suffix}`;
+const RS_EXPR_ADAPTER_NAME: string = `librs_expr_adapter.${suffix}`;
 
-const C_EXPRTK_ADAPTER = dlopen(C_EXPRTK_ADAPTER_NAME, {
+const RS_EXPR_ADAPTER = dlopen(RS_EXPR_ADAPTER_NAME, {
   via_exprtk: {
     args: [FFIType.cstring],
     returns: FFIType.double,
@@ -24,14 +24,14 @@ const viaMathJs = (expr: string): number => {
 const viaExprtk = (expr: string): number => {
   const enc = new TextEncoder();
   const c_string_buf = enc.encode(expr + "\0");
-  const result: number = C_EXPRTK_ADAPTER.symbols.via_exprtk(c_string_buf);
+  const result: number = RS_EXPR_ADAPTER.symbols.via_exprtk(c_string_buf);
   return result;
 };
 
 const viaMeval = (expr: string): number => {
   const enc = new TextEncoder();
   const c_string_buf = enc.encode(expr + "\0");
-  const result: number = C_EXPRTK_ADAPTER.symbols.via_meval(c_string_buf);
+  const result: number = RS_EXPR_ADAPTER.symbols.via_meval(c_string_buf);
   return result;
 };
 
