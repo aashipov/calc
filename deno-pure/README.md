@@ -2,14 +2,14 @@
 
 ## Requirements
 
-Build `../c-exprtk-adapter` first
+Build `../c-exprtk-adapter`, `../rs_expr_adapter` first
 
 [Deno](https://github.com/denoland/deno/releases) and Rust in `${PATH}`
 
 ## Build & run
 
 ```shell
-deno install && deno run wasmbuild
+deno install
 ```
 
 ```shell
@@ -29,7 +29,3 @@ Platform-specific executable:
 ```shell
 deno run build && ./calc
 ```
-
-## References ##
-
-[wasmbuild](https://github.com/denoland/wasmbuild)
