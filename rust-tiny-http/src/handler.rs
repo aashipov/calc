@@ -1,9 +1,10 @@
 extern crate tiny_http;
-use calc_tiny_http::{WELCOME, via_exprtk, via_meval};
+use calc_tiny_http::{viaExprtk, viaMeval};
 use tiny_http::{Method, Request, Response, Server};
 
 pub const EXPRTK: &'static str = "exprtk";
 pub const NAN: &'static str = "NaN";
+pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
 fn body_to_string(request: &mut Request) -> String {
     let mut body = String::new();
@@ -30,9 +31,9 @@ pub fn handler(server: std::sync::Arc<Server>) {
             let mut response_text = body.to_owned();
             if body != NAN {
                 if request.url().contains(EXPRTK) {
-                    response_text = via_exprtk(body);
+                    response_text = viaExprtk(body);
                 } else {
-                    response_text = via_meval(body);
+                    response_text = viaMeval(body);
                 }
             }
             str_response(request, &response_text).ok();

@@ -24,7 +24,6 @@ mod tests {
         SOCKET,
         handler::{self, EXPRTK, NAN},
     };
-    use calc_tiny_http::WELCOME;
     use std::sync::Once;
     use tiny_http::Server;
 
@@ -61,7 +60,7 @@ mod tests {
             .body_mut()
             .read_to_string()
             .unwrap();
-        assert_eq!(WELCOME, response_body);
+        assert_eq!(handler::WELCOME, response_body);
     }
 
     #[test]
