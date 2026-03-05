@@ -49,7 +49,7 @@ mod tests {
         let req = test::TestRequest::get().uri("/").to_request();
         let resp = test::call_service(&mut app, req).await;
 
-        check_response(resp, calc_ntex::WELCOME.to_string()).await;
+        check_response(resp, crate::handler::WELCOME.to_string()).await;
     }
 
     #[ntex::test]

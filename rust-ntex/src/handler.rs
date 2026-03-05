@@ -1,6 +1,8 @@
-use calc_ntex::{via_exprtk, via_meval, welcome};
+use calc_ntex::{via_exprtk, via_meval};
 
 use ntex::web::{HttpResponse, get, post};
+
+pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
 fn text_response(body: String) -> HttpResponse {
     return HttpResponse::Ok().content_type("text/plain").body(body);
@@ -8,7 +10,7 @@ fn text_response(body: String) -> HttpResponse {
 
 #[get("{tails:.*}")]
 async fn respond_welcome() -> HttpResponse {
-    return text_response(welcome());
+    return text_response(WELCOME.to_owned());
 }
 
 #[post("{tails:.*}")]
