@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Build `../c-exprtk-adapter` first
+Build `../c-exprtk-adapter`, `../rs_expr_adapter` first
 
 ## Build & run
 

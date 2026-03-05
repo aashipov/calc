@@ -1,12 +1,6 @@
 #ifndef RS_EXPR_ADAPTER_H
 #define RS_EXPR_ADAPTER_H
 
-#include <cstdarg>
-#include <cstdint>
-#include <cstdlib>
-#include <new>
-#include <ostream>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
