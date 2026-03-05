@@ -1,0 +1,7 @@
+{
+	"dependencies": {
+		"serverino": "~>0.7.21"
+	},
+	"libs": ["c-exprtk-adapter"],
+	"name": "calc"
+}
