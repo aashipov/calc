@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "dev": "deno run --allow-all --watch calc.ts",
+    "start": "deno run --allow-all calc.ts",
+    "build": "deno compile --allow-all calc.ts"
+  },
+  "imports": {
+    "@oak/oak": "jsr:@oak/oak@^17.2.0",
+    "mathjs": "npm:mathjs@^15.1.0"
+  }
+}

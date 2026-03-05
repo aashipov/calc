@@ -1,4 +1,4 @@
-# Deno Flavor
+# Deno Oak Flavor
 
 ## Requirements
 
