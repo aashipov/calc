@@ -1,6 +1,7 @@
 use rocket::response::content::RawText;
+use calc_rocket::{via_exprtk, via_meval};
 
-use calc_rocket::{via_exprtk, via_meval, welcome};
+pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
 fn text_response(body: String) -> RawText<String> {
     return RawText(body);
@@ -14,7 +15,7 @@ fn text_response(body: String) -> RawText<String> {
 )]
 #[get("/<_..>")]
 pub fn respond_welcome() -> RawText<String> {
-    return text_response(welcome());
+    return text_response(WELCOME.to_owned());
 }
 
 #[utoipa::path(

@@ -5,12 +5,6 @@ include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 use std::ffi::{CString, c_char};
 
-pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
-
-pub fn welcome() -> String {
-    WELCOME.to_owned()
-}
-
 pub fn via_meval(expr: String) -> String {
     let eval = meval::eval_str(expr);
     match eval {
@@ -30,16 +24,11 @@ pub fn via_exprtk(expr: String) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::{WELCOME, via_exprtk, via_meval, welcome};
+    use crate::{via_exprtk, via_meval};
 
     const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
     const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
     const NOT_AN_EXPRESSION: &'static str = "NaN";
-
-    #[test]
-    fn test_welcome() {
-        assert_eq!(WELCOME.to_owned(), welcome());
-    }
 
     #[test]
     fn test_via_meval_expr() {

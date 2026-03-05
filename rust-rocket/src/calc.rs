@@ -36,6 +36,7 @@ fn rocket() -> _ {
 #[cfg(test)]
 mod tests {
     use rocket::local::blocking::Client;
+    use crate::handler::WELCOME;
 
     const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
     const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
@@ -45,7 +46,7 @@ mod tests {
     fn test_welcome() {
         let client = Client::tracked(crate::rocket()).unwrap();
         let response = client.get("/").dispatch();
-        assert_eq!(response.into_string().unwrap(), calc_rocket::WELCOME);
+        assert_eq!(response.into_string().unwrap(), WELCOME);
     }
 
     #[test]
