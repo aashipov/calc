@@ -1,7 +1,9 @@
 use std::convert::Infallible;
 
 use actix_web::{HttpResponse, HttpResponseBuilder, get, http::StatusCode, post};
-use calc_actix::{via_exprtk, via_meval, welcome};
+use calc_actix::{via_exprtk, via_meval};
+
+pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
 fn text_response(body: String) -> Result<HttpResponse, Infallible> {
     return Ok(HttpResponseBuilder::new(StatusCode::OK)
@@ -17,7 +19,7 @@ fn text_response(body: String) -> Result<HttpResponse, Infallible> {
 )]
 #[get("{tails:.*}")]
 async fn respond_welcome() -> Result<HttpResponse, Infallible> {
-    return text_response(welcome());
+    return text_response(WELCOME.to_owned());
 }
 
 #[utoipa::path(

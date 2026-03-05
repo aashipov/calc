@@ -60,7 +60,7 @@ mod tests {
         let req = test::TestRequest::get().uri("/").to_request();
         let resp = app.call(req).await?;
 
-        return check_response(resp, calc_actix::WELCOME.to_string()).await;
+        return check_response(resp, crate::handler::WELCOME.to_string()).await;
     }
 
     #[actix_web::test]
