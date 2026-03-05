@@ -1,10 +1,12 @@
-use calc_axum::{via_exprtk, via_meval, welcome};
+use calc_axum::{via_exprtk, via_meval};
 
 use axum::{
     body::Body,
     http::{StatusCode, header::CONTENT_TYPE},
     response::Response,
 };
+
+pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
 fn text_response(body: String) -> Response {
     return Response::builder()
@@ -22,7 +24,7 @@ fn text_response(body: String) -> Response {
     )
 )]
 pub async fn respond_welcome() -> Response {
-    return text_response(welcome());
+    return text_response(WELCOME.to_owned());
 }
 
 #[utoipa::path(

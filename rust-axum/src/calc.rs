@@ -40,7 +40,7 @@ mod tests {
         let app = crate::app();
         let server = TestServer::new(app);
         let response = server.get("/").await;
-        response.assert_status_ok().assert_text(calc_axum::WELCOME);
+        response.assert_status_ok().assert_text(crate::handler::WELCOME);
     }
 
     #[tokio::test]
