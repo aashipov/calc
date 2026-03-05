@@ -1,5 +1,5 @@
 extern crate tiny_http;
-use calc_tiny_http::{viaExprtk, viaMeval};
+use calc_tiny_http::{via_exprtk, via_meval};
 use tiny_http::{Method, Request, Response, Server};
 
 pub const EXPRTK: &'static str = "exprtk";
@@ -31,9 +31,9 @@ pub fn handler(server: std::sync::Arc<Server>) {
             let mut response_text = body.to_owned();
             if body != NAN {
                 if request.url().contains(EXPRTK) {
-                    response_text = viaExprtk(body);
+                    response_text = via_exprtk(body);
                 } else {
-                    response_text = viaMeval(body);
+                    response_text = via_meval(body);
                 }
             }
             str_response(request, &response_text).ok();

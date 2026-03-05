@@ -2,9 +2,9 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    println!("cargo:rustc-link-lib=rs_expr_adapter");
+    println!("cargo:rustc-link-lib=c-exprtk-adapter");
     let bindings = bindgen::Builder::default()
-        .header("rs-expr-adapter.h")
+        .header("c-exprtk-adapter.h")
         .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
         .generate()
         .expect("Unable to generate bindings");
