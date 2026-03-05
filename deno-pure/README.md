@@ -27,5 +27,5 @@ deno run start
 Platform-specific executable:
 
 ```shell
-deno run build && ./calc
+deno run build && ./calc --parallel
 ```
