@@ -35,6 +35,39 @@ rust_flavors(){
     done
 }
 
+dotnet_flavor() {
+    local IMPLEMENTATIONS="dotnet"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        ${CALC_DIR}/${IMPLEMENTATION}/bin/Release/net10.0/calc &
+        sleep 1s
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f calc
+    done
+}
+
+cpp_flavors() {
+    local IMPLEMENTATIONS="cpp-Crow cpp-poco"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        ${CALC_DIR}/${IMPLEMENTATION}/build/calc &
+        sleep 1s
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f calc
+    done
+}
+
+python_flavor() {
+    local IMPLEMENTATIONS="python-fastapi"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        ${CALC_DIR}/${IMPLEMENTATION}/run.sh &
+        sleep 1s
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f run.sh
+    done
+}
+
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
@@ -47,8 +80,11 @@ closure() {
     jvm_flavors
     go_flavors
     rust_flavors
-    
-    ./do-stats.sh
+    dotnet_flavor
+    cpp_flavors
+    python_flavor
+
+    ${_SCRIPT_DIR}/stats/do-stats.sh
 }
 
 closure
