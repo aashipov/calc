@@ -2,15 +2,6 @@
 
 # Run JMeter load test via compose
 
-check_cgroup_v1_enabled() {
-    mount | grep -q "cgroup "
-    if [ $? -ne 0 ]
-    then
-        printf "Enable cgroup v1 for java 11 not to OOM in containers\n"
-        exit 1
-    fi
-}
-
 stop_and_remove_container() {
     docker stop ${CALC_CONTAINER_NAME}
     docker rm ${CALC_CONTAINER_NAME}
@@ -23,6 +14,16 @@ launch_container() {
     # Managed memory languages may need some initialization timeout
     sleep 10s
     set +e
+}
+
+perform_load_test() {
+    rm -rf ${_SCRIPT_DIR}/bin/calc-load-test/result
+    rm -rf ${_SCRIPT_DIR}/client
+    rm -rf ${_SCRIPT_DIR}/server
+    docker-compose -f docker-compose-jmeter.yml up
+    docker-compose -f docker-compose-jmeter.yml down
+    cp ${_SCRIPT_DIR}/client/calc-load-test.jtl ${_SCRIPT_DIR}/stats/${implementation}-${distro}-${TAKE_NO}.jtl
+    ((TAKE_NO=${TAKE_NO} + 1))
 }
 
 main() {
@@ -41,20 +42,14 @@ main() {
     do
         for implementation in ${IMPLEMENTATIONS}
         do
+            stop_and_remove_container
+            launch_container
             local TAKE_NO=1
             while [ ${TAKE_NO} -le ${TAKES_COUNT} ]
             do
-                stop_and_remove_container
-                launch_container
-                rm -rf ${_SCRIPT_DIR}/bin/calc-load-test/result
-                rm -rf ${_SCRIPT_DIR}/client
-                rm -rf ${_SCRIPT_DIR}/server
-                docker-compose -f docker-compose-jmeter.yml up
-                docker-compose -f docker-compose-jmeter.yml down
-                cp ${_SCRIPT_DIR}/client/calc-load-test.jtl ${_SCRIPT_DIR}/stats/${implementation}-${distro}-${TAKE_NO}.jtl
-                ((TAKE_NO=${TAKE_NO} + 1))
-                stop_and_remove_container
+                perform_load_test
             done
+            stop_and_remove_container
         done
     done
 
@@ -74,7 +69,6 @@ closure() {
 
     local CALC_CONTAINER_NAME=calc
 
-    check_cgroup_v1_enabled
     main
 }
 

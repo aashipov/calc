@@ -28,7 +28,7 @@ RUN curl -L -o /tmp/java.tar.gz https://github.com/aashipov/openjdk-build/releas
 
 FROM openjdk25base AS native
 # docker build . --file=docker/Dockerfile.debian --target=native --tag=aashipov/calc:debian-native
-RUN apt-get -y install build-essential cmake clang python3.13-venv python3-pip && \
+RUN apt-get -y install build-essential cmake clang python3.13-venv python3-pip git && \
     apt-get -y autoremove && apt-get -y clean
 
 FROM aashipov/calc:debian-native AS exprtkbuilder
