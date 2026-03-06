@@ -61,8 +61,15 @@ closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
+    
+    if [ ! -f ${_SCRIPT_DIR}/.env ]
+    then
+        printf ".env file is missing. Make one out of .env.template\n"
+        exit 1
+    fi
 
-    if grep -q "HOST_TO_TEST=<host-IP>" ${_SCRIPT_DIR}/.env; then
+    if grep -q "HOST_TO_TEST=<host-IP>" ${_SCRIPT_DIR}/.env
+    then
         printf "Replace <host-IP> with host IP in .env variable HOST_TO_TEST and repeat\n"
         exit 1
     fi
