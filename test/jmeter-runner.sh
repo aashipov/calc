@@ -22,7 +22,7 @@ run_jmeter() {
     done
 
     cd ${_SCRIPT_DIR}/stats
-    ./do-stats.sh
+    #./do-stats.sh
 }
 
 closure() {
