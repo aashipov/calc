@@ -1,12 +1,10 @@
 #!/bin/sh
 
 dummy() {
-    cd ${_SCRIPT_DIR}
     ${DOCKER_BUILD_CMD} . --file=docker/Dockerfile.${DISTRO} --target=dummy --tag=aashipov/calc:${DISTRO}-dummy
 }
 
 openjdk25base() {
-    cd ${_SCRIPT_DIR}
     ${DOCKER_BUILD_CMD} . --file=docker/Dockerfile.${DISTRO} --target=openjdk25base --tag=aashipov/calc:${DISTRO}-openjdk25base
 }
 
@@ -81,7 +79,10 @@ pythonresult() {
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
-    cd ${_SCRIPT_DIR}
+    cd ${_SCRIPT_DIR}/..
+    
+    local SOURCE_TREE_ROOT=$(pwd)
+    cd ${SOURCE_TREE_ROOT}
 
     set -e
 

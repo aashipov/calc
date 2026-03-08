@@ -59,7 +59,7 @@ Python
 Build local images:
 
 ```shell
-./build-docker-images.sh
+./build/build-docker-images.sh
 ```
 
 Download and extract the latest Apache JMeter distro, copy `./test` catalog to JMeter dir, run harness `./test/composed-runner.sh`
