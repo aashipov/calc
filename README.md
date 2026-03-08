@@ -4,7 +4,7 @@
 
 Ad hoc throughput framework. Compare language-specific algebraic library to native library call. 
 
-Findings: native call is less expensive, the 'lower' the language the higher the throughput ('inconvenient convenience').
+Findings: native call is less expensive, the 'lower' the language the higher the throughput ('inconvenient convenience'), dockerized (bridged net) is twice as slow as baremetal at least.
 
 ## Requirements ##
 
@@ -64,7 +64,7 @@ Build local images:
 
 Download and extract the latest Apache JMeter distro, copy `./test` catalog to JMeter dir, run harness `./test/composed-runner.sh`
 
-[Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
+[Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip). [Dockerized vs Baremetal](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test-dockerized-vs-baremetal.zip)
 
 ## License
 
