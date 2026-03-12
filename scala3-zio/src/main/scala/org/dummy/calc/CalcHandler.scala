@@ -12,11 +12,11 @@ object CalcHandler {
   private val WELCOME =
     "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)"
 
-  val welcome =
-    Method.GET / "" -> handler(Response.text(WELCOME))
+  private val welcome =
+    Method.GET / zio.http.trailing -> handler(Response.text(WELCOME))
 
-  val viaEvalex =
-    Method.POST / "" ->
+  private val viaEvalex =
+    Method.POST / zio.http.trailing ->
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
@@ -24,7 +24,7 @@ object CalcHandler {
         } yield Response.text(result.toString)
       }.sandbox
 
-  val viaMxparser =
+  private val viaMxparser =
     Method.POST / "mxparser" ->
       handler { (req: Request) =>
         for {
@@ -33,7 +33,7 @@ object CalcHandler {
         } yield Response.text(result.toString)
       }.sandbox
 
-  val viaExprtk =
+  private val viaExprtk =
     Method.POST / "exprtk" ->
       handler { (req: Request) =>
         for {
@@ -42,4 +42,10 @@ object CalcHandler {
         } yield Response.text(result.toString)
       }.sandbox
 
+  val routes = zio.http.Routes(
+    welcome,
+    viaEvalex,
+    viaMxparser,
+    viaExprtk
+  )
 }
