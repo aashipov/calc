@@ -6,8 +6,6 @@
 run_jmeter() {
     local TAKES_COUNT=5
     local TAKE_NO=1
-    distro=arch
-    implementation="pure-java"
     while [ ${TAKE_NO} -le ${TAKES_COUNT} ]
     do
         rm -rf ${_SCRIPT_DIR}/bin/calc-load-test/result
@@ -29,6 +27,8 @@ closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
+    
+    set -x
 
     # Standalone: uncomment two variables, change accordingly
     #local DISTRO=arch
@@ -48,8 +48,8 @@ closure() {
 
     if [ ! -f ${_SCRIPT_DIR}/.env ]
     then
-        printf ".env file is missing. Make one out of .env.template\n"
-        exit 1
+        printf ".env file is missing. Making one out of .env.template\n"
+        cp .env.template .env
     fi
 
     if grep -q "HOST_TO_TEST=<host-IP>" ${_SCRIPT_DIR}/.env

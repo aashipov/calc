@@ -1,0 +1,7 @@
+nohup.out
+.idea/
+.metals/
+.vscode/
+.bloop/
+dependency-reduced-pom.xml
+*.iml
