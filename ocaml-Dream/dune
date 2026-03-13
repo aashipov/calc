@@ -1,0 +1,5 @@
+(executable
+ (name calc)
+ (modes native)
+ (libraries ctypes-foreign dream)
+ (preprocess (pps lwt_ppx)))
