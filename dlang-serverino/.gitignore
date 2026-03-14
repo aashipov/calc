@@ -3,7 +3,7 @@ docs.json
 __dummy.html
 docs/
 calc
-calc-dlang-it
+calc-it
 calc.so
 calc.dylib
 calc.dll

@@ -33,7 +33,7 @@ closure() {
     cd ${_SCRIPT_DIR}
     
     local EXECUTABLE_NAME_ORIG="calc"
-    local EXECUTABLE_NAME="calc-dlang-it"
+    local EXECUTABLE_NAME="calc-it"
     
     build
     integration_test
