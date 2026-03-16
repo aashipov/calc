@@ -5,6 +5,7 @@
 build() {
     cd ${_SCRIPT_DIR}
     mvn clean package
+    SHARED_LIBRARY_HARNESS=FFM mvn clean package
 }
 
 integration_test() {

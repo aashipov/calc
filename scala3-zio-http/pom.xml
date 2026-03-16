@@ -20,6 +20,7 @@
         <scala-maven-plugin.version>4.9.10</scala-maven-plugin.version>
         <scala.version>3.8.2</scala.version>
         <zio-http_3.version>3.10.0</zio-http_3.version>
+        <zio.version>2.1.24</zio.version>
     </properties>
 
     <dependencies>
@@ -42,6 +43,24 @@
             <groupId>dev.zio</groupId>
             <artifactId>zio-http_3</artifactId>
             <version>${zio-http_3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dev.zio</groupId>
+            <artifactId>zio-test_3</artifactId>
+            <version>${zio.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.zio</groupId>
+            <artifactId>zio-test-junit_3</artifactId>
+            <version>${zio.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.zio</groupId>
+            <artifactId>zio-http-testkit_3</artifactId>
+            <version>${zio-http_3.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
