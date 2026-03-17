@@ -1,0 +1,8 @@
+{
+  "description": "calc",
+  "dependencies": {
+    "vibe-d": "~>0.9"
+  },
+  "libs": ["c-exprtk-adapter"],
+  "name": "calc"
+}
