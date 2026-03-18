@@ -48,15 +48,13 @@ public class App {
     static void launch() throws IOException, InterruptedException {
         IoHandlerFactory factory = NioIoHandler.newFactory();
         int capacity = Runtime.getRuntime().availableProcessors();
-        bossGroup = new MultiThreadIoEventLoopGroup(capacity, factory);
-        workerGroup = new MultiThreadIoEventLoopGroup(capacity * 2, factory);
+        bossGroup = new MultiThreadIoEventLoopGroup(1, factory);
+        workerGroup = new MultiThreadIoEventLoopGroup(Math.max(1, capacity) * 8, factory);
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.ERROR))
                 .childHandler(new ServerInitializer())
-                .option(ChannelOption.SO_BACKLOG, 128)
-                .childOption(ChannelOption.SO_KEEPALIVE, true);
+                .option(ChannelOption.SO_BACKLOG, 8_192);
         channelFuture = serverBootstrap.bind(HTTP_PORT)
                 .sync();
         channelFuture.channel()
