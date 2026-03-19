@@ -3,13 +3,14 @@
 # Expects ../calc/<project-tree-with-apps-built>
 
 jvm_flavors() {
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio"
+    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         java -jar ${CALC_DIR}/${IMPLEMENTATION}/target/calc-shaded.jar &
         sleep 10s
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
-        pkill -f calc
+        pkill -f calc-shaded.jar
+        sleep 10s
     done
 }
 
@@ -68,6 +69,20 @@ python_flavor() {
     done
 }
 
+dart_flavor() {
+    local IMPLEMENTATIONS="dart-pure"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        cd ${CALC_DIR}/${IMPLEMENTATION}
+        dart run &
+        sleep 1s
+        
+        cd ${_SCRIPT_DIR}
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f dart
+    done
+}
+
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
@@ -85,6 +100,7 @@ closure() {
     dotnet_flavor
     cpp_flavors
     python_flavor
+    dart_flavor
 
     ${_SCRIPT_DIR}/stats/do-stats.sh
 }

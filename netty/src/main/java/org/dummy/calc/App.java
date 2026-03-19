@@ -1,7 +1,6 @@
 package org.dummy.calc;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -16,15 +15,15 @@ import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 /**
  * App.
  */
 public class App {
 
-    private static final Logger LOGGER = Logger.getLogger(App.class.getSimpleName());
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(App.class);
     static final int HTTP_PORT = 8080;
     private static EventLoopGroup bossGroup;
     private static EventLoopGroup workerGroup;
@@ -68,7 +67,7 @@ public class App {
             workerGroup.shutdownGracefully().sync();
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 

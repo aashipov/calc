@@ -1,6 +1,5 @@
 package org.dummy.calc;
 
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import io.netty.buffer.Unpooled;
@@ -15,10 +14,12 @@ import io.netty.handler.codec.http.HttpMethod;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import io.netty.util.CharsetUtil;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
-    private static final Logger LOGGER = Logger.getLogger(CalcHandler.class.getSimpleName());
+    private static final InternalLogger LOGGER = InternalLoggerFactory.getInstance(CalcHandler.class);
     private static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String MXPARSER = "mxparser";
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
@@ -26,12 +27,8 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        LOGGER.info(cause.getMessage());
         ctx.flush();
         ctx.close();
     }
@@ -66,7 +63,7 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         httpResponse.headers()
                 .setInt(HttpHeaderNames.CONTENT_LENGTH, httpResponse.content()
                         .readableBytes());
-        httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        httpResponse.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         ctx.write(httpResponse);
         ctx.flush();
         ctx.close();
