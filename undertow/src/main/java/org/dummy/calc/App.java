@@ -13,6 +13,7 @@ import jakarta.servlet.ServletException;
  * App.
  */
 public class App {
+
     static final String HTTP_HOST = "0.0.0.0";
     static final int HTTP_PORT = 8080;
 
@@ -27,8 +28,10 @@ public class App {
         manager.deploy();
         PathHandler path = Handlers.path(Handlers.redirect("/"))
                 .addPrefixPath("/", manager.start());
-
+        int capacity = Runtime.getRuntime().availableProcessors();
         return Undertow.builder()
+                .setIoThreads(capacity)
+                .setWorkerThreads(capacity)
                 .addHttpListener(HTTP_PORT, HTTP_HOST)
                 .setHandler(path)
                 .build();
