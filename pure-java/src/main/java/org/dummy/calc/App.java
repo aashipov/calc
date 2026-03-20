@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -13,10 +12,22 @@ import com.sun.net.httpserver.HttpServer;
  */
 public class App {
 
-    static final int HTTP_PORT = 8080;
     private static final ExecutorService HTTP_EXECUTOR_SERVICE
-            = Executors.newWorkStealingPool(Math.max(Runtime.getRuntime().availableProcessors(), 2) * 8);
-    private static final Logger LOGGER = Logger.getLogger(App.class.getSimpleName());
+            = buildExecutorService();
+    static final int HTTP_PORT = 8080;
+
+    /**
+     * {@link java.lang.VirtualThread#createDefaultScheduler}.
+     *
+     * @return {@link ExecutorService}
+     */
+    // https://github.com/openjdk/jdk21u/blob/master/src/java.base/share/classes/java/lang/VirtualThread.java#L1152
+    // java -Djdk.virtualThreadScheduler.parallelism=`getconf _NPROCESSORS_ONLN` -jar target/calc-shaded.jar
+    // no difference in CPU load/socket error count with a consumer grade PC
+    private static ExecutorService buildExecutorService() {
+        int capacity = Runtime.getRuntime().availableProcessors();
+        return System.getProperty("jdk.virtualThreadScheduler.parallelism") == null ? Executors.newFixedThreadPool(capacity) : Executors.newVirtualThreadPerTaskExecutor();
+    }
 
     static HttpServer launch() throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(HTTP_PORT), 0);
