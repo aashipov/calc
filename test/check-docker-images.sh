@@ -19,7 +19,7 @@ closure() {
     local DISTRO=debian
     local CALC_CONTAINER_NAME=calc
 
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio dotnet rust-actix rust-axum rust-ntex rust-tiny-http rust-rocket cpp-Crow cpp-poco go-pure go-fasthttp python-fastapi"
+    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http dotnet rust-actix rust-axum rust-ntex rust-tiny-http rust-rocket cpp-Crow cpp-poco go-pure go-fasthttp python-fastapi"
     for implementation in ${IMPLEMENTATIONS}
     do
         stop_and_remove_container
