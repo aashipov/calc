@@ -1,5 +1,7 @@
 mod api_docs;
 mod handler;
+use std::thread;
+
 use axum::{
     Router,
     routing::{get, post},
@@ -20,12 +22,19 @@ fn app() -> Router {
         .route("/exprtk", post(|expr| handler::respond_via_exprkt(expr)));
 }
 
-#[tokio::main]
-async fn main() {
-    let app = app();
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
-    println!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+fn main() -> std::io::Result<()> {
+    let num_workers = std::cmp::max(2, thread::available_parallelism()?.get());
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(num_workers)
+        .enable_all()
+        .build()?;
+    rt.block_on(async {
+        let app = app();
+        let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
+        println!("listening on {}", listener.local_addr().unwrap());
+        axum::serve(listener, app).await.unwrap();
+    });
+    return Ok(());
 }
 
 #[cfg(test)]
@@ -40,7 +49,9 @@ mod tests {
         let app = crate::app();
         let server = TestServer::new(app);
         let response = server.get("/").await;
-        response.assert_status_ok().assert_text(crate::handler::WELCOME);
+        response
+            .assert_status_ok()
+            .assert_text(crate::handler::WELCOME);
     }
 
     #[tokio::test]

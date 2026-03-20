@@ -3,16 +3,20 @@ extern crate rocket;
 mod api_docs;
 mod handler;
 
+use std::thread;
+
 use crate::api_docs::ApiDoc;
 use rocket::{Config, figment::Figment};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 fn config() -> Figment {
+    let num_workers = std::cmp::max(2, thread::available_parallelism().unwrap().get());
     return Config::figment()
         .merge(("address", "0.0.0.0"))
         .merge(("port", 8080))
-        .merge(("log_level", "critical"));
+        .merge(("log_level", "critical"))
+        .merge(("workers", num_workers));
 }
 
 #[launch]

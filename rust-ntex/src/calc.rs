@@ -12,7 +12,7 @@ fn config(app: &mut ServiceConfig) {
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    let num_workers = std::cmp::max(1, thread::available_parallelism()?.get()) * 8;
+    let num_workers = std::cmp::max(2, thread::available_parallelism()?.get());
     let server = HttpServer::new(|| {
         App::new()
             .wrap(middleware::Logger::default())

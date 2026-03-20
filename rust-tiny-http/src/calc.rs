@@ -5,9 +5,9 @@ mod handler;
 
 const SOCKET: &'static str = "0.0.0.0:8080";
 
-fn main() {
+fn main() -> std::io::Result<()>{
     let server = std::sync::Arc::new(Server::http(SOCKET).unwrap());
-    let num_workers = std::cmp::max(1, thread::available_parallelism().unwrap().get()) * 8;
+    let num_workers = std::cmp::max(2, thread::available_parallelism()?.get());
     let mut handles = Vec::with_capacity(num_workers);
     for _ in 0..num_workers {
         let server_copy = server.clone();
@@ -16,6 +16,7 @@ fn main() {
     for h in handles {
         h.join().unwrap();
     }
+    return Ok(());
 }
 
 #[cfg(test)]

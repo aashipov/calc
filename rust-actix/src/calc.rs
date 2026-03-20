@@ -20,7 +20,7 @@ fn config(app: &mut web::ServiceConfig) {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let num_workers = std::cmp::max(1, thread::available_parallelism()?.get()) * 8;
+    let num_workers = std::cmp::max(2, thread::available_parallelism()?.get());
     let server = HttpServer::new(|| {
         App::new()
             .wrap(middleware::Logger::default())
@@ -47,8 +47,8 @@ mod tests {
 
     async fn check_response(resp: ServiceResponse, expected_body: String) -> Result<(), Error> {
         assert_eq!(resp.status(), http::StatusCode::OK);
-        let body_bytes = actix_web::body::to_bytes(resp.into_body()).await.unwrap();
-        let body_str = std::str::from_utf8(&body_bytes).unwrap();
+        let body_bytes = actix_web::body::to_bytes(resp.into_body()).await?;
+        let body_str = std::str::from_utf8(&body_bytes)?;
         assert_eq!(body_str, expected_body);
         Ok(())
     }
