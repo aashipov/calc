@@ -25,7 +25,7 @@ public class App {
     // java -Djdk.virtualThreadScheduler.parallelism=`getconf _NPROCESSORS_ONLN` -jar target/calc-shaded.jar
     // no difference in CPU load/socket error count with a consumer grade PC
     private static ExecutorService buildExecutorService() {
-        int capacity = Runtime.getRuntime().availableProcessors();
+        int capacity = Math.max(2, Runtime.getRuntime().availableProcessors());
         return System.getProperty("jdk.virtualThreadScheduler.parallelism") == null ? Executors.newFixedThreadPool(capacity) : Executors.newVirtualThreadPerTaskExecutor();
     }
 

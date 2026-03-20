@@ -15,7 +15,7 @@ public class App {
     static final int HTTP_PORT = 8080;
 
     static Server jetty() {
-        int capacity = Runtime.getRuntime().availableProcessors();
+        int capacity = Math.max(2, Runtime.getRuntime().availableProcessors());
         ThreadPool pool = new QueuedThreadPool(capacity);
         Server server = new Server(pool, null, null);
         ServerConnector connector = new ServerConnector(server);

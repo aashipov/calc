@@ -28,7 +28,7 @@ public class App {
         manager.deploy();
         PathHandler path = Handlers.path(Handlers.redirect("/"))
                 .addPrefixPath("/", manager.start());
-        int capacity = Runtime.getRuntime().availableProcessors();
+        int capacity = Math.max(2, Runtime.getRuntime().availableProcessors());
         return Undertow.builder()
                 .setIoThreads(capacity)
                 .setWorkerThreads(capacity)
