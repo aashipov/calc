@@ -3,6 +3,7 @@ package org.dummy.calc;
 import java.util.regex.Pattern;
 
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
@@ -25,6 +26,18 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
     private static final String EXPRTK = "exprtk";
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+
+    static void textResponse(ChannelHandlerContext ctx, String responseText) {
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK,
+                Unpooled.copiedBuffer(responseText, CharsetUtil.UTF_8));
+        httpResponse.headers()
+                .set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+        httpResponse.headers()
+                .setInt(HttpHeaderNames.CONTENT_LENGTH, httpResponse.content()
+                        .readableBytes());
+        httpResponse.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+        ctx.writeAndFlush(httpResponse).addListener(ChannelFutureListener.CLOSE);
+    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -53,19 +66,5 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             }
         }
         textResponse(ctx, result);
-    }
-
-    static void textResponse(ChannelHandlerContext ctx, String responseText) {
-        FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK,
-                Unpooled.copiedBuffer(responseText, CharsetUtil.UTF_8));
-        httpResponse.headers()
-                .set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
-        httpResponse.headers()
-                .setInt(HttpHeaderNames.CONTENT_LENGTH, httpResponse.content()
-                        .readableBytes());
-        httpResponse.headers().add(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        ctx.write(httpResponse);
-        ctx.flush();
-        ctx.close();
     }
 }

@@ -1,6 +1,7 @@
 package org.dummy.calc;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -46,14 +47,16 @@ public class App {
 
     static void launch() throws IOException, InterruptedException {
         IoHandlerFactory factory = NioIoHandler.newFactory();
-        int capacity = Runtime.getRuntime().availableProcessors();
-        bossGroup = new MultiThreadIoEventLoopGroup(1, factory);
-        workerGroup = new MultiThreadIoEventLoopGroup(Math.max(1, capacity) * 8, factory);
+        bossGroup = new MultiThreadIoEventLoopGroup(Executors.newVirtualThreadPerTaskExecutor(), factory);
+        workerGroup = new MultiThreadIoEventLoopGroup(Executors.newVirtualThreadPerTaskExecutor(), factory);
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ServerInitializer())
-                .option(ChannelOption.SO_BACKLOG, 8_192);
+                .option(ChannelOption.SO_BACKLOG, 8_192)
+                .option(ChannelOption.SO_REUSEADDR, true)
+                .childOption(ChannelOption.TCP_NODELAY, true)
+                .childOption(ChannelOption.SO_REUSEADDR, true);
         channelFuture = serverBootstrap.bind(HTTP_PORT)
                 .sync();
         channelFuture.channel()
