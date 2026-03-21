@@ -1,8 +1,8 @@
-# C# implementation #
+# C# flavor
 
 [Debugger](https://github.com/Samsung/netcoredbg)
 
-## Debug in Code OSS ##
+## Debug in Code OSS
 
 ```json
 "pipeTransport": {
@@ -13,18 +13,22 @@
             }
 ```
 
-## Debug in Zed ##
+## Debug in Zed
 
 [Extension](https://github.com/qwadrox/zed-netcoredbg)
 
-## Development ##
+## Development
 
 ```shell
 dotnet clean && dotnet build && dotnet test && ./bin/Debug/net10.0/calc
 ```
 
-## Release ##
+## Release
 
 ```shell
 dotnet publish -c Release
+```
+
+```shell
+Logging__LogLevel__Default=Warning ./bin/Release/net10.0/calc
 ```
