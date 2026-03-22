@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Common ancestor {@link Test}.
  */
-public class AppTestBase {
+public abstract class AppTestBase {
     protected static final Logger LOG = Logger.getLogger(AppTestBase.class.getSimpleName());
     protected static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     protected static final int DEFAULT_HTTP_PORT = 8080;
