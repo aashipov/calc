@@ -2,6 +2,7 @@ package org.dummy.calc;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -10,12 +11,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.IoHandlerFactory;
-import io.netty.channel.MultiThreadIoEventLoopGroup;
-import io.netty.channel.nio.NioIoHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -46,9 +46,12 @@ public class App {
     }
 
     static void launch() throws IOException, InterruptedException {
-        IoHandlerFactory factory = NioIoHandler.newFactory();
-        bossGroup = new MultiThreadIoEventLoopGroup(Executors.newVirtualThreadPerTaskExecutor(), factory);
-        workerGroup = new MultiThreadIoEventLoopGroup(Executors.newVirtualThreadPerTaskExecutor(), factory);
+        ThreadFactory factory = new DefaultThreadFactory("calc");
+        bossGroup = new NioEventLoopGroup(1, factory);
+        int capacity = Math.max(2, Runtime.getRuntime().availableProcessors());
+        workerGroup = System.getProperty("jdk.virtualThreadScheduler.parallelism") == null
+                ? new NioEventLoopGroup(capacity, factory)
+                : new NioEventLoopGroup(capacity, Executors.newVirtualThreadPerTaskExecutor());
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
@@ -74,6 +77,7 @@ public class App {
         }
     }
 
+    // java -Djdk.virtualThreadScheduler.parallelism=`getconf _NPROCESSORS_ONLN` -jar target/calc-shaded.jar
     public static void main(String[] args) throws Exception {
         launch();
     }
