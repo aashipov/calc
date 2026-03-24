@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: org.dummy.calc
+testFramework: junit
+sourceLanguage: java
+buildTool: maven
+features: [java, java-application, junit, logback, maven, netty-server, properties, serialization-jackson, shade]
