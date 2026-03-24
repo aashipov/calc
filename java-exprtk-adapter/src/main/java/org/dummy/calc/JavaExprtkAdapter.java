@@ -41,7 +41,7 @@ public class JavaExprtkAdapter {
      * @param expression expression
      * @return result
      */
-    public static double calculateFfm(String expression) {
+    static double calculateFfm(String expression) {
         FunctionDescriptor functionDescriptor = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
         Linker linker = Linker.nativeLinker();
         Arena arena = Arena.ofAuto();
@@ -64,9 +64,18 @@ public class JavaExprtkAdapter {
      * @param expression expression
      * @return result
      */
-    public static native double calculateJni(String expression);
+    static native double calculateJni(String expression);
 
+    /**
+     * Calculate.
+     *
+     * @param expression expression
+     * @return result
+     */
     public static double calculate(String expression) {
+        if (expression == null) {
+            return Double.NaN;
+        }
         return isJniHarness() ? calculateJni(expression) : calculateFfm(expression);
     }
 }
