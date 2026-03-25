@@ -14,10 +14,8 @@ curl -L https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/
 
 ## Build
 
-### Release
-
 ```shell
-./release.sh
+./build.sh
 ```
 
 ## Run
