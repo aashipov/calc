@@ -1,22 +1,36 @@
 #!/bin/sh
 
-# Run JMeter load test via compose
-# build openjdkXXbase image first
+# Run baremetal JMeter load test
+# 127.0.0.1 jmeter-server{1,2,3} alias will produce three times larger request time.
+# No such issue with different host IPs (like dockerized or baremetal multihost)
+# Submaximal load of 10k per round will produce cleaner throughput comparison
+# 
+# sh -c "DISTRO=arch IMPLEMENTATION=cpprestsdk ./jmeter-runner.sh"
+# 
+# Put following line to /etc/hosts (without opening #) 
+# 127.0.0.1 host.to.test
+
+kill_jmeter_leftovers() {
+    pkill -f "JMeter"
+}
 
 run_jmeter() {
+    mkdir -p ./{server,client}
     local TAKES_COUNT=5
-    local TAKE_NO=1
-    while [ ${TAKE_NO} -le ${TAKES_COUNT} ]
+    local take_no=1
+    while [ ${take_no} -le ${TAKES_COUNT} ]
     do
-        rm -rf ${_SCRIPT_DIR}/bin/calc-load-test/result
-        rm -rf ${_SCRIPT_DIR}/client
-        rm -rf ${_SCRIPT_DIR}/server
-        set -e
-        docker-compose -f docker-compose-jmeter.yml up
-        docker-compose -f docker-compose-jmeter.yml down
+        kill_jmeter_leftovers
+        set -e  
+        rm -rf ./stats/${IMPLEMENTATION}-${DISTRO}-${take_no}.jtl
+        rm -rf ./client/web-report-${IMPLEMENTATION}-${DISTRO}-${take_no}
+        
+        ./bin/jmeter -n -t ./bin/calc-load-test/calc-load-test.jmx -l ./stats/${IMPLEMENTATION}-${DISTRO}-${take_no}.jtl -j ./client/jmeter-client-${IMPLEMENTATION}-${DISTRO}-${take_no}.log -e -o ./client/web-report-${IMPLEMENTATION}-${DISTRO}-${take_no}
+        
         set +e
-        cp ${_SCRIPT_DIR}/client/calc-load-test.jtl ${_SCRIPT_DIR}/stats/${IMPLEMENTATION}-${DISTRO}-${TAKE_NO}.jtl
-        ((TAKE_NO=${TAKE_NO} + 1))
+        
+        ((take_no=${take_no} + 1))
+        kill_jmeter_leftovers
     done
 
     cd ${_SCRIPT_DIR}/stats
@@ -27,8 +41,6 @@ closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
-    
-    set -x
 
     # Standalone: uncomment two variables, change accordingly
     #local DISTRO=arch
