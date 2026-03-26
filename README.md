@@ -12,7 +12,7 @@ Common: bash, curl
 
 Runtime: Docker, docker-compose
 
-Development: OpenJDK, .NET, C++, Go, Python, Rust, Julia, Node.js
+Development: OpenJDK, .NET, C++, Go, Python, Rust, Julia, Node.js, D, Dart, OCaml
 
 Environment configured for unprivileged installation:
 
@@ -26,7 +26,9 @@ CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 ## Flavors ##
 
-Java (pure), (Tomcat, Undertow & Jetty), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor), Netty
+C++ (cpprestsdk, Crow, Drogon, httplib, oatpp, POCO). Seasoned cpprestsdk performs the best
+
+Java (pure), (Tomcat, Undertow, Jetty, Netty, Vert.x), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor), (Helidon SE, Helidon PE), Micronaut, (Scala 3 ZIO HTTP & Cask)
 
 Node.js (pure, express, nestjs), Bun, Deno (stable, way higher throughput in js-ecosystem)
 
@@ -37,6 +39,12 @@ Rust
 Julia
 
 Python
+
+OCaml
+
+D (serverino, Vibe.d)
+
+Dart
 
 ## Showcase for any flavor up & running ##
 

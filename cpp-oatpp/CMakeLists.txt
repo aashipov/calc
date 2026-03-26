@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(project_name calc-oatpp)
+set(project_name calc)
 
 project(${project_name})
 
@@ -23,3 +23,9 @@ target_link_libraries(${project_name}-lib
 
 add_executable(${project_name} app.cpp)
 target_link_libraries(${project_name} ${project_name}-lib)
+
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}
+)

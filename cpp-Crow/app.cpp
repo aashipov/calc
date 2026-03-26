@@ -5,6 +5,8 @@
 #include <crow/http_response.h>
 
 int main() {
+  unsigned int thread_count = 8 * std::thread::hardware_concurrency();
   crow::SimpleApp app = calc::buildCalcApp(calc::HTTP_PORT);
-  app.multithreaded().run();
+  app.concurrency(thread_count).run();
+  return EXIT_SUCCESS;
 }

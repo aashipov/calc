@@ -23,8 +23,8 @@ public:
   }
 };
 
-Poco::Net::HTTPServer buildHTTPServer(unsigned short httpPort) {
-  unsigned int thread_count = std::thread::hardware_concurrency() * 2;
+inline Poco::Net::HTTPServer buildHTTPServer(unsigned short httpPort) {
+  unsigned int thread_count = std::thread::hardware_concurrency();
   Poco::ThreadPool::defaultPool().addCapacity(thread_count);
   Poco::Net::HTTPServerParams *httpServerParams =
       new Poco::Net::HTTPServerParams;
