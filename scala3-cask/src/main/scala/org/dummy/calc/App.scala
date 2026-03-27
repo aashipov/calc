@@ -8,6 +8,10 @@ import java.util.concurrent.Executors
 // java --add-opens java.base/java.lang=ALL-UNNAMED -Dcask.virtual-threads.enabled=true -jar target/calc-shaded.jar
 object App extends cask.MainRoutes {
 
+  override def port: Int = 8080
+
+  override def host: String = "0.0.0.0"
+
   def buildExecutor(): ExecutorService = {
     val capacity: Int = Math.max(2, Runtime.getRuntime().availableProcessors())
     Executors.newFixedThreadPool(capacity)
@@ -16,7 +20,6 @@ object App extends cask.MainRoutes {
   override protected def handlerExecutor(): Option[ExecutorService] = {
     super.handlerExecutor().orElse(Some(buildExecutor()))
   }
-  
-  override
-  val allRoutes: Seq[CalcHandler] = Seq(CalcHandler())
+
+  override val allRoutes: Seq[CalcHandler] = Seq(CalcHandler())
 }

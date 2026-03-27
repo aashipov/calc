@@ -15,13 +15,13 @@ class CalcHandlerTest extends TestSuite {
 
   def withServer[T](example: cask.main.Main)(f: String => T): T = {
     val server = Undertow.builder
-      .addHttpListener(8081, "0.0.0.0")
+      .addHttpListener(8080, "0.0.0.0")
       .setSocketOption(Options.REUSE_ADDRESSES, java.lang.Boolean.TRUE)
       .setHandler(example.defaultHandler)
       .build
     server.start()
     val res =
-      try f("http://0.0.0.0:8081")
+      try f("http://0.0.0.0:8080")
       finally server.stop()
     res
   }
