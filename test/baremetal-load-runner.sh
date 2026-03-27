@@ -3,7 +3,7 @@
 # Expects ../calc/<project-tree-with-apps-built>
 
 jvm_flavors() {
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty Vert.x micronaut spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se helidon-mp scala3-zio-http scala3-cask"
+    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty Vertx micronaut spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se helidon-mp scala3-zio-http scala3-cask"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         java -jar ${CALC_DIR}/${IMPLEMENTATION}/target/calc-shaded.jar &
