@@ -1,40 +1,51 @@
-const http = require('http');
-const math = require('mathjs');
+const http = require("http");
+const math = require("mathjs");
 
-const welcome = 'Welcome to calc service\nHTTP POST your expression / (via mathjs)';
-const canNotEvaluate = 'Can not evaluate';
+const welcome =
+  "Welcome to calc service\nHTTP POST your expression / (via mathjs)";
+const canNotEvaluate = "Can not evaluate";
 
-const server = http.createServer((request, response) => {
-    if (request.method === 'POST') {
-        let expr = '';
+const textResponse = (response, statusCode, body) => {
+  response.statusCode = statusCode;
+  response.setHeader("Content-Type", "text/plain");
+  response.end(body);
+};
+
+const handler = (request, response) => {
+  if (request.method === "POST") {
+    const chunks = [];
+    request
+      .on("data", (chunk) => {
+        chunks.push(chunk);
+      })
+      .on("end", () => {
         let result = canNotEvaluate;
-        request
-            .on('data', (chunk) => {
-                expr += chunk;
-            })
-            .on('end', () => {
-                try {
-                    result = '' + math.evaluate(expr).entries[0];
-                } catch (exc) {
-                    result += ' ' + expr + ': ' + exc.message;
-                } finally {
-                    response.end(result);
-                }
-            })
-            .on('error', (err) => {
-                response.end(err);
-            });
-    } else {
-        response.end(welcome);
-    }
-}).listen(8080);
+        let expr = "";
+        try {
+          expr = Buffer.concat(chunks).toString().trim();
+          result = "" + math.evaluate(expr);
+        } catch (exc) {
+          result += " " + expr + ": " + exc.message;
+        } finally {
+          textResponse(response, 200, result);
+        }
+      })
+      .on("error", (err) => {
+        textResponse(response, 200, err);
+      });
+  } else {
+    textResponse(response, 200, welcome);
+  }
+};
 
-process.on('SIGTERM', () => {
-    console.log('SIGTERM signal received.');
-    server.close();
+const server = http.createServer(handler).listen(8080);
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM signal received.");
+  server.close();
 });
 
-process.on('SIGINT', () => {
-    console.log('SIGINT signal received.');
-    server.close();
+process.on("SIGINT", () => {
+  console.log("SIGINT signal received.");
+  server.close();
 });
