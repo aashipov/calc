@@ -5,12 +5,6 @@ const welcome =
   "Welcome to calc service\nHTTP POST your expression / (via mathjs)";
 const canNotEvaluate = "Can not evaluate";
 
-const textResponse = (response, statusCode, body) => {
-  response.statusCode = statusCode;
-  response.setHeader("Content-Type", "text/plain");
-  response.end(body);
-};
-
 const handler = (request, response) => {
   if (request.method === "POST") {
     const chunks = [];
@@ -27,14 +21,14 @@ const handler = (request, response) => {
         } catch (exc) {
           result += " " + expr + ": " + exc.message;
         } finally {
-          textResponse(response, 200, result);
+          response.end(result);
         }
       })
       .on("error", (err) => {
-        textResponse(response, 200, err);
+        response.end(err);
       });
   } else {
-    textResponse(response, 200, welcome);
+    response.end(welcome);
   }
 };
 
