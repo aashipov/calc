@@ -2,9 +2,16 @@ const http = require("http");
 const math = require("mathjs");
 const cluster = require("cluster");
 const numCPUs = Math.max(2, require("os").availableParallelism());
+const koffi = require("koffi");
+
+const viaMathJs = (expr) => math.evaluate(expr);
+
+const exprtk = "exprtk";
+const cExprtkAdapter = koffi.load("libc-exprtk-adapter.so");
+const viaExprtk = cExprtkAdapter.func("double calculate(str)");
 
 const welcome =
-  "Welcome to calc service\nHTTP POST your expression / (via mathjs)";
+  "Welcome to calc service\nHTTP POST your expression / (via mathjs) or /exprtk (via exprtk)";
 const canNotEvaluate = "Can not evaluate";
 
 const handler = (request, response) => {
@@ -19,7 +26,11 @@ const handler = (request, response) => {
         let expr = "";
         try {
           expr = Buffer.concat(chunks).toString().trim();
-          result = "" + math.evaluate(expr);
+          if (request.url.includes(exprtk)) {
+            result = "" + viaExprtk(expr);
+          } else {
+            result = "" + viaMathJs(expr);
+          }
         } catch (exc) {
           result += " " + expr + ": " + exc.message;
         } finally {

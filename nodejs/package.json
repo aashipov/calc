@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "koffi": "^2.15.2",
     "mathjs": "^15.1.0"
   }
 }
