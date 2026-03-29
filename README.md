@@ -26,11 +26,11 @@ CMAKE_POLICY_VERSION_MINIMUM=3.5
 
 ## Flavors ##
 
-C++ (cpprestsdk, Crow, Drogon, httplib, oatpp, POCO). Seasoned cpprestsdk performs the best
+C++ (cpprestsdk, Crow, Drogon, httplib, oatpp, POCO).
 
 Java (pure), (Tomcat, Undertow, Jetty, Netty, Vert.x), (Quarkus & Quarcus reactive), (Spring Boot web & webflux), (Ktor), (Helidon SE, Helidon PE), Micronaut, (Scala 3 ZIO HTTP & Cask)
 
-Node.js (pure, express, nestjs), Bun, Deno (stable, way higher throughput in js-ecosystem)
+Node.js (pure, express, nestjs), Bun, Deno
 
 Rust
 
@@ -62,7 +62,21 @@ Dart
 ./test/calc-benchmark.sh
 ```
 
-### Apache JMeter ###
+### wrk ###
+
+```shell
+./test/calc-wrk.sh
+```
+
+### Apache JMeter Baremetal ###
+
+Build all the implementations, copy `test` dir to jmeter dir (same parent dir as this repo), the call:
+
+```shell
+./baremetal-load-runner.sh
+```
+
+### Apache JMeter Dockerized ###
 
 Build local images:
 
@@ -72,7 +86,7 @@ Build local images:
 
 Download and extract the latest Apache JMeter distro, copy `./test` catalog to JMeter dir, run harness `./test/composed-runner.sh`
 
-[Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip). [Dockerized vs Baremetal](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test-dockerized-vs-baremetal.zip)
+[Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
 
 ## License
 

@@ -3,7 +3,7 @@
 # Expects ../calc/<project-tree-with-apps-built>
 
 jvm_flavors() {
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty Vertx micronaut spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se helidon-mp scala3-zio-http scala3-cask"
+    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty Vertx spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http scala3-cask"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         java -jar ${CALC_DIR}/${IMPLEMENTATION}/target/calc-shaded.jar &
@@ -83,6 +83,34 @@ dart_flavor() {
     done
 }
 
+nodejs_flavors() {
+    local IMPLEMENTATIONS="nodejs-pure"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        cd ${CALC_DIR}/${IMPLEMENTATION}
+        node server.js &
+        sleep 1s
+        
+        cd ${_SCRIPT_DIR}
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f "server.js"
+    done
+}
+
+deno_flavors() {
+    local IMPLEMENTATIONS="deno-pure deno-oak"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        cd ${CALC_DIR}/${IMPLEMENTATION}
+        ./calc &
+        sleep 1s
+        
+        cd ${_SCRIPT_DIR}
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f "calc"
+    done
+}
+
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
@@ -101,6 +129,8 @@ closure() {
     cpp_flavors
     python_flavor
     dart_flavor
+    nodejs_flavors
+    deno_flavors
 
     ${_SCRIPT_DIR}/stats/do-stats.sh
 }
