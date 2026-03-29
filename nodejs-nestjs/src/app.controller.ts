@@ -17,8 +17,13 @@ export class AppController {
     return this.appService.welcome();
   }
   @HttpCode(HttpStatus.OK)
-  @Post('/*')
-  post(@Body() expr: string): string {
-    return this.appService.doEval(expr);
+  @Post('/exprtk')
+  exprtk(@Body() expr: string): string {
+    return this.appService.doViaExprtk(expr);
+  }
+  @HttpCode(HttpStatus.OK)
+  @Post(['/', '/mxparser'])
+  mathjs(@Body() expr: string): string {
+    return this.appService.doViaMathJs(expr);
   }
 }

@@ -1,32 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { evaluate } from 'mathjs';
+import { evaluate, ResultSet } from 'mathjs';
+import { load } from 'koffi';
 
 export const WELCOME =
-  'Welcome to calc service\nHTTP POST your expression / (via mathjs)';
-export const CAN_NOT_EVALUATE = 'Can not evaluate';
+  'Welcome to calc service\nHTTP POST your expression / (via mathjs) or /exprtk (via exprtk)';
 
-const evaluateInner = (expr: string): string => {
-  let result: string = CAN_NOT_EVALUATE;
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const evaluateResult = evaluate(expr);
-    if (Array.isArray(evaluateResult)) {
-      result = '' + evaluateResult.entries[0];
-    } else {
-      result = '' + evaluateResult;
-    }
-  } catch (exc) {
-    result += '' + expr + ': ' + exc.message;
+export const NAN = 'NaN';
+
+const viaMathJs = (expr: string): string => {
+  const result: unknown = evaluate(expr);
+  if (result === undefined || result === null) {
+    return NAN;
   }
-  return result;
+  if ((result as ResultSet).entries !== undefined) {
+    const entries = (result as ResultSet).entries;
+    return entries.length === 0 ? NAN : String(entries[0]);
+  }
+  return String(result);
 };
+
+const cExprtkAdapter = load('libc-exprtk-adapter.so');
+const viaExprtk = cExprtkAdapter.func('double calculate(str)');
 
 @Injectable()
 export class AppService {
   welcome(): string {
     return WELCOME;
   }
-  doEval(expr: string): string {
-    return evaluateInner(expr);
+  doViaMathJs(expr: string): string {
+    return viaMathJs(expr);
+  }
+  doViaExprtk(expr: string): string {
+    return viaExprtk(expr) as string;
   }
 }
