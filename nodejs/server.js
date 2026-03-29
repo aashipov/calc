@@ -1,7 +1,7 @@
 const http = require("http");
 const math = require("mathjs");
 const cluster = require("cluster");
-const numCPUs = Math.max(2, require("os").cpus().length);
+const numCPUs = Math.max(2, require("os").availableParallelism());
 
 const welcome =
   "Welcome to calc service\nHTTP POST your expression / (via mathjs)";
@@ -52,5 +52,7 @@ if (cluster.isPrimary) {
   process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
 } else {
   console.log(`Worker process ${process.pid}`);
-  const server = http.createServer(handler).listen(8080);
+  const server = http
+    .createServer(handler)
+    .listen({ host: "0.0.0.0", port: 8080 });
 }
