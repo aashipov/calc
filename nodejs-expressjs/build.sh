@@ -9,7 +9,6 @@ build() {
     npm run lint
     npm run build
     npm prune --production --omit=dev
-    cp dist/main.js ./${EXECUTABLE_NAME}
 }
 
 integration_test() {

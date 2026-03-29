@@ -1,24 +1,28 @@
 {
   "name": "calc",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=22.0.0 <23.0.0"
+  },
   "main": "main.ts",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --fix .",
-    "build": "npx esbuild src/index.ts --bundle --outfile=dist/main.js --platform=node --target=node22",
+    "build": "npx esbuild src/index.ts --bundle --packages=external --outfile=server.js --platform=node",
     "dev": "tsx --watch src/index.ts",
-    "start": "node dist/main.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^2.2.1",
     "express": "^5.2.1",
+    "koffi": "^2.15.2",
     "mathjs": "^15.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@tsconfig/node22": "^22.0.5",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.0.3",
+    "@types/node": "^22.19.15",
     "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
     "eslint-plugin-perfectionist": "^5.2.0",

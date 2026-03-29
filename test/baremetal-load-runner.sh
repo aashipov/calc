@@ -84,7 +84,7 @@ dart_flavor() {
 }
 
 nodejs_flavors() {
-    local IMPLEMENTATIONS="nodejs-pure"
+    local IMPLEMENTATIONS="nodejs-pure nodejs-expressjs"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         cd ${CALC_DIR}/${IMPLEMENTATION}

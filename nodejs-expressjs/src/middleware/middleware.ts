@@ -1,26 +1,34 @@
 import { RequestHandler } from 'express';
-import * as math from 'mathjs';
+import { evaluate, ResultSet } from 'mathjs';
+import { load } from 'koffi';
 
 export const WELCOME =
-  'Welcome to calc service\nHTTP POST your expression / (via mathjs)';
+  'Welcome to calc service\nHTTP POST your expression / (via mathjs) or /exprtk (via exprtk)';
 
-export const CAN_NOT_EVALUATE = 'Can not evaluate';
+export const NAN = 'NaN';
 
-const evaluate = (expr: string) => {
-  let result: string = CAN_NOT_EVALUATE;
+const viaMathJs = (expr: string): string => {
+  const result: ResultSet = evaluate(expr);
+  return result.entries.length === 0 ? NAN : (result.entries[0] as string);
+};
+
+const exprtk = 'exprtk';
+const cExprtkAdapter = load('libc-exprtk-adapter.so');
+const viaExprtk = cExprtkAdapter.func('double calculate(str)');
+
+export const getMiddleware: RequestHandler = (req, res) => res.send(WELCOME);
+
+export const postMiddleware: RequestHandler = (req, res) => {
+  const expr = req.body as string;
+  let result: string = NAN;
   try {
-    result = '' + math.evaluate(expr).entries[0];
+    if (req.url.includes(exprtk)) {
+      result = '' + viaExprtk(expr);
+    } else {
+      result = viaMathJs(expr);
+    }
   } catch (exc) {
     result += ' ' + expr + ': ' + exc.message;
   }
-  return result;
-};
-
-export const welcomeMiddleware: RequestHandler = (req, res) =>
-  res.send(WELCOME);
-
-export const evaluateMiddleware: RequestHandler = (req, res) => {
-  const expr = req.body as string;
-  const result = evaluate(expr);
   res.send(result);
 };
