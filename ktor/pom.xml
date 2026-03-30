@@ -5,12 +5,13 @@
 
     <groupId>org.dummy</groupId>
     <artifactId>calc-ktor</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>calc-ktor</name>
 
     <properties>
         <evalex.version>2.7</evalex.version>
         <java.version>25</java.version>
+        <main.class>io.ktor.server.netty.EngineMain</main.class>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
@@ -23,8 +24,7 @@
         <ktor_version>3.3.2</ktor_version>
         <logback_version>1.4.14</logback_version>
         <slf4j_version>2.0.9</slf4j_version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main.class>io.ktor.server.netty.EngineMain</main.class>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
 
     <dependencies>
@@ -112,6 +112,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.class</include>
+                    </includes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

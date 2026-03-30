@@ -12,6 +12,8 @@ const val MXPARSER_PATH = "/mxparser"
 
 const val EXPRTK_PATH = "/exprtk"
 
+const val NAN = "NaN"
+
 fun calcRoutingConfiguration(): (Routing.() -> Unit) =
     {
         get("{...}") {
@@ -22,7 +24,7 @@ fun calcRoutingConfiguration(): (Routing.() -> Unit) =
             try {
                 call.respondText((Expression(expr).eval()).toString())
             } catch (e: Exception) {
-                e.message?.let { call.respondText(it) }
+                e.message?.let { call.respondText(NAN) }
             }
         }
         post(MXPARSER_PATH) {
@@ -30,7 +32,7 @@ fun calcRoutingConfiguration(): (Routing.() -> Unit) =
             try {
                 call.respondText(org.mariuszgromada.math.mxparser.Expression(expr).calculate().toString())
             } catch (e: Exception) {
-                e.message?.let { call.respondText(it) }
+                e.message?.let { call.respondText(NAN) }
             }
         }
         post(EXPRTK_PATH) {
@@ -38,7 +40,7 @@ fun calcRoutingConfiguration(): (Routing.() -> Unit) =
             try {
                 call.respondText("" + JavaExprtkAdapter.calculate(expr))
             } catch (e: Exception) {
-                e.message?.let { call.respondText(it) }
+                e.message?.let { call.respondText(NAN) }
             }
         }
     }
