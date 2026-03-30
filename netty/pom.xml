@@ -34,6 +34,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.udojava</groupId>
             <artifactId>EvalEx</artifactId>
             <version>${evalex.version}</version>

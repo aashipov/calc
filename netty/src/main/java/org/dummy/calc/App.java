@@ -9,8 +9,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -38,23 +39,31 @@ public class App {
 
         @Override
         protected void initChannel(Channel ch) throws Exception {
-            ChannelPipeline pipeline = ch.pipeline();
-            pipeline.addLast(new HttpServerCodec());
-            pipeline.addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-            pipeline.addLast(new CalcHandler());
+            ch.pipeline()
+                    .addLast(new HttpServerCodec())
+                    .addLast(new HttpObjectAggregator(65_536))
+                    .addLast(new CalcHandler());
         }
     }
 
     static void launch() throws IOException, InterruptedException {
         ThreadFactory factory = new DefaultThreadFactory("calc");
-        bossGroup = new NioEventLoopGroup(1, factory);
+        boolean useVirtualThreads = System.getProperty("jdk.virtualThreadScheduler.parallelism") != null;
+        Class<? extends io.netty.channel.ServerChannel> channelClass = useVirtualThreads
+                ? EpollServerSocketChannel.class
+                : NioServerSocketChannel.class;
+        EventLoopGroup bossGroupLocal = useVirtualThreads
+                ? new EpollEventLoopGroup(1, factory)
+                : new NioEventLoopGroup(1, factory);
         int capacity = Math.max(2, Runtime.getRuntime().availableProcessors());
-        workerGroup = System.getProperty("jdk.virtualThreadScheduler.parallelism") == null
-                ? new NioEventLoopGroup(capacity, factory)
-                : new NioEventLoopGroup(capacity, Executors.newVirtualThreadPerTaskExecutor());
+        EventLoopGroup workerGroupLocal = useVirtualThreads
+                ? new EpollEventLoopGroup(capacity, Executors.newVirtualThreadPerTaskExecutor())
+                : new NioEventLoopGroup(capacity, factory);
+        bossGroup = bossGroupLocal;
+        workerGroup = workerGroupLocal;
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
+                .channel(channelClass)
                 .childHandler(new ServerInitializer())
                 .option(ChannelOption.SO_BACKLOG, 8_192)
                 .option(ChannelOption.SO_REUSEADDR, true)

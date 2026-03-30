@@ -26,6 +26,7 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
     private static final String EXPRTK = "exprtk";
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+    static final String NAN = "NaN";
 
     static void textResponse(ChannelHandlerContext ctx, String responseText) {
         FullHttpResponse httpResponse = new DefaultFullHttpResponse(HTTP_1_1, OK,
@@ -62,7 +63,7 @@ public class CalcHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 }
             } catch (Exception ex) {
                 LOGGER.info(String.format("Can not evaluate expression %s because of %s", expr, ex.getMessage()));
-                result = ex.getMessage();
+                result = NAN;
             }
         }
         textResponse(ctx, result);

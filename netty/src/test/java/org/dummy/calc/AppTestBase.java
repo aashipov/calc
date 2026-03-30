@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
  * Common ancestor {@link Test}.
  */
 public abstract class AppTestBase {
+
     protected static final Logger LOG = Logger.getLogger(AppTestBase.class.getSimpleName());
     protected static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     protected static final int DEFAULT_HTTP_PORT = 8080;
@@ -27,7 +28,6 @@ public abstract class AppTestBase {
     private static final String EXPRTK_EXPECTED = "19.988432890485228";
     private static final String EXPRTK_ENDPOINT = "/exprtk";
     private static final String NOT_AN_EXPRESSION = "abc";
-    private static final String NAN = "NaN";
     protected static final String BASE_URL = "http://0.0.0.0:" + DEFAULT_HTTP_PORT;
 
     @Test
@@ -43,7 +43,7 @@ public abstract class AppTestBase {
 
     @Test
     public void evalexNotAnExpressionTest() {
-        evaluatePost(BASE_URL, NOT_AN_EXPRESSION, "Unknown operator or function: " + NOT_AN_EXPRESSION);
+        evaluatePost(BASE_URL, NOT_AN_EXPRESSION, CalcHandler.NAN);
     }
 
     @Test
@@ -63,7 +63,7 @@ public abstract class AppTestBase {
 
     @Test
     public void exprtkNotAnExpressionTest() {
-        evaluatePost(BASE_URL + EXPRTK_ENDPOINT, NOT_AN_EXPRESSION, NAN);
+        evaluatePost(BASE_URL + EXPRTK_ENDPOINT, NOT_AN_EXPRESSION, CalcHandler.NAN);
     }
 
     /**
@@ -92,7 +92,7 @@ public abstract class AppTestBase {
     /**
      * Perform HTTP POST via {@link HttpClient}.
      *
-     * @param url     URL
+     * @param url URL
      * @param content content
      * @return {@link String} of {@link HttpResponse#body()}
      */
