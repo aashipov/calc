@@ -53,12 +53,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>dev.zio</groupId>
-            <artifactId>zio-http-testkit_3</artifactId>
-            <version>${zio-http_3.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit5-version}</version>
