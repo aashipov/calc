@@ -74,6 +74,7 @@
     </dependencies>
 
     <build>
+        <finalName>calc-shaded</finalName>
         <plugins>
             <plugin>
                 <groupId>io.micronaut.maven</groupId>

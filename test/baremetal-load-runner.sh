@@ -3,7 +3,7 @@
 # Expects ../calc/<project-tree-with-apps-built>
 
 jvm_flavors() {
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty Vertx spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http scala3-cask"
+    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty Vertx spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http scala3-cask micronaut"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         java -jar ${CALC_DIR}/${IMPLEMENTATION}/target/calc-shaded.jar &
@@ -84,7 +84,7 @@ dart_flavor() {
 }
 
 nodejs_flavors() {
-    local IMPLEMENTATIONS="nodejs-pure nodejs-expressjs"
+    local IMPLEMENTATIONS="nodejs-pure nodejs-expressjs nodejs-nestjs"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         cd ${CALC_DIR}/${IMPLEMENTATION}
