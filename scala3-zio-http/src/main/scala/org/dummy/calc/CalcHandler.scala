@@ -1,6 +1,7 @@
 package org.dummy.calc
 
 import zio.http.*
+import zio.ZIO
 
 object CalcHandler {
 
@@ -10,6 +11,7 @@ object CalcHandler {
     "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)"
   val MXPARSER_PATH: String = "mxparser"
   val EXPRTK_PATH: String = "exprtk"
+  val NAN: String = "NaN"
 
   private val welcome: Route[Any, Nothing] =
     Method.GET / zio.http.trailing -> handler(Response.text(WELCOME))
@@ -19,7 +21,9 @@ object CalcHandler {
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
-          result = com.udojava.evalex.Expression(expr).eval()
+          result <- ZIO
+            .attempt(com.udojava.evalex.Expression(expr).eval())
+            .catchAll(_ => ZIO.succeed(NAN))
         } yield Response.text(result.toString)
       }.sandbox
 
@@ -28,7 +32,11 @@ object CalcHandler {
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
-          result = org.mariuszgromada.math.mxparser.Expression(expr).calculate()
+          result <- ZIO
+            .attempt(
+              org.mariuszgromada.math.mxparser.Expression(expr).calculate()
+            )
+            .catchAll(_ => ZIO.succeed(NAN))
         } yield Response.text(result.toString)
       }.sandbox
 
@@ -37,7 +45,9 @@ object CalcHandler {
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
-          result = JavaExprtkAdapter.calculate(expr)
+          result <- ZIO
+            .attempt(JavaExprtkAdapter.calculate(expr))
+            .catchAll(_ => ZIO.succeed(NAN))
         } yield Response.text(result.toString)
       }.sandbox
 
