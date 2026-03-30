@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CalcHandlerTest extends AppTestBase {
 
-  private var executor: java.util.concurrent.ExecutorService =
+  private val executor: java.util.concurrent.ExecutorService =
     java.util.concurrent.Executors.newSingleThreadExecutor()
 
   @BeforeAll
@@ -20,8 +20,6 @@ class CalcHandlerTest extends AppTestBase {
 
   @AfterAll
   def tearDown(): Unit = {
-    if (executor != null) {
-      executor.shutdownNow()
-    }
+    executor.shutdownNow()
   }
 }
