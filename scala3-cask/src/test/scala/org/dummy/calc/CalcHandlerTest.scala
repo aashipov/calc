@@ -1,10 +1,11 @@
 package org.dummy.calc
 
 import io.undertow.Undertow
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.xnio.Options
-import utest._
 
-class CalcHandlerTest extends TestSuite {
+class CalcHandlerTest {
 
   private val EXPRESSION: String =
     "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2"
@@ -13,44 +14,68 @@ class CalcHandlerTest extends TestSuite {
   private val NOT_AN_EXPRESSION: String = "abc"
   private val EXPRTK_EXPECTED: String = "19.988432890485228"
 
-  def withServer[T](example: cask.main.Main)(f: String => T): T = {
+  private def withServer[T](example: cask.main.Main)(f: String => T): T = {
     val server = Undertow.builder
       .addHttpListener(8080, "0.0.0.0")
       .setSocketOption(Options.REUSE_ADDRESSES, java.lang.Boolean.TRUE)
       .setHandler(example.defaultHandler)
       .build
     server.start()
-    val res =
-      try f("http://0.0.0.0:8080")
-      finally server.stop()
-    res
+    try f("http://0.0.0.0:8080")
+    finally server.stop()
   }
 
-  val tests = Tests {
-    test("CalcHandlerTest") - withServer(org.dummy.calc.App) { host =>
-      requests.get(s"$host/", check = false).text() ==> CalcHandler.WELCOME
+  private def withApp[T](f: String => T): T = withServer(org.dummy.calc.App)(f)
 
-      requests.post(s"$host/", data = EXPRESSION).text() ==> EVALEX_EXPECTED
+  private def buildUrl(host: String, path: String): String =
+    if path.isEmpty then s"$host/" else s"$host/$path"
 
-      requests
-        .post(s"$host/", data = NOT_AN_EXPRESSION)
-        .text() ==> CalcHandler.NAN
+  @Test
+  def welcomeTest(): Unit = withApp { host =>
+    val url = buildUrl(host, "")
+    val actual = requests.get(url, check = false).text()
+    assertEquals(CalcHandler.WELCOME, actual)
+  }
 
-      requests
-        .post(s"$host/" + CalcHandler.MXPARSER_PATH, data = EXPRESSION)
-        .text() ==> MXPARSER_EXPECTED
+  @Test
+  def evalexTest(): Unit = withApp { host =>
+    val url = buildUrl(host, "")
+    val actual = requests.post(url, data = EXPRESSION).text()
+    assertEquals(EVALEX_EXPECTED, actual)
+  }
 
-      requests
-        .post(s"$host/" + CalcHandler.MXPARSER_PATH, data = NOT_AN_EXPRESSION)
-        .text() ==> CalcHandler.NAN
+  @Test
+  def evalexNotAnExpressionTest(): Unit = withApp { host =>
+    val url = buildUrl(host, "")
+    val actual = requests.post(url, data = NOT_AN_EXPRESSION).text()
+    assertEquals(CalcHandler.NAN, actual)
+  }
 
-      requests
-        .post(s"$host/" + CalcHandler.EXPRTK_PATH, data = EXPRESSION)
-        .text() ==> EXPRTK_EXPECTED
+  @Test
+  def mxparserTest(): Unit = withApp { host =>
+    val url = buildUrl(host, CalcHandler.MXPARSER_PATH)
+    val actual = requests.post(url, data = EXPRESSION).text()
+    assertEquals(MXPARSER_EXPECTED, actual)
+  }
 
-      requests
-        .post(s"$host/" + CalcHandler.EXPRTK_PATH, data = NOT_AN_EXPRESSION)
-        .text() ==> CalcHandler.NAN
-    }
+  @Test
+  def mxparserNotAnExpressionTest(): Unit = withApp { host =>
+    val url = buildUrl(host, CalcHandler.MXPARSER_PATH)
+    val actual = requests.post(url, data = NOT_AN_EXPRESSION).text()
+    assertEquals(CalcHandler.NAN, actual)
+  }
+
+  @Test
+  def exprtkTest(): Unit = withApp { host =>
+    val url = buildUrl(host, CalcHandler.EXPRTK_PATH)
+    val actual = requests.post(url, data = EXPRESSION).text()
+    assertEquals(EXPRTK_EXPECTED, actual)
+  }
+
+  @Test
+  def exprtkNotAnExpressionTest(): Unit = withApp { host =>
+    val url = buildUrl(host, CalcHandler.EXPRTK_PATH)
+    val actual = requests.post(url, data = NOT_AN_EXPRESSION).text()
+    assertEquals(CalcHandler.NAN, actual)
   }
 }
