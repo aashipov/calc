@@ -59,13 +59,13 @@ cpp_flavors() {
 }
 
 python_flavor() {
-    local IMPLEMENTATIONS="python-fastapi"
+    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         ${CALC_DIR}/${IMPLEMENTATION}/run.sh &
         sleep 1s
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
-        pkill -f run.sh
+        pkill -f gunicorn
     done
 }
 
