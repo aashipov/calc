@@ -63,6 +63,8 @@ def do_catplot(df_melt: pandas.DataFrame) -> None:
         + " records",
         "Implementation",
     )
+    for i in range(0, 30, 5):
+        cp.ax.axvline(x=i + 5, color="red", linestyle="--")
     matplotlib.pyplot.gcf().set_size_inches(10, 5)
     matplotlib.pyplot.savefig("catplot.png")
 
