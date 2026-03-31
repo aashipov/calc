@@ -72,7 +72,7 @@ RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x ru
     rustc --version
 
 FROM aashipov/calc:debian-openjdk25 AS javaresult
-# docker build pure-java --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-pure-java && docker push aashipov/calc:debian-pure-java
+# docker build java-pure --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-pure && docker push aashipov/calc:debian-java-pure
 # docker build spring-boot-web --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-web && docker push aashipov/calc:debian-spring-boot-web
 # docker build spring-boot-webflux --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-webflux && docker push aashipov/calc:debian-spring-boot-webflux
 # docker build tomcat --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-tomcat && docker push aashipov/calc:debian-tomcat

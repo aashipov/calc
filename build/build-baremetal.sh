@@ -12,7 +12,7 @@ c_exprtk_adapter_and_cpp() {
 }
 
 jvm_flavors() {
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio"
+    local IMPLEMENTATIONS="java-pure tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"

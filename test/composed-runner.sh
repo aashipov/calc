@@ -28,7 +28,7 @@ perform_load_test() {
 
 main() {
     local TAKES_COUNT=5
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http dotnet rust-actix rust-axum rust-ntex rust-tiny-http rust-rocket cpp-Crow cpp-poco go-pure go-fasthttp python-fastapi"
+    local IMPLEMENTATIONS="java-pure tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio-http dotnet rust-actix rust-axum rust-ntex rust-tiny-http rust-rocket cpp-Crow cpp-poco go-pure go-fasthttp python-fastapi"
     local DISTROS="debian"
     for d in ${DISTROS}
     do

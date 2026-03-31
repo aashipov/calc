@@ -44,7 +44,7 @@ closure() {
 
     # Standalone: uncomment two variables, change accordingly
     #local DISTRO=arch
-    #local IMPLEMENTATION=pure-java
+    #local IMPLEMENTATION=java-pure
 
     if [ -z ${DISTRO} ]
     then

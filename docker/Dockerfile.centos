@@ -44,7 +44,7 @@ FROM aashipov/calc:centos-dummy AS rust-toolset
 RUN yum -y install centos-release-scl && yum -y install rust-toolset-7 && yum -y clean all
 
 FROM aashipov/calc:centos-openjdk17 AS javaresult
-# DOCKER_BUILDKIT=1 docker build pure-java --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-pure && docker push aashipov/calc:centos-pure
+# DOCKER_BUILDKIT=1 docker build java-pure --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-pure && docker push aashipov/calc:centos-pure
 # DOCKER_BUILDKIT=1 docker build spring-boot-web --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-spring-boot-web && docker push aashipov/calc:centos-spring-boot-web
 # DOCKER_BUILDKIT=1 docker build spring-boot-webflux --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-spring-boot-webflux && docker push aashipov/calc:centos-spring-boot-webflux
 # DOCKER_BUILDKIT=1 docker build tomcat --file=docker/Dockerfile.centos --target=javaresult --tag=aashipov/calc:centos-tomcat && docker push aashipov/calc:centos-tomcat

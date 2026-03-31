@@ -25,7 +25,7 @@ dotnet10() {
 }
 
 javaresult() {
-    local IMPLEMENTATIONS="pure-java tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio"
+    local IMPLEMENTATIONS="java-pure tomcat undertow jetty netty spring-boot-web spring-boot-webflux quarkus quarkus-reactive ktor helidon-se scala3-zio"
     for implementation in ${IMPLEMENTATIONS}
     do
         ${DOCKER_BUILD_CMD} ${implementation} --file=docker/Dockerfile.${DISTRO} --target=javaresult --tag=aashipov/calc:${DISTRO}-${implementation}
