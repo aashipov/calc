@@ -5,7 +5,7 @@
 # No such issue with different host IPs (like dockerized or baremetal multihost)
 # Submaximal load of 10k per round will produce cleaner throughput comparison
 # 
-# sh -c "DISTRO=arch IMPLEMENTATION=cpprestsdk ./jmeter-runner.sh"
+# sh -c "DISTRO=arch IMPLEMENTATION=cpp-cpprestsdk ./jmeter-runner.sh"
 # 
 # Put following line to /etc/hosts (without opening #) 
 # 127.0.0.1 host.to.test
