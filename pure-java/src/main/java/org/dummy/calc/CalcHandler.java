@@ -28,7 +28,7 @@ public class CalcHandler implements HttpHandler {
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
     private static final String EXPRTK = "exprtk";
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
-    private static final String NAN = "NaN";
+    static final String NAN = "NaN";
 
     public CalcHandler() {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
@@ -55,7 +55,6 @@ public class CalcHandler implements HttpHandler {
                     }
                 } catch (Throwable e) {
                     LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-                    result = e.getMessage();
                 } finally {
                     textResponse(exchange, OK, result);
                 }
