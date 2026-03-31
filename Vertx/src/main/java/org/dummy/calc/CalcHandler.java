@@ -27,7 +27,7 @@ public class CalcHandler implements Handler<RoutingContext> {
     private static final String NAN = "NaN";
 
     public CalcHandler() {
-        
+
     }
 
     static void textResponse(RoutingContext ctx, String body) {
@@ -53,7 +53,6 @@ public class CalcHandler implements Handler<RoutingContext> {
                     }
                 } catch (Exception e) {
                     LOG.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-                    result = e.getMessage();
                 }
             }
             textResponse(ctx, result);

@@ -24,7 +24,7 @@ public class CalcVehicle extends VerticleBase {
 
         Router router = Router.router(vertx);
         Route route = router.route();
-        route.handler(BodyHandler.create());
+        route.handler(BodyHandler.create().setBodyLimit(4_096));
         route.handler(new CalcHandler());
         server.requestHandler(router);
 
