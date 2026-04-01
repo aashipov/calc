@@ -40,7 +40,7 @@ dotnet_flavor() {
     local IMPLEMENTATIONS="dotnet"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
-        ${CALC_DIR}/${IMPLEMENTATION}/bin/Release/net10.0/calc &
+        Logging__LogLevel__Default=Warning ${CALC_DIR}/${IMPLEMENTATION}/bin/Release/net10.0/calc &
         sleep 1s
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f calc
