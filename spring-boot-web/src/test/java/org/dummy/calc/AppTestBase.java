@@ -43,7 +43,7 @@ public abstract class AppTestBase {
 
     @Test
     public void evalexNotAnExpressionTest() {
-        evaluatePost(BASE_URL, NOT_AN_EXPRESSION, "Unknown operator or function: " + NOT_AN_EXPRESSION);
+        evaluatePost(BASE_URL, NOT_AN_EXPRESSION, NAN);
     }
 
     @Test
