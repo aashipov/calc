@@ -83,7 +83,9 @@ def count_lines(filename: os.PathLike[str]) -> int:
 
 
 def do_catplot(df_melt: pandas.DataFrame, num_lines: int) -> None:
-    cp: FacetGrid = seaborn.catplot(data=df_melt, kind="bar", x="value", y="variable")
+    cp: FacetGrid = seaborn.catplot(
+        data=df_melt, kind="bar", x="value", y="variable", palette="deep"
+    )
     _ = cp.set_axis_labels(
         "Request elapsed time (the smaller the better), top "
         + str(num_lines - 1)
