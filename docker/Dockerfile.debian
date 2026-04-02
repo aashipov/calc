@@ -73,14 +73,14 @@ RUN curl -L -O https://static.rust-lang.org/rustup/rustup-init.sh && chmod +x ru
 
 FROM aashipov/calc:debian-openjdk25 AS javaresult
 # docker build java-pure --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-pure && docker push aashipov/calc:debian-java-pure
-# docker build spring-boot-web --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-web && docker push aashipov/calc:debian-spring-boot-web
-# docker build spring-boot-webflux --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-spring-boot-webflux && docker push aashipov/calc:debian-spring-boot-webflux
-# docker build tomcat --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-tomcat && docker push aashipov/calc:debian-tomcat
-# docker build jetty --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-jetty && docker push aashipov/calc:debian-jetty
-# docker build undertow --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-undertow && docker push aashipov/calc:debian-undertow
-# docker build quarkus --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-quarkus && docker push aashipov/calc:debian-quarkus
-# docker build quarkus-reactive --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-quarkus-reactive && docker push aashipov/calc:debian-quarkus-reactive
-# docker build ktor --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-ktor && docker push aashipov/calc:debian-ktor
+# docker build java-spring-boot-web --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-spring-boot-web && docker push aashipov/calc:debian-java-spring-boot-web
+# docker build java-spring-boot-webflux --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-spring-boot-webflux && docker push aashipov/calc:debian-java-spring-boot-webflux
+# docker build java-tomcat --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-tomcat && docker push aashipov/calc:debian-java-tomcat
+# docker build java-jetty --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-jetty && docker push aashipov/calc:debian-java-jetty
+# docker build java-undertow --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-undertow && docker push aashipov/calc:debian-java-undertow
+# docker build java-quarkus --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-quarkus && docker push aashipov/calc:debian-java-quarkus
+# docker build java-quarkus-reactive --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-quarkus-reactive && docker push aashipov/calc:debian-java-quarkus-reactive
+# docker build java-ktor --file=docker/Dockerfile.debian --target=javaresult --tag=aashipov/calc:debian-java-ktor && docker push aashipov/calc:debian-java-ktor
 COPY --chown=${DUMMY_USER}:${DUMMY_USER} target/calc-shaded.jar /dummy/app.jar
 WORKDIR /${DUMMY_USER}/
 EXPOSE 8080
