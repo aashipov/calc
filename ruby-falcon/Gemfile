@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+gem "falcon", "~> 0.55.2"
+gem "ffi", "~> 1.17.4"
