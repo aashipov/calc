@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/valyala/fasthttp"
@@ -15,28 +16,29 @@ func checkResponse(t *testing.T, ctx *fasthttp.RequestCtx, expected string) {
 	}
 }
 
-func TestWelcome(t *testing.T) {
-	ctx := &fasthttp.RequestCtx{}
-	ctx.Request.SetRequestURI("/")
-	ctx.Request.Header.SetMethod("GET")
-	CalcHandler(ctx)
-	checkResponse(t, ctx, string(Welcome))
-}
+func TestHandler(t *testing.T) {
+	tests := []struct {
+		name          string
+		requestMethod string
+		expression    string
+		expected      string
+	}{
+		{"welcome", "GET", "", string(Welcome)},
+		{"simple addition", "POST", "2+2", "4"},
+		{"complex expression", "POST", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
+		{"invalid expression", "POST", "invalid", NaN},
+	}
 
-func TestExpression(t *testing.T) {
-	ctx := &fasthttp.RequestCtx{}
-	ctx.Request.SetRequestURI("/")
-	ctx.Request.Header.SetMethod("POST")
-	ctx.Request.SetBody([]byte(expression))
-	CalcHandler(ctx)
-	checkResponse(t, ctx, string(expressionResult))
-}
-
-func TestNaN(t *testing.T) {
-	ctx := &fasthttp.RequestCtx{}
-	ctx.Request.SetRequestURI("/")
-	ctx.Request.Header.SetMethod("POST")
-	ctx.Request.SetBody([]byte(NaN))
-	CalcHandler(ctx)
-	checkResponse(t, ctx, string(NaN))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := &fasthttp.RequestCtx{}
+			ctx.Request.SetRequestURI("/")
+			ctx.Request.Header.SetMethod(tt.requestMethod)
+			if strings.EqualFold("POST", tt.requestMethod) {
+				ctx.Request.SetBody([]byte(tt.expression))
+			}
+			CalcHandler(ctx)
+			checkResponse(t, ctx, string(tt.expected))
+		})
+	}
 }

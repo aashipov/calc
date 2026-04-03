@@ -12,6 +12,17 @@ import (
 
 var baseUrl = NaN
 
+func TestMain(m *testing.M) {
+	http.HandleFunc("/", CalcHandler)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		CalcHandler(w, req)
+	}))
+	baseUrl = server.Listener.Addr().String()
+	defer server.Close()
+	exitCode := m.Run()
+	os.Exit(exitCode)
+}
+
 func request(t *testing.T, url string, method string, statusCode int, reqBody io.Reader) (body string) {
 	req, _ := http.NewRequest(method, url, reqBody)
 	if reqBody != nil {
@@ -34,35 +45,30 @@ func request(t *testing.T, url string, method string, statusCode int, reqBody io
 	return
 }
 
-func TestMain(m *testing.M) {
-	http.HandleFunc("/", CalcHandler)
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		CalcHandler(w, req)
-	}))
-	baseUrl = server.Listener.Addr().String()
-	defer server.Close()
-	exitCode := m.Run()
-	os.Exit(exitCode)
-}
-
-func TestE2eWelcome(t *testing.T) {
-	expected := string(Welcome)
-	actual := request(t, fmt.Sprintf("http://%s/", baseUrl), "GET", 200, nil)
-	if actual != expected {
-		t.Errorf("Expected %s but got %v", expected, actual)
+func TestApp(t *testing.T) {
+	tests := []struct {
+		name          string
+		requestMethod string
+		expression    string
+		expected      string
+	}{
+		{"welcome", "GET", "", string(Welcome)},
+		{"simple addition", "POST", "2+2", "4"},
+		{"complex expression", "POST", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
+		{"invalid expression", "POST", "invalid", NaN},
 	}
-}
 
-func TestE2eExpression(t *testing.T) {
-	actual := request(t, fmt.Sprintf("http://%s/", baseUrl), "POST", 200, strings.NewReader(expression))
-	if actual != expressionResult {
-		t.Errorf("Expected %s but got %v", expressionResult, actual)
-	}
-}
-
-func TestE2eNan(t *testing.T) {
-	actual := request(t, fmt.Sprintf("http://%s/", baseUrl), "POST", 200, strings.NewReader(NaN))
-	if actual != NaN {
-		t.Errorf("Expected %s but got %v", NaN, actual)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var actual string
+			if strings.EqualFold("POST", tt.requestMethod) {
+				actual = request(t, fmt.Sprintf("http://%s/", baseUrl), tt.requestMethod, 200, strings.NewReader(tt.expression))
+			} else {
+				actual = request(t, fmt.Sprintf("http://%s/", baseUrl), tt.requestMethod, 200, nil)
+			}
+			if actual != tt.expected {
+				t.Errorf("Expected %s but got %v", tt.expected, actual)
+			}
+		})
 	}
 }

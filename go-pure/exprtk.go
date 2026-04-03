@@ -9,6 +9,10 @@ import (
 	"unsafe"
 )
 
+const (
+	NaN = "NaN"
+)
+
 func CalculateViaExprtk(expression string) string {
 	expressionCString := C.CString(expression)
 	defer C.free(unsafe.Pointer(expressionCString))

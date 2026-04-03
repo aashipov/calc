@@ -53,14 +53,22 @@ func doTest(t *testing.T, url string, method string, requestBody string, expecte
 	}
 }
 
-func TestE2eWelcome(t *testing.T) {
-	doTest(t, "http://localhost", "GET", "", string(Welcome))
-}
+func TestApp(t *testing.T) {
+	tests := []struct {
+		name          string
+		requestMethod string
+		expression    string
+		expected      string
+	}{
+		{"welcome", "GET", "", string(Welcome)},
+		{"simple addition", "POST", "2+2", "4"},
+		{"complex expression", "POST", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
+		{"invalid expression", "POST", "invalid", NaN},
+	}
 
-func TestE2eExpression(t *testing.T) {
-	doTest(t, "http://localhost", "POST", expression, expressionResult)
-}
-
-func TestE2eNan(t *testing.T) {
-	doTest(t, "http://localhost", "POST", NaN, NaN)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			doTest(t, "http://localhost", tt.requestMethod, tt.expression, tt.expected)
+		})
+	}
 }
