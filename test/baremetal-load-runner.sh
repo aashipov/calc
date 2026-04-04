@@ -15,7 +15,7 @@ jvm_flavors() {
 }
 
 go_flavors(){
-    local IMPLEMENTATIONS="go-pure go-fasthttp"
+    local IMPLEMENTATIONS="go-pure go-fasthttp go-echo go-gin"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         ${CALC_DIR}/${IMPLEMENTATION}/app &
@@ -111,6 +111,17 @@ deno_flavors() {
     done
 }
 
+ruby_flavor() {
+    local IMPLEMENTATIONS="ruby-falcon"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        falcon serve --bind http://0.0.0.0:8080 &
+        sleep 1s
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f falcon
+    done
+}
+
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
@@ -131,6 +142,7 @@ closure() {
     dart_flavor
     nodejs_flavors
     deno_flavors
+    ruby_flavor
 
     ${_SCRIPT_DIR}/stats/do-stats.sh
 }
