@@ -1,0 +1,18 @@
+[
+  {
+    "label": "Remote Debug",
+    "adapter": "Delve",
+    "request": "attach",
+    "mode": "remote",
+    "tcp_connection": {
+      "host": "0.0.0.0",
+      "port": 2345,
+    },
+    "substitutePath": [
+      {
+        "from": "$ZED_WORKTREE_ROOT",
+        "to": "$ZED_WORKTREE_ROOT",
+      },
+    ],
+  },
+]
