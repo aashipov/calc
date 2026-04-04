@@ -16,7 +16,7 @@ func checkResponse(t *testing.T, ctx *fasthttp.RequestCtx, expected string) {
 	}
 }
 
-func TestHandler(t *testing.T) {
+func TestCalcHandler(t *testing.T) {
 	tests := []struct {
 		name          string
 		requestMethod string

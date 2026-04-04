@@ -22,7 +22,7 @@ func checkResponse(t *testing.T, response *http.Response, expected string) {
 	}
 }
 
-func TestHandler(t *testing.T) {
+func TestCalcHandler(t *testing.T) {
 	tests := []struct {
 		name          string
 		requestMethod string

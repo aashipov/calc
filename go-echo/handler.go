@@ -10,8 +10,6 @@ import (
 )
 
 const (
-	SWAGGER    = "swagger"
-	OPENAPI_UI = "openapi-ui"
 	WELCOME    = "Welcome to calc service\nHTTP POST your expression"
 )
 

@@ -9,10 +9,7 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-func checkResult(t *testing.T, rec *httptest.ResponseRecorder, expected string, err error) {
-	if err != nil {
-		t.Fatalf("error = %v", err)
-	}
+func checkResult(t *testing.T, rec *httptest.ResponseRecorder, expected string) {
 	if rec.Code != http.StatusOK {
 		t.Errorf("Expected status %d, got %d", http.StatusOK, rec.Code)
 	}
@@ -21,38 +18,28 @@ func checkResult(t *testing.T, rec *httptest.ResponseRecorder, expected string, 
 	}
 }
 
-func TestWelcome(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	err := welcome(c)
-	checkResult(t, rec, WELCOME, err)
-}
-
-func TestEvaluate(t *testing.T) {
-	e := echo.New()
-
+func TestCalcHandler(t *testing.T) {
 	tests := []struct {
-		name       string
-		expression string
-		expected   string
+		name          string
+		requestMethod string
+		expression    string
+		expected      string
 	}{
-		{"simple addition", "2+2", "4"},
-		{"complex expression", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
-		{"invalid expression", "invalid", NaN},
+		{"welcome", "GET", "", WELCOME},
+		{"simple addition", "POST", "2+2", "4"},
+		{"complex expression", "POST", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
+		{"invalid expression", "POST", "invalid", NaN},
 	}
 
+	server := echo.New()
+	CalcHandler(server)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(tt.expression))
-			req.Header.Set(echo.HeaderContentType, echo.MIMETextPlain)
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
-
-			err := evaluate(c)
-			checkResult(t, rec, tt.expected, err)
+			req := httptest.NewRequest(tt.requestMethod, "/", strings.NewReader(tt.expression))
+			req.Header.Set(echo.HeaderContentType, echo.MIMETextPlain)
+			server.ServeHTTP(rec, req)
+			checkResult(t, rec, tt.expected)
 		})
 	}
 }
