@@ -26,7 +26,7 @@ public class CalcServlet extends HttpServlet {
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
     private static final String NAN = "NaN";
 
-    public CalcServlet() {
+    static {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
     }
 
@@ -51,7 +51,6 @@ public class CalcServlet extends HttpServlet {
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-            result = e.getMessage();
         } finally {
             textResponse(resp, HttpServletResponse.SC_OK, result);
         }
