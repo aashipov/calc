@@ -22,7 +22,6 @@ public class CalcHandler implements HttpHandler {
     private static final String DEFAULT_CHARSET_NAME = DEFAULT_CHARSET.name();
     private static final String TEXT_PLAIN = "text/plain; charset=" + DEFAULT_CHARSET_NAME;
     private static final int OK = 200;
-    private static final String NO_REQUEST_METHOD = "No request method";
     static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String MXPARSER = "mxparser";
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
@@ -30,58 +29,44 @@ public class CalcHandler implements HttpHandler {
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
     static final String NAN = "NaN";
 
-    public CalcHandler() {
+    static {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
     }
 
     @Override
     public void handle(HttpExchange exchange) {
         String requestMethod = exchange.getRequestMethod();
-        if (isBlank(requestMethod)) {
-            textResponse(exchange, OK, NO_REQUEST_METHOD);
-        } else {
-            if (POST.equalsIgnoreCase(exchange.getRequestMethod())) {
-                String url = exchange.getRequestURI().toString();
-                String result = NAN;
-                try (InputStream inputStream = exchange.getRequestBody(); ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-                    inputStream.transferTo(byteArrayOutputStream);
-                    String expr = byteArrayOutputStream.toString(DEFAULT_CHARSET);
-                    if (MXPARSER_PATTERN.matcher(url).find()) {
-                        result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
-                    } else if (EXPRTK_PATTERN.matcher(url).find()) {
-                        result = "" + JavaExprtkAdapter.calculate(expr);
-                    } else {
-                        result = (new com.udojava.evalex.Expression(expr).eval()).toString();
-                    }
-                } catch (Throwable e) {
-                    LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
-                } finally {
-                    textResponse(exchange, OK, result);
+        if (!isEmpty(requestMethod) && POST.equalsIgnoreCase(requestMethod)) {
+            String url = exchange.getRequestURI().toString();
+            String result = NAN;
+            try (InputStream reqBodyInputStream = exchange.getRequestBody(); ByteArrayOutputStream reqBodyOutputStream = new ByteArrayOutputStream()) {
+                reqBodyInputStream.transferTo(reqBodyOutputStream);
+                String expr = reqBodyOutputStream.toString(DEFAULT_CHARSET);
+                if (MXPARSER_PATTERN.matcher(url).find()) {
+                    result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
+                } else if (EXPRTK_PATTERN.matcher(url).find()) {
+                    result = "" + JavaExprtkAdapter.calculate(expr);
+                } else {
+                    result = (new com.udojava.evalex.Expression(expr).eval()).toString();
                 }
-            } else {
-                textResponse(exchange, OK, WELCOME);
+            } catch (Throwable e) {
+                LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
+            } finally {
+                textResponse(exchange, OK, result);
             }
+        } else {
+            textResponse(exchange, OK, WELCOME);
         }
     }
 
     /**
-     * Is {@link CharSequence} blank?.
+     * Is {@link String} blank?.
      *
-     * @param cs {@link CharSequence}
+     * @param cs {@link String}
      * @return is blank?
      */
-    static boolean isBlank(final CharSequence cs) {
-        if (null != cs) {
-            final int strLen = cs.length();
-            if (0 != strLen) {
-                for (int i = 0; i < strLen; i++) {
-                    if (!Character.isWhitespace(cs.charAt(i))) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    static boolean isEmpty(final String s) {
+        return s == null || s.isBlank();
     }
 
     /**

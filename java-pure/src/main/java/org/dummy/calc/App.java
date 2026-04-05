@@ -12,12 +12,11 @@ import com.sun.net.httpserver.HttpServer;
  */
 public class App {
 
-    private static final ExecutorService HTTP_EXECUTOR_SERVICE
-            = buildExecutorService();
+    private static final ExecutorService HTTP_EXECUTOR_SERVICE = buildExecutorService();
     static final int HTTP_PORT = 8080;
 
     /**
-     * {@link java.lang.VirtualThread#createDefaultScheduler}.
+     * {@link java.lang.VirtualThread#createDefaultScheduler()}.
      *
      * @return {@link ExecutorService}
      */
@@ -29,15 +28,14 @@ public class App {
         return System.getProperty("jdk.virtualThreadScheduler.parallelism") == null ? Executors.newFixedThreadPool(capacity) : Executors.newVirtualThreadPerTaskExecutor();
     }
 
-    static HttpServer launch() throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(HTTP_PORT), 0);
+    static HttpServer server() throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(HTTP_PORT), 8_192);
         server.createContext("/", new CalcHandler());
         server.setExecutor(HTTP_EXECUTOR_SERVICE);
-        server.start();
         return server;
     }
 
-    public static void main(String[] args) throws IOException {
-        launch();
+    static void main(String[] args) throws IOException {
+        server().start();
     }
 }
