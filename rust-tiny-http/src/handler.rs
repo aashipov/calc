@@ -1,39 +1,33 @@
-extern crate tiny_http;
-use calc_tiny_http::{via_exprtk, via_meval};
-use tiny_http::{Method, Request, Response, Server};
-
-pub const EXPRTK: &'static str = "exprtk";
-pub const NAN: &'static str = "NaN";
 pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
-fn body_to_string(request: &mut Request) -> String {
+fn body_to_string(request: &mut tiny_http::Request) -> String {
     let mut body = String::new();
     let read_result = request.as_reader().read_to_string(&mut body);
     match read_result {
         Ok(_ok) => (),
-        Err(_e) => return NAN.to_owned(),
+        Err(_e) => return calc_tiny_http::NAN.to_owned(),
     }
     match body.parse() {
         Ok(b) => b,
-        Err(_e) => NAN.to_owned(),
+        Err(_e) => calc_tiny_http::NAN.to_owned(),
     }
 }
 
-fn str_response(request: Request, response_str: &str) -> Result<(), std::io::Error> {
-    request.respond(Response::from_string(response_str))
+fn str_response(request: tiny_http::Request, response_str: &str) -> Result<(), std::io::Error> {
+    request.respond(tiny_http::Response::from_string(response_str))
 }
 
-pub fn handler(server: std::sync::Arc<Server>) {
+pub fn handler(server: std::sync::Arc<tiny_http::Server>) {
     for mut request in server.incoming_requests() {
-        if let &Method::Post = request.method() {
+        if let &tiny_http::Method::Post = request.method() {
             request.url();
             let body = body_to_string(&mut request);
             let mut response_text = body.to_owned();
-            if body != NAN {
-                if request.url().contains(EXPRTK) {
-                    response_text = via_exprtk(body);
+            if body != calc_tiny_http::NAN {
+                if request.url().contains(calc_tiny_http::EXPRTK) {
+                    response_text = calc_tiny_http::via_exprtk(body);
                 } else {
-                    response_text = via_meval(body);
+                    response_text = calc_tiny_http::via_meval(body);
                 }
             }
             str_response(request, &response_text).ok();
