@@ -3,19 +3,25 @@
 #![allow(non_snake_case)]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
-use std::ffi::{CString, c_char};
+pub const EXPRTK: &'static str = "exprtk";
+pub const NAN: &'static str = "NaN";
+pub const SIMPLE_EXPRESSION: &'static str = "2+2";
+pub const SIMPLE_EXPRESSION_RESULT: &'static str = "4";
+pub const COMPLEX_EXPRESSION: &'static str =
+    "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
+pub const COMPLEX_EXPRESSION_RESULT: &'static str = "19.988432890485228";
 
 pub fn via_meval(expr: String) -> String {
     let eval = meval::eval_str(expr);
     match eval {
         Ok(result) => return result.to_string(),
-        Err(err) => return err.to_string(),
+        Err(_) => return NAN.to_string(),
     }
 }
 
 pub fn via_exprtk(expr: String) -> String {
-    let expr_c_string = CString::new(expr).expect("CString::new failed");
-    let expr_c_ptr: *const c_char = expr_c_string.as_ptr();
+    let expr_c_string = std::ffi::CString::new(expr).expect("CString::new failed");
+    let expr_c_ptr: *const std::ffi::c_char = expr_c_string.as_ptr();
     unsafe {
         let result = calculate(expr_c_ptr);
         return result.to_string();
@@ -24,33 +30,73 @@ pub fn via_exprtk(expr: String) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::{via_exprtk, via_meval};
 
-    const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-    const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
-    const NOT_AN_EXPRESSION: &'static str = "NaN";
+    #[derive(Clone)]
+    struct LibTestConfig {
+        name: String,
+        f: fn(String) -> String,
+        expression: String,
+        expected: String,
+    }
 
-    #[test]
-    fn test_via_meval_expr() {
-        let result = via_meval(EXPRESSION.to_owned());
-        assert_eq!(EXPRESSION_RESULT_MEVAL.to_owned(), result);
+    fn test_lib_inner(tt: LibTestConfig) -> Result<(), String> {
+        let actual = (tt.f)(tt.expression.clone());
+        if tt.expected.clone() != actual.clone() {
+            Err(format!(
+                "{} with {}; expected {}, actual {}",
+                tt.name.clone(),
+                tt.expression.clone(),
+                tt.expected.clone(),
+                actual.clone()
+            ))
+        } else {
+            Ok(())
+        }
     }
 
     #[test]
-    fn test_via_meval_not_an_expr() {
-        let result = via_meval(NOT_AN_EXPRESSION.to_owned());
-        assert!(result.to_owned().contains(NOT_AN_EXPRESSION));
-    }
-
-    #[test]
-    fn test_via_exprtk_expr() {
-        let result = via_exprtk(EXPRESSION.to_owned());
-        assert_eq!(EXPRESSION_RESULT_MEVAL.to_owned(), result);
-    }
-
-    #[test]
-    fn test_via_exprtk_not_an_expr() {
-        let result = via_exprtk(NOT_AN_EXPRESSION.to_owned());
-        assert_eq!(NOT_AN_EXPRESSION.to_owned(), result);
+    fn test_lib() -> Result<(), String> {
+        let test_cfgs = [
+            LibTestConfig {
+                name: String::from("mevalSimpleExpression"),
+                f: crate::via_meval,
+                expression: String::from(crate::SIMPLE_EXPRESSION),
+                expected: String::from(crate::SIMPLE_EXPRESSION_RESULT),
+            },
+            LibTestConfig {
+                name: String::from("mevalComplexExpression"),
+                f: crate::via_meval,
+                expression: String::from(crate::COMPLEX_EXPRESSION),
+                expected: String::from(crate::COMPLEX_EXPRESSION_RESULT),
+            },
+            LibTestConfig {
+                name: String::from("mevalInvalidExpression"),
+                f: crate::via_meval,
+                expression: String::from(crate::NAN),
+                expected: String::from(crate::NAN),
+            },
+            LibTestConfig {
+                name: String::from("exprtkSimpleExpression"),
+                f: crate::via_exprtk,
+                expression: String::from(crate::SIMPLE_EXPRESSION),
+                expected: String::from(crate::SIMPLE_EXPRESSION_RESULT),
+            },
+            LibTestConfig {
+                name: String::from("exprtkComplexExpression"),
+                f: crate::via_exprtk,
+                expression: String::from(crate::COMPLEX_EXPRESSION),
+                expected: String::from(crate::COMPLEX_EXPRESSION_RESULT),
+            },
+            LibTestConfig {
+                name: String::from("exprtkInvalidExpression"),
+                f: crate::via_exprtk,
+                expression: String::from(crate::NAN),
+                expected: String::from(crate::NAN),
+            },
+        ];
+        test_cfgs
+            .iter()
+            .try_for_each(|tt| test_lib_inner(tt.clone()))?;
+        Ok(())
     }
 }

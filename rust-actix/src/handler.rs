@@ -31,7 +31,8 @@ async fn respond_welcome() -> Result<HttpResponse, Infallible> {
 )]
 #[post("{tails:.*}")]
 async fn respond_via_meval(expr: String) -> Result<HttpResponse, Infallible> {
-    return text_response(via_meval(expr));
+    let result = via_meval(expr);
+    return text_response(result);
 }
 
 #[utoipa::path(
@@ -43,5 +44,6 @@ async fn respond_via_meval(expr: String) -> Result<HttpResponse, Infallible> {
 )]
 #[post("/exprtk")]
 async fn respond_via_exprkt(expr: String) -> Result<HttpResponse, Infallible> {
-    return text_response(via_exprtk(expr));
+    let result = via_exprtk(expr);
+    return text_response(result);
 }
