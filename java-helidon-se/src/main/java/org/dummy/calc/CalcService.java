@@ -1,6 +1,8 @@
 package org.dummy.calc;
 
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import io.helidon.http.Status;
 import io.helidon.webserver.http.HttpRules;
@@ -10,13 +12,14 @@ import io.helidon.webserver.http.ServerResponse;
 
 class CalcService implements HttpService {
 
+    private static final Logger LOGGER = Logger.getLogger(CalcService.class.getSimpleName());
     private static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final byte[] WELCOME_BYTES = WELCOME.getBytes(StandardCharsets.UTF_8);
     private static final String MXPARSER = "mxparser";
     private static final String EXPRTK = "exprtk";
     private static final String NAN = "NaN";
 
-    public CalcService() {
+    static {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
     }
 
@@ -43,7 +46,7 @@ class CalcService implements HttpService {
         try {
             result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
         } catch (Exception ex) {
-            result = ex.getMessage();
+            LOGGER.log(Level.INFO, ex.getMessage());
         } finally {
             textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
         }
@@ -55,7 +58,7 @@ class CalcService implements HttpService {
         try {
             result = "" + JavaExprtkAdapter.calculate(expr);
         } catch (Exception ex) {
-            result = ex.getMessage();
+            LOGGER.log(Level.INFO, ex.getMessage());
         } finally {
             textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
         }
@@ -67,7 +70,7 @@ class CalcService implements HttpService {
         try {
             result = (new com.udojava.evalex.Expression(expr).eval()).toString();
         } catch (Exception ex) {
-            result = ex.getMessage();
+            LOGGER.log(Level.INFO, ex.getMessage());
         } finally {
             textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
         }
