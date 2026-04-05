@@ -16,6 +16,10 @@ public class CalcController {
     private static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String NAN = "NaN";
 
+    static {
+        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
+    }
+
     @GetMapping(path = "/", produces = MediaType.TEXT_PLAIN_VALUE)
     public String welcome() {
         return WELCOME;

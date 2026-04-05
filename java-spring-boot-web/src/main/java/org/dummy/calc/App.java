@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @CrossOrigin(value = "*")
 public class App {
 	public static void main(String[] args) {
-		org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
 		SpringApplication.run(App.class, args);
 	}
 }
