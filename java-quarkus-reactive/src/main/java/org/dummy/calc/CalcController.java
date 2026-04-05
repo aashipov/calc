@@ -1,6 +1,5 @@
 package org.dummy.calc;
 
-import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,8 +18,9 @@ public class CalcController {
 
     private static final Logger LOGGER = Logger.getLogger(CalcController.class.getSimpleName());
     public static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
+    private static final String NAN = "NaN";
 
-    public CalcController() {
+    static {
         org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
     }
 
@@ -34,13 +34,13 @@ public class CalcController {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> evalex(String expression) {
+        String result = NAN;
         try {
-            BigDecimal result = new com.udojava.evalex.Expression(expression).eval();
-            return Uni.createFrom().item(result.toString());
+            result = "" + new com.udojava.evalex.Expression(expression).eval();
         } catch (Exception e) {
             LOGGER.log(Level.INFO, null, e);
-            return Uni.createFrom().item(e.getMessage());
         }
+        return Uni.createFrom().item(result);
     }
 
     @POST
@@ -48,8 +48,13 @@ public class CalcController {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> mxparser(String expression) {
-        double result = new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
-        return Uni.createFrom().item(String.valueOf(result));
+        String result = NAN;
+        try {
+            result = "" + new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, null, e);
+        }
+        return Uni.createFrom().item(result);
     }
 
     @POST
@@ -57,7 +62,12 @@ public class CalcController {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> exprtk(String expression) {
-        double result = JavaExprtkAdapter.calculate(expression);
-        return Uni.createFrom().item(String.valueOf(result));
+        String result = NAN;
+        try {
+            result = "" + JavaExprtkAdapter.calculate(expression);
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, null, e);
+        }
+        return Uni.createFrom().item(result);
     }
 }
