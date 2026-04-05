@@ -47,14 +47,14 @@
             <version>${zio-http_3.version}</version>
         </dependency>
         <dependency>
-            <groupId>dev.zio</groupId>
-            <artifactId>zio-test_3</artifactId>
-            <version>${zio.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
+            <artifactId>junit-jupiter-params</artifactId>
             <version>${junit5-version}</version>
             <scope>test</scope>
         </dependency>
