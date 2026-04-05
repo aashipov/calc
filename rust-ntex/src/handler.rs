@@ -15,10 +15,12 @@ async fn respond_welcome() -> HttpResponse {
 
 #[post("{tails:.*}")]
 async fn respond_via_meval(expr: String) -> HttpResponse {
-    return text_response(via_meval(expr));
+    let result = via_meval(expr);
+    return text_response(result);
 }
 
 #[post("/exprtk")]
 async fn respond_via_exprkt(expr: String) -> HttpResponse {
-    return text_response(via_exprtk(expr));
+    let result = via_exprtk(expr);
+    return text_response(result);
 }

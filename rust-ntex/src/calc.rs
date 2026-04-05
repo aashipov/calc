@@ -26,89 +26,99 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ntex::{
-        http::StatusCode,
-        web::{WebResponse, test},
-    };
+    use ntex::web::test;
 
-    const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-    const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
-    const NOT_AN_EXPRESSION: &'static str = "NaN";
+    #[derive(Clone)]
+    struct CalcTestConfig {
+        name: String,
+        request_method: String,
+        url: String,
+        expression: String,
+        expected: String,
+    }
 
-    async fn check_response(resp: WebResponse, expected_body: String) {
-        assert_eq!(resp.status(), StatusCode::OK);
+    async fn test_calc_inner(tt: &CalcTestConfig) -> Result<(), String> {
+        let mut req = test::TestRequest::post()
+            .set_payload(tt.expression.clone())
+            .uri(tt.url.clone().as_str())
+            .to_request();
+        if tt.request_method.eq("GET") {
+            req = test::TestRequest::get()
+                .uri(tt.url.clone().as_str())
+                .to_request();
+        };
+        let app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
+        let resp = app.call(req).await.unwrap();
         let body_bytes = test::read_body(resp).await;
-        let body_str = std::str::from_utf8(&body_bytes).unwrap();
-        assert_eq!(body_str, expected_body);
+        let actual = std::str::from_utf8(&body_bytes).unwrap();
+        if tt.expected.clone() != actual {
+            return Err(format!(
+                "{} with {}; expected {}, actual {}",
+                tt.name.clone(),
+                tt.expression.clone(),
+                tt.expected.clone(),
+                actual
+            ));
+        }
+        Ok(())
     }
 
     #[ntex::test]
-    async fn test_welcome() {
-        let mut app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
-
-        let req = test::TestRequest::get().uri("/").to_request();
-        let resp = test::call_service(&mut app, req).await;
-
-        check_response(resp, crate::handler::WELCOME.to_string()).await;
-    }
-
-    #[ntex::test]
-    async fn test_via_meval_expr() {
-        let mut app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
-
-        let req = test::TestRequest::post()
-            .set_payload(EXPRESSION)
-            .uri("/")
-            .to_request();
-        let resp = test::call_service(&mut app, req).await;
-
-        return check_response(resp, EXPRESSION_RESULT_MEVAL.to_string()).await;
-    }
-
-    #[ntex::test]
-    async fn test_via_meval_not_an_expr() {
-        let mut app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
-
-        let req = test::TestRequest::post()
-            .set_payload(NOT_AN_EXPRESSION)
-            .uri("/")
-            .to_request();
-        let resp = test::call_service(&mut app, req).await;
-
-        return check_response(
-            resp,
-            "Evaluation error: unknown variable `NaN`.".to_string(),
-        )
-        .await;
-    }
-
-    #[ntex::test]
-    async fn test_via_exprtk_expr() {
-        let mut app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
-
-        let req = test::TestRequest::post()
-            .set_payload(EXPRESSION)
-            .uri("/exprtk")
-            .to_request();
-        let resp = test::call_service(&mut app, req).await;
-
-        return check_response(resp, EXPRESSION_RESULT_MEVAL.to_string()).await;
-    }
-
-    #[ntex::test]
-    async fn test_via_exprtk_not_an_expr() {
-        let mut app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
-
-        let req = test::TestRequest::post()
-            .set_payload(NOT_AN_EXPRESSION)
-            .uri("/exprtk")
-            .to_request();
-        let resp = test::call_service(&mut app, req).await;
-
-        return check_response(
-            resp,
-            "Evaluation error: unknown variable `NaN`.".to_string(),
-        )
-        .await;
+    async fn test_calc() -> Result<(), String> {
+        let test_cfgs = [
+            CalcTestConfig {
+                name: String::from("welcome"),
+                request_method: String::from("GET"),
+                url: String::from("/"),
+                expression: String::from(""),
+                expected: String::from(crate::handler::WELCOME),
+            },
+            CalcTestConfig {
+                name: String::from("mevalSimpleExpression"),
+                request_method: String::from("POST"),
+                url: String::from("/"),
+                expression: String::from(calc_ntex::SIMPLE_EXPRESSION),
+                expected: String::from(calc_ntex::SIMPLE_EXPRESSION_RESULT),
+            },
+            CalcTestConfig {
+                name: String::from("mevalComplexExpression"),
+                request_method: String::from("POST"),
+                url: String::from("/"),
+                expression: String::from(calc_ntex::COMPLEX_EXPRESSION),
+                expected: String::from(calc_ntex::COMPLEX_EXPRESSION_RESULT),
+            },
+            CalcTestConfig {
+                name: String::from("mevalInvalidExpression"),
+                request_method: String::from("POST"),
+                url: String::from("/"),
+                expression: String::from(calc_ntex::NAN),
+                expected: String::from(calc_ntex::NAN),
+            },
+            CalcTestConfig {
+                name: String::from("exprtkSimpleExpression"),
+                request_method: String::from("POST"),
+                url: String::from(format!("/{}", calc_ntex::EXPRTK)),
+                expression: String::from(calc_ntex::SIMPLE_EXPRESSION),
+                expected: String::from(calc_ntex::SIMPLE_EXPRESSION_RESULT),
+            },
+            CalcTestConfig {
+                name: String::from("exprtkComplexExpression"),
+                request_method: String::from("POST"),
+                url: String::from(format!("/{}", calc_ntex::EXPRTK)),
+                expression: String::from(calc_ntex::COMPLEX_EXPRESSION),
+                expected: String::from(calc_ntex::COMPLEX_EXPRESSION_RESULT),
+            },
+            CalcTestConfig {
+                name: String::from("exprtkInvalidExpression"),
+                request_method: String::from("POST"),
+                url: String::from(format!("/{}", calc_ntex::EXPRTK)),
+                expression: String::from(calc_ntex::NAN),
+                expected: String::from(calc_ntex::NAN),
+            },
+        ];
+        for tt in test_cfgs.iter() {
+            test_calc_inner(tt).await?;
+        }
+        Ok(())
     }
 }
