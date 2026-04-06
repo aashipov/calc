@@ -31,72 +31,45 @@ pub fn via_exprtk(expr: String) -> String {
 #[cfg(test)]
 mod tests {
 
-    #[derive(Clone)]
-    struct LibTestConfig {
-        name: String,
-        f: fn(String) -> String,
-        expression: String,
-        expected: String,
+    macro_rules! test_lib_inner {
+        ($name:ident, $f:expr, $expr:expr, $expected:expr) => {
+            #[test]
+            fn $name() {
+                let actual = ($f)($expr.to_string());
+                assert_eq!(actual, $expected);
+            }
+        };
     }
 
-    fn test_lib_inner(tt: LibTestConfig) -> Result<(), String> {
-        let actual = (tt.f)(tt.expression.clone());
-        if tt.expected.clone() != actual.clone() {
-            Err(format!(
-                "{} with {}; expected {}, actual {}",
-                tt.name.clone(),
-                tt.expression.clone(),
-                tt.expected.clone(),
-                actual.clone()
-            ))
-        } else {
-            Ok(())
-        }
-    }
+    test_lib_inner!(
+        meval_simple,
+        crate::via_meval,
+        crate::SIMPLE_EXPRESSION,
+        crate::SIMPLE_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_lib() -> Result<(), String> {
-        let test_cfgs = [
-            LibTestConfig {
-                name: String::from("mevalSimpleExpression"),
-                f: crate::via_meval,
-                expression: String::from(crate::SIMPLE_EXPRESSION),
-                expected: String::from(crate::SIMPLE_EXPRESSION_RESULT),
-            },
-            LibTestConfig {
-                name: String::from("mevalComplexExpression"),
-                f: crate::via_meval,
-                expression: String::from(crate::COMPLEX_EXPRESSION),
-                expected: String::from(crate::COMPLEX_EXPRESSION_RESULT),
-            },
-            LibTestConfig {
-                name: String::from("mevalInvalidExpression"),
-                f: crate::via_meval,
-                expression: String::from(crate::NAN),
-                expected: String::from(crate::NAN),
-            },
-            LibTestConfig {
-                name: String::from("exprtkSimpleExpression"),
-                f: crate::via_exprtk,
-                expression: String::from(crate::SIMPLE_EXPRESSION),
-                expected: String::from(crate::SIMPLE_EXPRESSION_RESULT),
-            },
-            LibTestConfig {
-                name: String::from("exprtkComplexExpression"),
-                f: crate::via_exprtk,
-                expression: String::from(crate::COMPLEX_EXPRESSION),
-                expected: String::from(crate::COMPLEX_EXPRESSION_RESULT),
-            },
-            LibTestConfig {
-                name: String::from("exprtkInvalidExpression"),
-                f: crate::via_exprtk,
-                expression: String::from(crate::NAN),
-                expected: String::from(crate::NAN),
-            },
-        ];
-        test_cfgs
-            .iter()
-            .try_for_each(|tt| test_lib_inner(tt.clone()))?;
-        Ok(())
-    }
+    test_lib_inner!(
+        meval_complex,
+        crate::via_meval,
+        crate::COMPLEX_EXPRESSION,
+        crate::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(meval_invalid, crate::via_meval, crate::NAN, crate::NAN);
+
+    test_lib_inner!(
+        exprtk_simple,
+        crate::via_exprtk,
+        crate::SIMPLE_EXPRESSION,
+        crate::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(
+        exprtk_complex,
+        crate::via_exprtk,
+        crate::COMPLEX_EXPRESSION,
+        crate::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(exprtk_invalid, crate::via_exprtk, crate::NAN, crate::NAN);
 }
