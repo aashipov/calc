@@ -2,8 +2,8 @@
 
 # Builds everything locally.
 
-c_exprtk_adapter_and_cpp() {
-    local IMPLEMENTATIONS="c-exprtk-adapter cpp-Crow cpp-poco"
+adapters() {
+    local IMPLEMENTATIONS="c-exprtk-adapter java-exprtk-adapter"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -11,8 +11,17 @@ c_exprtk_adapter_and_cpp() {
     done
 }
 
+cpp_flavors() {
+    local IMPLEMENTATIONS="cpp-Crow cpp-poco"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        printf "\n${IMPLEMENTATION}\n"
+        ${SOURCE_TREE_ROOT}/${IMPLEMENTATION}/build.sh
+    done
+}
+
 jvm_flavors() {
-    local IMPLEMENTATIONS="java-pure java-tomcat java-undertow java-jetty java-netty java-spring-boot-web java-spring-boot-webflux java-quarkus java-quarkus-reactive java-ktor java-helidon-se java-scala3-zio-http"
+    local IMPLEMENTATIONS="java-pure java-tomcat java-undertow java-jetty java-netty java-spring-boot-web java-spring-boot-webflux java-quarkus java-quarkus-reactive java-ktor java-helidon-se java-scala3-zio-http java-scala3-cask java-micronaut java-Vertx"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -22,7 +31,7 @@ jvm_flavors() {
 }
 
 go_flavors(){
-    local IMPLEMENTATIONS="go-pure go-fasthttp"
+    local IMPLEMENTATIONS="go-pure go-fasthttp go-echo go-gin"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -57,7 +66,17 @@ dotnet_flavor(){
 }
 
 python_flavor(){
-    local IMPLEMENTATIONS="python-fastapi"
+    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        printf "\n${IMPLEMENTATION}\n"
+        cd ${SOURCE_TREE_ROOT}/${IMPLEMENTATION}
+        ./build.sh
+    done
+}
+
+nodejs_flavors() {
+    local IMPLEMENTATIONS="nodejs-expressjs nodejs-nestjs nodejs-pure"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -76,12 +95,14 @@ closure() {
 
     set -e
 
-    c_exprtk_adapter_and_cpp
+    adapters
+    cpp_flavors
     jvm_flavors
     go_flavors
     rust_flavors
     dotnet_flavor
     python_flavor
+    nodejs_flavors
 }
 
 closure
