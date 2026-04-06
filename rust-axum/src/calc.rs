@@ -39,56 +39,76 @@ fn main() -> std::io::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use axum_test::TestServer;
-    const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-    const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
-    const NOT_AN_EXPRESSION: &'static str = "NaN";
 
-    #[tokio::test]
-    async fn test_welcome() {
-        let app = crate::app();
-        let server = TestServer::new(app);
-        let response = server.get("/").await;
-        response
-            .assert_status_ok()
-            .assert_text(crate::handler::WELCOME);
+    fn build_server() -> axum_test::TestServer {
+        axum_test::TestServer::new(crate::app())
     }
 
-    #[tokio::test]
-    async fn test_via_meval_expr() {
-        let app = crate::app();
-        let server = TestServer::new(app);
-        let response = server.post("/").text(EXPRESSION).await;
-        response
-            .assert_status_ok()
-            .assert_text(EXPRESSION_RESULT_MEVAL);
+    macro_rules! test_calc_inner {
+        ($name:ident, $request_method:expr, $url:expr, $expression:expr, $expected:expr) => {
+            #[tokio::test]
+            async fn $name() -> Result<(), String> {
+                let server = build_server();
+                let mut response = server.post($url).text($expression).await;
+                if $request_method.eq("GET") {
+                    response = server.get($url).await;
+                };
+                let actual = response.text();
+                if $expected.clone() != actual {
+                    return Err(format!(
+                        "{} with {}; expected {}, actual {}",
+                        $url.clone(),
+                        $expression.clone(),
+                        $expected.clone(),
+                        actual
+                    ));
+                }
+                Ok(())
+            }
+        };
     }
 
-    #[tokio::test]
-    async fn test_via_meval_not_an_expr() {
-        let app = crate::app();
-        let server = TestServer::new(app);
-        let response = server.post("/").text(NOT_AN_EXPRESSION).await;
-        response
-            .assert_status_ok()
-            .assert_text("Evaluation error: unknown variable `NaN`.");
-    }
+    test_calc_inner!(welcome, "GET", "/", "", crate::handler::WELCOME);
 
-    #[tokio::test]
-    async fn test_via_exprtk_expr() {
-        let app = crate::app();
-        let server = TestServer::new(app);
-        let response = server.post("/exprtk").text(EXPRESSION).await;
-        response
-            .assert_status_ok()
-            .assert_text(EXPRESSION_RESULT_MEVAL);
-    }
+    test_calc_inner!(
+        meval_simple,
+        "POST",
+        "/",
+        calc_axum::SIMPLE_EXPRESSION,
+        calc_axum::SIMPLE_EXPRESSION_RESULT
+    );
 
-    #[tokio::test]
-    async fn test_via_exprtk_not_an_expr() {
-        let app = crate::app();
-        let server = TestServer::new(app);
-        let response = server.post("/exprtk").text(NOT_AN_EXPRESSION).await;
-        response.assert_status_ok().assert_text(NOT_AN_EXPRESSION);
-    }
+    test_calc_inner!(
+        meval_complex,
+        "POST",
+        "/",
+        calc_axum::COMPLEX_EXPRESSION,
+        calc_axum::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(meval_invalid, "POST", "/", calc_axum::NAN, calc_axum::NAN);
+
+    test_calc_inner!(
+        exprtk_simple,
+        "POST",
+        format!("/{}", calc_axum::EXPRTK).as_str(),
+        calc_axum::SIMPLE_EXPRESSION,
+        calc_axum::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_complex,
+        "POST",
+        format!("/{}", calc_axum::EXPRTK).as_str(),
+        calc_axum::COMPLEX_EXPRESSION,
+        calc_axum::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_invalid,
+        "POST",
+        format!("/{}", calc_axum::EXPRTK).as_str(),
+        calc_axum::NAN,
+        calc_axum::NAN
+    );
 }

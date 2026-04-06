@@ -36,7 +36,8 @@ pub async fn respond_welcome() -> Response {
     )
 )]
 pub async fn respond_via_meval(expr: String) -> Response {
-    return text_response(via_meval(expr));
+    let result = via_meval(expr);
+    return text_response(result);
 }
 
 #[utoipa::path(
@@ -48,5 +49,6 @@ pub async fn respond_via_meval(expr: String) -> Response {
     )
 )]
 pub async fn respond_via_exprkt(expr: String) -> Response {
-    return text_response(via_exprtk(expr));
+    let result = via_exprtk(expr);
+    return text_response(result);
 }
