@@ -35,99 +35,77 @@ async fn main() -> std::io::Result<()> {
 mod tests {
     use actix_web::{dev::Service, test};
 
-    use super::*;
-
-    #[derive(Clone)]
-    struct CalcTestConfig {
-        name: String,
-        request_method: String,
-        url: String,
-        expression: String,
-        expected: String,
-    }
-
-    async fn test_calc_inner(tt: &CalcTestConfig) -> Result<(), String> {
-        let mut req = test::TestRequest::post()
-            .set_payload(tt.expression.clone())
-            .uri(tt.url.clone().as_str())
-            .to_request();
-        if tt.request_method.eq("GET") {
-            req = test::TestRequest::get()
-                .uri(tt.url.clone().as_str())
-                .to_request();
+    macro_rules! test_calc_inner {
+        ($name:ident, $request_method:expr, $url:expr, $expression:expr, $expected:expr) => {
+            #[actix_web::test]
+            async fn $name() -> Result<(), String> {
+                let mut req = test::TestRequest::post()
+                    .set_payload($expression.clone())
+                    .uri($url.clone())
+                    .to_request();
+                if $request_method.eq("GET") {
+                    req = test::TestRequest::get().uri($url.clone()).to_request();
+                };
+                let app =
+                    test::init_service(crate::App::new().configure(|cfg| crate::config(cfg))).await;
+                let resp = app.call(req).await.unwrap();
+                let body_bytes = actix_web::body::to_bytes(resp.into_body()).await.unwrap();
+                let actual = std::str::from_utf8(&body_bytes).unwrap();
+                if $expected.clone() != actual {
+                    return Err(format!(
+                        "{} with {}; expected {}, actual {}",
+                        $url.clone(),
+                        $expression.clone(),
+                        $expected.clone(),
+                        actual
+                    ));
+                }
+                Ok(())
+            }
         };
-        let app = test::init_service(App::new().configure(|cfg| config(cfg))).await;
-        let resp = app.call(req).await.unwrap();
-        let body_bytes = actix_web::body::to_bytes(resp.into_body()).await.unwrap();
-        let actual = std::str::from_utf8(&body_bytes).unwrap();
-        if tt.expected.clone() != actual {
-            return Err(format!(
-                "{} with {}; expected {}, actual {}",
-                tt.name.clone(),
-                tt.expression.clone(),
-                tt.expected.clone(),
-                actual
-            ));
-        }
-        Ok(())
     }
 
-    #[actix_web::test]
-    async fn test_calc() -> Result<(), String> {
-        let test_cfgs = [
-            CalcTestConfig {
-                name: String::from("welcome"),
-                request_method: String::from("GET"),
-                url: String::from("/"),
-                expression: String::from(""),
-                expected: String::from(crate::handler::WELCOME),
-            },
-            CalcTestConfig {
-                name: String::from("mevalSimpleExpression"),
-                request_method: String::from("POST"),
-                url: String::from("/"),
-                expression: String::from(calc_actix::SIMPLE_EXPRESSION),
-                expected: String::from(calc_actix::SIMPLE_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("mevalComplexExpression"),
-                request_method: String::from("POST"),
-                url: String::from("/"),
-                expression: String::from(calc_actix::COMPLEX_EXPRESSION),
-                expected: String::from(calc_actix::COMPLEX_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("mevalInvalidExpression"),
-                request_method: String::from("POST"),
-                url: String::from("/"),
-                expression: String::from(calc_actix::NAN),
-                expected: String::from(calc_actix::NAN),
-            },
-            CalcTestConfig {
-                name: String::from("exprtkSimpleExpression"),
-                request_method: String::from("POST"),
-                url: String::from(format!("/{}", calc_actix::EXPRTK)),
-                expression: String::from(calc_actix::SIMPLE_EXPRESSION),
-                expected: String::from(calc_actix::SIMPLE_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("exprtkComplexExpression"),
-                request_method: String::from("POST"),
-                url: String::from(format!("/{}", calc_actix::EXPRTK)),
-                expression: String::from(calc_actix::COMPLEX_EXPRESSION),
-                expected: String::from(calc_actix::COMPLEX_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("exprtkInvalidExpression"),
-                request_method: String::from("POST"),
-                url: String::from(format!("/{}", calc_actix::EXPRTK)),
-                expression: String::from(calc_actix::NAN),
-                expected: String::from(calc_actix::NAN),
-            },
-        ];
-        for tt in test_cfgs.iter() {
-            test_calc_inner(tt).await?;
-        }
-        Ok(())
-    }
+    test_calc_inner!(welcome, "GET", "/", "", crate::handler::WELCOME);
+
+    test_calc_inner!(
+        meval_simple,
+        "POST",
+        "/",
+        calc_actix::SIMPLE_EXPRESSION,
+        calc_actix::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        meval_complex,
+        "POST",
+        "/",
+        calc_actix::COMPLEX_EXPRESSION,
+        calc_actix::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(meval_invalid, "POST", "/", calc_actix::NAN, calc_actix::NAN);
+
+    test_calc_inner!(
+        exprtk_simple,
+        "POST",
+        format!("/{}", calc_actix::EXPRTK).as_str(),
+        calc_actix::SIMPLE_EXPRESSION,
+        calc_actix::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_complex,
+        "POST",
+        format!("/{}", calc_actix::EXPRTK).as_str(),
+        calc_actix::COMPLEX_EXPRESSION,
+        calc_actix::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_invalid,
+        "POST",
+        format!("/{}", calc_actix::EXPRTK).as_str(),
+        calc_actix::NAN,
+        calc_actix::NAN
+    );
 }
