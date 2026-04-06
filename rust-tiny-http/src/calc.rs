@@ -36,103 +36,94 @@ mod tests {
         });
     }
 
-    #[derive(Clone)]
-    struct CalcTestConfig {
-        name: String,
-        request_method: String,
-        url: String,
-        expression: String,
-        expected: String,
-    }
-
-    // https://stackoverflow.com/a/71993139
-    fn test_calc_inner(tt: CalcTestConfig) -> Result<(), String> {
-        let mut actual = ureq::post(tt.url.clone())
-            .send(tt.expression.clone())
-            .unwrap()
-            .body_mut()
-            .read_to_string()
-            .unwrap();
-        if tt.request_method.eq("GET") {
-            actual = ureq::get(tt.url.clone())
-                .call()
-                .unwrap()
-                .body_mut()
-                .read_to_string()
-                .unwrap();
+    macro_rules! test_calc_inner {
+        ($name:ident, $request_method:expr, $url:expr, $expression:expr, $expected:expr) => {
+            #[test]
+            fn $name() -> Result<(), String> {
+                set_up();
+                let mut actual = ureq::post($url.clone())
+                    .send($expression.clone())
+                    .unwrap()
+                    .body_mut()
+                    .read_to_string()
+                    .unwrap();
+                if $request_method.eq("GET") {
+                    actual = ureq::get($url.clone())
+                        .call()
+                        .unwrap()
+                        .body_mut()
+                        .read_to_string()
+                        .unwrap();
+                };
+                if $expected == actual {
+                    Ok(())
+                } else {
+                    Err(format!(
+                        "{} {} with {}; expected {}, actual {}",
+                        $request_method,
+                        $url.clone(),
+                        $expression,
+                        $expected,
+                        actual
+                    ))
+                }
+            }
         };
-        if tt.expected == actual {
-            Ok(())
-        } else {
-            Err(format!(
-                "{}: {} {} with {}; expected {}, actual {}",
-                tt.name,
-                tt.request_method,
-                tt.url.clone(),
-                tt.expression,
-                tt.expected,
-                actual
-            ))
-        }
     }
 
-    #[test]
-    fn test_calc() -> Result<(), String> {
-        set_up();
-        let test_cfgs = [
-            CalcTestConfig {
-                name: String::from("welcome"),
-                request_method: String::from("GET"),
-                url: format!("http://{SOCKET}"),
-                expression: String::from(""),
-                expected: String::from(crate::handler::WELCOME),
-            },
-            CalcTestConfig {
-                name: String::from("mevalSimpleExpression"),
-                request_method: String::from("POST"),
-                url: format!("http://{SOCKET}"),
-                expression: String::from(calc_tiny_http::SIMPLE_EXPRESSION),
-                expected: String::from(calc_tiny_http::SIMPLE_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("mevalComplexExpression"),
-                request_method: String::from("POST"),
-                url: format!("http://{SOCKET}"),
-                expression: String::from(calc_tiny_http::COMPLEX_EXPRESSION),
-                expected: String::from(calc_tiny_http::COMPLEX_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("mevalInvalidExpression"),
-                request_method: String::from("POST"),
-                url: format!("http://{SOCKET}"),
-                expression: String::from(calc_tiny_http::NAN),
-                expected: String::from(calc_tiny_http::NAN),
-            },
-            CalcTestConfig {
-                name: String::from("exprtkSimpleExpression"),
-                request_method: String::from("POST"),
-                url: format!("http://{SOCKET}/{EXPRTK}"),
-                expression: String::from(calc_tiny_http::SIMPLE_EXPRESSION),
-                expected: String::from(calc_tiny_http::SIMPLE_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("exprtkComplexExpression"),
-                request_method: String::from("POST"),
-                url: format!("http://{SOCKET}/{EXPRTK}"),
-                expression: String::from(calc_tiny_http::COMPLEX_EXPRESSION),
-                expected: String::from(calc_tiny_http::COMPLEX_EXPRESSION_RESULT),
-            },
-            CalcTestConfig {
-                name: String::from("exprtkInvalidExpression"),
-                request_method: String::from("POST"),
-                url: format!("http://{SOCKET}/{EXPRTK}"),
-                expression: String::from(calc_tiny_http::NAN),
-                expected: String::from(calc_tiny_http::NAN),
-            },
-        ];
-        test_cfgs
-            .iter()
-            .try_for_each(|tt| test_calc_inner(tt.clone()))?;
-        Ok(())
-    }
+    test_calc_inner!(
+        welcome,
+        "GET",
+        format!("http://{SOCKET}"),
+        "",
+        crate::handler::WELCOME
+    );
+
+    test_calc_inner!(
+        meval_simple,
+        "POST",
+        format!("http://{SOCKET}"),
+        calc_tiny_http::SIMPLE_EXPRESSION,
+        calc_tiny_http::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        meval_complex,
+        "POST",
+        format!("http://{SOCKET}"),
+        calc_tiny_http::COMPLEX_EXPRESSION,
+        calc_tiny_http::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        meval_invalid,
+        "POST",
+        format!("http://{SOCKET}"),
+        calc_tiny_http::NAN,
+        calc_tiny_http::NAN
+    );
+
+    test_calc_inner!(
+        exprtk_simple,
+        "POST",
+        format!("http://{SOCKET}/{EXPRTK}"),
+        calc_tiny_http::SIMPLE_EXPRESSION,
+        calc_tiny_http::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_complex,
+        "POST",
+        format!("http://{SOCKET}/{EXPRTK}"),
+        calc_tiny_http::COMPLEX_EXPRESSION,
+        calc_tiny_http::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_invalid,
+        "POST",
+        format!("http://{SOCKET}/{EXPRTK}"),
+        calc_tiny_http::NAN,
+        calc_tiny_http::NAN
+    );
 }
