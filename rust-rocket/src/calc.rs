@@ -40,47 +40,80 @@ fn rocket() -> _ {
 #[cfg(test)]
 mod tests {
     use rocket::local::blocking::Client;
-    use crate::handler::WELCOME;
 
-    const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-    const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
-    const NOT_AN_EXPRESSION: &'static str = "NaN";
-
-    #[test]
-    fn test_welcome() {
-        let client = Client::tracked(crate::rocket()).unwrap();
-        let response = client.get("/").dispatch();
-        assert_eq!(response.into_string().unwrap(), WELCOME);
+    macro_rules! test_calc_inner {
+        ($name:ident, $request_method:expr, $url:expr, $expression:expr, $expected:expr) => {
+            #[test]
+            fn $name() -> Result<(), String> {
+                let client = Client::tracked(crate::rocket()).unwrap();
+                let mut response = client.post($url).body($expression).dispatch();
+                if $request_method.eq("GET") {
+                    response = client.get($url).dispatch();
+                };
+                let actual = response.into_string().unwrap();
+                if $expected == actual {
+                    Ok(())
+                } else {
+                    Err(format!(
+                        "{} {} with {}; expected {}, actual {}",
+                        $request_method,
+                        $url.clone(),
+                        $expression,
+                        $expected,
+                        actual
+                    ))
+                }
+            }
+        };
     }
 
-    #[test]
-    fn test_via_meval_expr() {
-        let client = Client::tracked(crate::rocket()).unwrap();
-        let response = client.post("/").body(EXPRESSION).dispatch();
-        assert_eq!(response.into_string().unwrap(), EXPRESSION_RESULT_MEVAL);
-    }
+    test_calc_inner!(welcome, "GET", "/", "", crate::handler::WELCOME);
 
-    #[test]
-    fn test_via_meval_not_an_expr() {
-        let client = Client::tracked(crate::rocket()).unwrap();
-        let response = client.post("/").body(NOT_AN_EXPRESSION).dispatch();
-        assert_eq!(
-            response.into_string().unwrap(),
-            "Evaluation error: unknown variable `NaN`."
-        );
-    }
+    test_calc_inner!(
+        meval_simple,
+        "POST",
+        "/",
+        calc_rocket::SIMPLE_EXPRESSION,
+        calc_rocket::SIMPLE_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_via_exprtk_expr() {
-        let client = Client::tracked(crate::rocket()).unwrap();
-        let response = client.post("/exprtk").body(EXPRESSION).dispatch();
-        assert_eq!(response.into_string().unwrap(), EXPRESSION_RESULT_MEVAL);
-    }
+    test_calc_inner!(
+        meval_complex,
+        "POST",
+        "/",
+        calc_rocket::COMPLEX_EXPRESSION,
+        calc_rocket::COMPLEX_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_via_exprtk_not_an_expr() {
-        let client = Client::tracked(crate::rocket()).unwrap();
-        let response = client.post("/exprtk").body(NOT_AN_EXPRESSION).dispatch();
-        assert_eq!(response.into_string().unwrap(), NOT_AN_EXPRESSION);
-    }
+    test_calc_inner!(
+        meval_invalid,
+        "POST",
+        "/",
+        calc_rocket::NAN,
+        calc_rocket::NAN
+    );
+
+    test_calc_inner!(
+        exprtk_simple,
+        "POST",
+        format!("/{}", calc_rocket::EXPRTK),
+        calc_rocket::SIMPLE_EXPRESSION,
+        calc_rocket::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_complex,
+        "POST",
+        format!("/{}", calc_rocket::EXPRTK),
+        calc_rocket::COMPLEX_EXPRESSION,
+        calc_rocket::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_calc_inner!(
+        exprtk_invalid,
+        "POST",
+        format!("/{}", calc_rocket::EXPRTK),
+        calc_rocket::NAN,
+        calc_rocket::NAN
+    );
 }

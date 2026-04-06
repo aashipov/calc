@@ -1,5 +1,5 @@
-use rocket::response::content::RawText;
 use calc_rocket::{via_exprtk, via_meval};
+use rocket::response::content::RawText;
 
 pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expression /";
 
@@ -27,7 +27,8 @@ pub fn respond_welcome() -> RawText<String> {
 )]
 #[post("/<_..>", data = "<expr>")]
 pub fn respond_via_meval(expr: String) -> RawText<String> {
-    return text_response(via_meval(expr));
+    let result = via_meval(expr);
+    return text_response(result);
 }
 
 #[utoipa::path(
@@ -39,5 +40,6 @@ pub fn respond_via_meval(expr: String) -> RawText<String> {
 )]
 #[post("/exprtk", data = "<expr>")]
 pub fn respond_via_exprkt(expr: String) -> RawText<String> {
-    return text_response(via_exprtk(expr));
+    let result = via_exprtk(expr);
+    return text_response(result);
 }

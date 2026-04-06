@@ -3,19 +3,25 @@
 #![allow(non_snake_case)]
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
-use std::ffi::{CString, c_char};
+pub const EXPRTK: &'static str = "exprtk";
+pub const NAN: &'static str = "NaN";
+pub const SIMPLE_EXPRESSION: &'static str = "2+2";
+pub const SIMPLE_EXPRESSION_RESULT: &'static str = "4";
+pub const COMPLEX_EXPRESSION: &'static str =
+    "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
+pub const COMPLEX_EXPRESSION_RESULT: &'static str = "19.988432890485228";
 
 pub fn via_meval(expr: String) -> String {
     let eval = meval::eval_str(expr);
     match eval {
         Ok(result) => return result.to_string(),
-        Err(err) => return err.to_string(),
+        Err(_) => return NAN.to_string(),
     }
 }
 
 pub fn via_exprtk(expr: String) -> String {
-    let expr_c_string = CString::new(expr).expect("CString::new failed");
-    let expr_c_ptr: *const c_char = expr_c_string.as_ptr();
+    let expr_c_string = std::ffi::CString::new(expr).expect("CString::new failed");
+    let expr_c_ptr: *const std::ffi::c_char = expr_c_string.as_ptr();
     unsafe {
         let result = calculate(expr_c_ptr);
         return result.to_string();
@@ -24,33 +30,46 @@ pub fn via_exprtk(expr: String) -> String {
 
 #[cfg(test)]
 mod tests {
-    use crate::{via_exprtk, via_meval};
 
-    const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-    const EXPRESSION_RESULT_MEVAL: &'static str = "19.988432890485228";
-    const NOT_AN_EXPRESSION: &'static str = "NaN";
-
-    #[test]
-    fn test_via_meval_expr() {
-        let result = via_meval(EXPRESSION.to_owned());
-        assert_eq!(EXPRESSION_RESULT_MEVAL.to_owned(), result);
+    macro_rules! test_lib_inner {
+        ($name:ident, $f:expr, $expr:expr, $expected:expr) => {
+            #[test]
+            fn $name() {
+                let actual = ($f)($expr.to_string());
+                assert_eq!(actual, $expected);
+            }
+        };
     }
 
-    #[test]
-    fn test_via_meval_not_an_expr() {
-        let result = via_meval(NOT_AN_EXPRESSION.to_owned());
-        assert!(result.to_owned().contains(NOT_AN_EXPRESSION));
-    }
+    test_lib_inner!(
+        meval_simple,
+        crate::via_meval,
+        crate::SIMPLE_EXPRESSION,
+        crate::SIMPLE_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_via_exprtk_expr() {
-        let result = via_exprtk(EXPRESSION.to_owned());
-        assert_eq!(EXPRESSION_RESULT_MEVAL.to_owned(), result);
-    }
+    test_lib_inner!(
+        meval_complex,
+        crate::via_meval,
+        crate::COMPLEX_EXPRESSION,
+        crate::COMPLEX_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_via_exprtk_not_an_expr() {
-        let result = via_exprtk(NOT_AN_EXPRESSION.to_owned());
-        assert_eq!(NOT_AN_EXPRESSION.to_owned(), result);
-    }
+    test_lib_inner!(meval_invalid, crate::via_meval, crate::NAN, crate::NAN);
+
+    test_lib_inner!(
+        exprtk_simple,
+        crate::via_exprtk,
+        crate::SIMPLE_EXPRESSION,
+        crate::SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(
+        exprtk_complex,
+        crate::via_exprtk,
+        crate::COMPLEX_EXPRESSION,
+        crate::COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(exprtk_invalid, crate::via_exprtk, crate::NAN, crate::NAN);
 }
