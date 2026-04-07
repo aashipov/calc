@@ -4,10 +4,11 @@
 #include <pplx/threadpool.h>
 
 int main() {
-  unsigned int thread_count = std::thread::hardware_concurrency();
+  unsigned int thread_count =
+      std::max(2, (int)std::thread::hardware_concurrency());
   crossplat::threadpool::initialize_with_threads(thread_count);
   web::http::experimental::listener::http_listener listener =
-      calc::buildCalcApp(calc::BASE_URL);
+      calc::build_calc_app(calc::BASE_URL);
   try {
     listener.open().wait();
     std::string line;

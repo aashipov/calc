@@ -7,7 +7,7 @@
 namespace calc {
 
 inline web::http::experimental::listener::http_listener
-buildCalcApp(web::http::uri url) {
+build_calc_app(web::http::uri url) {
   web::http::experimental::listener::http_listener listener(url);
   listener.support(web::http::methods::GET, calc::get_handler);
   listener.support(web::http::methods::POST, calc::post_handler);
