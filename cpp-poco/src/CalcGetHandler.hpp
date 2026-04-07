@@ -11,7 +11,7 @@ namespace calc {
 class CalcGetHandler : public Poco::Net::HTTPRequestHandler {
 public:
   void handleRequest(Poco::Net::HTTPServerRequest &request,
-                     Poco::Net::HTTPServerResponse &response) {
+                     Poco::Net::HTTPServerResponse &response) override {
     response.setContentType(calc::TEXT_PLAIN);
     std::ostream &bodyStream = response.send();
     bodyStream << calc::WELCOME;

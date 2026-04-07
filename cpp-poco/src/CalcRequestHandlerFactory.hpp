@@ -12,26 +12,28 @@
 namespace calc {
 
 class CalcRequestHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory {
+
 public:
   Poco::Net::HTTPRequestHandler *
-  createRequestHandler(const Poco::Net::HTTPServerRequest &request) {
+  createRequestHandler(const Poco::Net::HTTPServerRequest &request) override {
     if (request.getMethod() == Poco::Net::HTTPServerRequest::HTTP_POST) {
-      return new CalcPostHandler();
+      return new CalcPostHandler;
     } else {
-      return new CalcGetHandler();
+      return new CalcGetHandler;
     }
   }
 };
 
-inline Poco::Net::HTTPServer buildHTTPServer(unsigned short httpPort) {
+inline Poco::Net::HTTPServer build_http_server(unsigned short httpPort) {
   unsigned int thread_count = std::thread::hardware_concurrency();
-  Poco::ThreadPool::defaultPool().addCapacity(thread_count);
+  Poco::ThreadPool *tp = new Poco::ThreadPool;
+  tp->addCapacity(thread_count);
   Poco::Net::HTTPServerParams *httpServerParams =
       new Poco::Net::HTTPServerParams;
   httpServerParams->setMaxQueued(MAX_QUEUED);
   httpServerParams->setMaxThreads(thread_count);
   Poco::Net::ServerSocket serverSocket(httpPort);
-  return Poco::Net::HTTPServer(new CalcRequestHandlerFactory(), serverSocket,
+  return Poco::Net::HTTPServer(new CalcRequestHandlerFactory, *tp, serverSocket,
                                httpServerParams);
 }
 

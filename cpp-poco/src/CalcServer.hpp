@@ -21,7 +21,7 @@ protected:
   void uninitialize() { ServerApplication::uninitialize(); }
 
   int main(const std::vector<std::string> &args) {
-    Poco::Net::HTTPServer httpServer = buildHTTPServer(SERVER_PORT);
+    Poco::Net::HTTPServer httpServer = build_http_server(HTTP_PORT);
     // start the HTTPServer
     httpServer.start();
     // wait for CTRL-C or kill

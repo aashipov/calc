@@ -36,11 +36,9 @@ protected:
     // tiny bit of time for HTTP server to start up
     std::this_thread::sleep_for(std::chrono::milliseconds(10L));
     httplib::Client cli("0.0.0.0", calc::HTTP_PORT);
-    httplib::Result result;
+    httplib::Result result = cli.Post(path, requestBody, calc::TEXT_PLAIN);
     if (requestBody.empty()) {
       result = cli.Get(path);
-    } else {
-      result = cli.Post(path, requestBody, calc::TEXT_PLAIN);
     }
     EXPECT_EQ(result->body, expected);
   }

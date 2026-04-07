@@ -11,8 +11,7 @@
 
 namespace calc {
 
-static inline std::string doubleToStringWithPrecision(double value,
-                                                      int precision) {
+static inline std::string to_string(double value, int precision) {
   std::ostringstream ss;
   ss << std::fixed << std::setprecision(precision) << value;
   return ss.str();
@@ -21,13 +20,11 @@ static inline std::string doubleToStringWithPrecision(double value,
 class CalcPostHandler : public Poco::Net::HTTPRequestHandler {
 public:
   void handleRequest(Poco::Net::HTTPServerRequest &request,
-                     Poco::Net::HTTPServerResponse &response) {
+                     Poco::Net::HTTPServerResponse &response) override {
     std::string expression;
     Poco::StreamCopier::copyToString(request.stream(), expression);
-    const char *expression_c_string = expression.c_str();
-    double result = calculate(expression_c_string);
-    std::string result_string =
-        doubleToStringWithPrecision(result, DOUBLE_PRECISION);
+    double result = calculate(expression.c_str());
+    std::string result_string = to_string(result, DOUBLE_PRECISION);
     response.setContentType(calc::TEXT_PLAIN);
     std::ostream &responseBodyStream = response.send();
     responseBodyStream << result_string;
