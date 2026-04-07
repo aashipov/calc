@@ -142,7 +142,7 @@ closure() {
     dart_flavor
     nodejs_flavors
     deno_flavors
-    ruby_flavor
+    #ruby_flavor
 
     ${_SCRIPT_DIR}/stats/do-stats.sh
 }

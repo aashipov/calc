@@ -1,28 +1,14 @@
 
 #include "src/AppComponent.hpp"
 #include "src/Runner.hpp"
+#include <cstdlib>
 
-void run() {
-
-  /* Register Components in scope of run() method */
-  calc::calc::AppComponent components({"localhost", 8080},
-                                      {"calc.virtualhost", 0});
-
-  /* run */
-  std::list<std::thread> acceptingThreads;
-  calc::calc::Runner runner;
-  runner.run(acceptingThreads);
-
-  for (auto &thread : acceptingThreads) {
-    thread.join();
-  }
-}
+void run() {}
 
 int main(int argc, const char *argv[]) {
 
-  oatpp::base::Environment::init();
-  run();
-  oatpp::base::Environment::destroy();
+  calc::calc::Runner runner;
+  runner.run();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

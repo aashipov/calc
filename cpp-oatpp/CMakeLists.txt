@@ -11,7 +11,6 @@ add_library(${project_name}-lib
         src/AppComponent.hpp
         src/SwaggerComponent.hpp
         src/CalcController.hpp
-        src/Runner.cpp
         src/Runner.hpp
 )
 target_include_directories(${project_name}-lib PUBLIC src)

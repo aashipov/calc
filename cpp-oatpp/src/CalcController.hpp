@@ -22,8 +22,7 @@ static const std::string TEXT_PLAIN = "text/plain";
 
 static inline constexpr unsigned short DOUBLE_PRECISION = 40;
 
-static inline std::string doubleToStringWithPrecision(double value,
-                                                      int precision) {
+static inline std::string to_string(double value, int precision) {
   std::ostringstream ss;
   ss << std::fixed << std::setprecision(precision) << value;
   return ss.str();
@@ -49,16 +48,36 @@ public:
   }
 
   ENDPOINT_INFO(evaluate) {
-    info->summary = "Evaluate expression";
+    info->summary = "evaluate";
     info->addConsumes<String>(TEXT_PLAIN);
     info->addResponse<String>(Status::CODE_200, TEXT_PLAIN);
   }
   ENDPOINT("POST", "/", evaluate, BODY_STRING(String, body)) {
     double result = calculate(body->c_str());
-
     return createResponse(Status::CODE_200,
-                          doubleToStringWithPrecision(
-                              result, DOUBLE_PRECISION));
+                          to_string(result, DOUBLE_PRECISION));
+  }
+
+  ENDPOINT_INFO(mxparser) {
+    info->summary = "mxparser";
+    info->addConsumes<String>(TEXT_PLAIN);
+    info->addResponse<String>(Status::CODE_200, TEXT_PLAIN);
+  }
+  ENDPOINT("POST", "/mxparser", mxparser, BODY_STRING(String, body)) {
+    double result = calculate(body->c_str());
+    return createResponse(Status::CODE_200,
+                          to_string(result, DOUBLE_PRECISION));
+  }
+
+  ENDPOINT_INFO(exprtk) {
+    info->summary = "exprtk";
+    info->addConsumes<String>(TEXT_PLAIN);
+    info->addResponse<String>(Status::CODE_200, TEXT_PLAIN);
+  }
+  ENDPOINT("POST", "/exprtk", exprtk, BODY_STRING(String, body)) {
+    double result = calculate(body->c_str());
+    return createResponse(Status::CODE_200,
+                          to_string(result, DOUBLE_PRECISION));
   }
 };
 
