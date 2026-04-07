@@ -19,20 +19,18 @@ static inline const std::string TEXT_PLAIN = "text/plain";
 
 static inline const unsigned short DOUBLE_PRECISION = 40;
 
-static inline std::string doubleToStringWithPrecision(double value,
-                                                      int precision) {
+static inline std::string to_string(double value, int precision) {
   std::ostringstream ss;
   ss << std::fixed << std::setprecision(precision) << value;
   return ss.str();
 }
 
 static inline void handler(const crow::request &req, crow::response &res) {
+  res.body = WELCOME;
   if (crow::HTTPMethod::POST == req.method) {
     std::string expression = req.body;
     double result = calculate(expression.c_str());
-    res.body = doubleToStringWithPrecision(result, DOUBLE_PRECISION);
-  } else {
-    res.body = WELCOME;
+    res.body = to_string(result, DOUBLE_PRECISION);
   }
   res.code = 200;
   res.set_header(CONTENT_TYPE, TEXT_PLAIN);
