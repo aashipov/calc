@@ -10,6 +10,11 @@ export const NAN = "NaN";
 export const EXPRTK: string = "exprtk";
 const NUM_CPUS = Math.max(2, availableParallelism());
 
+/**
+ * Calculate expression via mathjs.
+ * @param expr expression
+ * @returns result
+ */
 export const viaMathJs = (expr: string): string => {
   let result: unknown = evaluate(expr);
   if (result === undefined || result === null) {
@@ -23,7 +28,14 @@ export const viaMathJs = (expr: string): string => {
 };
 
 const cExprtkAdapter: koffi.IKoffiLib = koffi.load("libc-exprtk-adapter.so");
-const koffiFunctionExprtk: koffi.KoffiFunction = cExprtkAdapter.func("double calculate(str)");
+const koffiFunctionExprtk: koffi.KoffiFunction = cExprtkAdapter.func(
+  "double calculate(str)",
+);
+/**
+ * Calculate expression via exprtk.
+ * @param expr expression
+ * @returns result
+ */
 export const viaExprtk = (expr: string): string => {
   let result: unknown = koffiFunctionExprtk(expr);
   if (result === undefined || result === null) {
@@ -35,6 +47,11 @@ export const viaExprtk = (expr: string): string => {
   return String(result);
 };
 
+/**
+ * {@link Server} handler.
+ * @param request {@link IncomingMessage} request
+ * @param response {@link ServerResponse} response
+ */
 export const handler = (request: IncomingMessage, response: ServerResponse) => {
   if (request.method === "POST") {
     const chunks: string[] = [];
@@ -66,12 +83,22 @@ export const handler = (request: IncomingMessage, response: ServerResponse) => {
   }
 };
 
-export const createServerInstance = (
+/**
+ * Build {@link Server} instance.
+ * @param port HTTP port
+ * @returns {@link Server}
+ */
+export const buildServerInstance = (
   port = 8080,
 ): Server<typeof IncomingMessage, typeof ServerResponse> => {
   return createServer(handler).listen({ host: "0.0.0.0", port });
 };
 
+/**
+ * Enable graceful shutdown on a {@link Process}.
+ * @param mainProcess {@link Process}
+ * @param sig {@link Signals}
+ */
 const gracefulShutdown = (mainProcess: NodeJS.Process, sig: NodeJS.Signals) => {
   mainProcess.on(sig, () => {
     if (cluster.workers) {
@@ -83,6 +110,9 @@ const gracefulShutdown = (mainProcess: NodeJS.Process, sig: NodeJS.Signals) => {
   });
 };
 
+/**
+ * Cluster and worker launch statements.
+ */
 if (cluster.isPrimary) {
   console.log(`Primary process ${process.pid}`);
   for (let i = 0; i < NUM_CPUS; i++) {
@@ -92,5 +122,5 @@ if (cluster.isPrimary) {
   process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
 } else {
   console.log(`Worker process ${process.pid}`);
-  createServerInstance();
+  buildServerInstance();
 }

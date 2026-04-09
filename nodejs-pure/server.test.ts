@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createServerInstance, NAN, EXPRTK, viaExprtk, viaMathJs } from "./server";
+import { buildServerInstance, NAN, EXPRTK, viaExprtk, viaMathJs } from "./server";
 
 const SIMPLE_EXPRESSION: string = "2 + 2";
 const SIMPLE_EXPRESSION_RESULT: string = "4";
@@ -40,11 +40,11 @@ describe("Library", () => {
 });
 
 describe("Server", () => {
-  let server: ReturnType<typeof createServerInstance>;
+  let server: ReturnType<typeof buildServerInstance>;
 
   beforeAll(async () => {
     return new Promise<void>((resolve) => {
-      server = createServerInstance();
+      server = buildServerInstance();
       server.listen(0, () => resolve());
     });
   });
