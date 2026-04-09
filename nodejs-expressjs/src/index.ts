@@ -5,9 +5,9 @@ import cluster from "cluster";
 import { availableParallelism } from "os";
 
 const NUM_CPUS = Math.max(2, availableParallelism());
-const PORT = 8080;
+export const PORT = 8080;
 
-const buildApp = (): express.Express => {
+export const buildApp = (): express.Express => {
   const app = express();
   app.use(bodyParser.text());
   app.get("*any", getMiddleware);
