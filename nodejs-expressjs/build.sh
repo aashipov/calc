@@ -1,14 +1,12 @@
 #!/bin/sh
 
-# 'Reusable integration test' for 'not-yet-industrial-grade' languages
+# 'Reusable integration test'
 
 build() {
     cd ${_SCRIPT_DIR}
     npm install
-    npm run format
-    npm run lint
     npm run build
-    npm prune --production --omit=dev
+    #npm prune --production --omit=dev
 }
 
 integration_test() {
