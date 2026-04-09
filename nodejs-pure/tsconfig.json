@@ -7,4 +7,5 @@
     "target": "ES2023",
   },
   "include": ["./server.ts", "./server.test.ts"],
+  "exclude": ["node_modules", "dist"]
 }
