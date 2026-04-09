@@ -1,5 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { buildServerInstance, NAN, EXPRTK, viaExprtk, viaMathJs } from "./server";
+import {
+  buildServerInstance,
+  NAN,
+  EXPRTK,
+  viaExprtk,
+  viaMathJs,
+} from "./server";
+import { AddressInfo } from "net";
 
 const SIMPLE_EXPRESSION: string = "2 + 2";
 const SIMPLE_EXPRESSION_RESULT: string = "4";
@@ -57,7 +64,7 @@ describe("Server", () => {
 
   describe("GET /", () => {
     it("should return welcome message", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/`);
       const body = await res.text();
       expect(body).toContain("Welcome to calc service");
@@ -67,7 +74,7 @@ describe("Server", () => {
 
   describe("POST / (mathjs)", () => {
     it("should evaluate simple expression via mathjs", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/`, {
         method: "POST",
         body: SIMPLE_EXPRESSION,
@@ -78,7 +85,7 @@ describe("Server", () => {
 
   describe("POST / (mathjs)", () => {
     it("should evaluate complex expression via mathjs", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/`, {
         method: "POST",
         body: COMPLEX_EXPRESSION,
@@ -89,7 +96,7 @@ describe("Server", () => {
 
   describe("POST / (mathjs)", () => {
     it("should evaluate invalid expression via mathjs", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/`, {
         method: "POST",
         body: NAN,
@@ -100,7 +107,7 @@ describe("Server", () => {
 
   describe("POST / (exprtk)", () => {
     it("should evaluate simple expression via exprtk", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/${EXPRTK}`, {
         method: "POST",
         body: SIMPLE_EXPRESSION,
@@ -111,7 +118,7 @@ describe("Server", () => {
 
   describe("POST / (exprtk)", () => {
     it("should evaluate complex expression via exprtk", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/${EXPRTK}`, {
         method: "POST",
         body: COMPLEX_EXPRESSION,
@@ -122,7 +129,7 @@ describe("Server", () => {
 
   describe("POST / (exprtk)", () => {
     it("should evaluate invalid expression via exprtk", async () => {
-      const port = (server.address() as any).port;
+      const port = (server.address() as AddressInfo).port;
       const res = await fetch(`http://localhost:${port}/${EXPRTK}`, {
         method: "POST",
         body: NAN,
