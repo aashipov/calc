@@ -1,5 +1,5 @@
 import { createServer, IncomingMessage, ServerResponse, Server } from "http";
-import { evaluate } from "mathjs";
+import { evaluate, ResultSet } from "mathjs";
 import cluster from "cluster";
 import { availableParallelism } from "os";
 import koffi from "koffi";
@@ -10,9 +10,30 @@ export const NAN = "NaN";
 export const EXPRTK: string = "exprtk";
 const NUM_CPUS = Math.max(2, availableParallelism());
 
-const viaMathJs = (expr: string): string => evaluate(expr);
-const cExprtkAdapter = koffi.load("libc-exprtk-adapter.so");
-const viaExprtk = cExprtkAdapter.func("double calculate(str)");
+export const viaMathJs = (expr: string): string => {
+  let result: unknown = evaluate(expr);
+  if (result === undefined || result === null) {
+    return NAN;
+  }
+  if ((result as ResultSet).entries !== undefined) {
+    const entries = (result as ResultSet).entries;
+    result = entries.length === 0 ? NAN : entries[0];
+  }
+  return String(result);
+};
+
+const cExprtkAdapter: koffi.IKoffiLib = koffi.load("libc-exprtk-adapter.so");
+const koffiFunctionExprtk: koffi.KoffiFunction = cExprtkAdapter.func("double calculate(str)");
+export const viaExprtk = (expr: string): string => {
+  let result: unknown = koffiFunctionExprtk(expr);
+  if (result === undefined || result === null) {
+    return NAN;
+  }
+  if (Array.isArray(result)) {
+    result = result.length === 0 ? NAN : result[0];
+  }
+  return String(result);
+};
 
 export const handler = (request: IncomingMessage, response: ServerResponse) => {
   if (request.method === "POST") {

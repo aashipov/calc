@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createServerInstance, NAN, EXPRTK } from "./server";
+import { createServerInstance, NAN, EXPRTK, viaExprtk, viaMathJs } from "./server";
 
 const SIMPLE_EXPRESSION: string = "2 + 2";
 const SIMPLE_EXPRESSION_RESULT: string = "4";
@@ -7,7 +7,39 @@ const COMPLEX_EXPRESSION: string =
   "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
 const COMPLEX_EXPRESSION_RESULT: string = "19.988432890485228";
 
-describe("Calculator Server", () => {
+describe("Library", () => {
+  it("should evaluate simple expression via mathjs", () => {
+    let actual: string = viaMathJs(SIMPLE_EXPRESSION);
+    expect(actual).toContain(SIMPLE_EXPRESSION_RESULT);
+  });
+
+  it("should evaluate complex expression via mathjs", () => {
+    let actual: string = viaMathJs(COMPLEX_EXPRESSION);
+    expect(actual).toContain(COMPLEX_EXPRESSION_RESULT);
+  });
+
+  it("should evaluate invalid expression via mathjs", () => {
+    let actual: string = viaMathJs(NAN);
+    expect(actual).toContain(NAN);
+  });
+
+  it("should evaluate simple expression via exprtk", () => {
+    let actual: string = viaExprtk(SIMPLE_EXPRESSION);
+    expect(actual).toContain(SIMPLE_EXPRESSION_RESULT);
+  });
+
+  it("should evaluate complex expression via exprtk", () => {
+    let actual: string = viaExprtk(COMPLEX_EXPRESSION);
+    expect(actual).toContain(COMPLEX_EXPRESSION_RESULT);
+  });
+
+  it("should evaluate invalid expression via exprtk", () => {
+    let actual: string = viaExprtk(NAN);
+    expect(actual).toContain(NAN);
+  });
+});
+
+describe("Server", () => {
   let server: ReturnType<typeof createServerInstance>;
 
   beforeAll(async () => {
