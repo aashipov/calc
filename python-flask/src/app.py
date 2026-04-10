@@ -1,4 +1,3 @@
-import cexprtk
 from flask import Flask, request
 from src.c_exprtk_adapter import calculate_via_exprtk
 
