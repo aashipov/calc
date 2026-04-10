@@ -7,6 +7,6 @@ from src.app import create_calc
 
 
 @pytest.fixture
-def app():
+def app() -> Generator[Sanic]:
     app: Sanic = create_calc("TestCalc", True)
     yield app
