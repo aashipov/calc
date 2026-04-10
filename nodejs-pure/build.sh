@@ -4,12 +4,10 @@
 
 build() {
     cd ${_SCRIPT_DIR}
-    rm -rf ./dist/
     rm ${EXECUTABLE_NAME}
     npm install
     npm run build
     npm run test
-    cp ./dist/${EXECUTABLE_NAME} ./
     #npm prune --production --omit=dev
 }
 

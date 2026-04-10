@@ -4,6 +4,7 @@
 
 build() {
     cd ${_SCRIPT_DIR}
+    rm ${EXECUTABLE_NAME}
     npm install
     npm run build
     npm run test
