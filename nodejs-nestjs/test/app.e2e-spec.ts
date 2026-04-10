@@ -4,15 +4,11 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
-import { WELCOME } from '../src/app.service';
+import { EXPRTK, NAN, WELCOME } from '../src/app.service';
 import bodyParser from 'body-parser';
+import { COMPLEX_EXPRESSION, COMPLEX_EXPRESSION_RESULT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT } from "./constants";
 
-const EXPRESSION: string =
-  '(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2';
-const MATHJS_EXPECTED: string = '19.988432890485228';
-const NOT_AN_EXPRESSION: string = 'NaN';
-
-describe('AppController (e2e)', () => {
+describe("Server", () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
@@ -29,43 +25,76 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (welcome)', () => {
-    return request(app.getHttpServer()).get('/').expect(200).expect(WELCOME);
+
+  describe("GET /", () => {
+    it("should return welcome message", async () => {
+      return request(app.getHttpServer()).get('/').expect(200).expect(WELCOME);
+    });
   });
 
-  it('/ (expression via mathjs)', () => {
-    return request(app.getHttpServer())
-      .post('/')
-      .set('Content-Type', 'text/plain')
-      .send(EXPRESSION)
-      .expect(200)
-      .expect(MATHJS_EXPECTED);
+  describe("POST / (mathjs)", () => {
+    it("should evaluate simple expression via mathjs", async () => {
+      return request(app.getHttpServer())
+        .post('/')
+        .set('Content-Type', 'text/plain')
+        .send(SIMPLE_EXPRESSION)
+        .expect(200)
+        .expect(SIMPLE_EXPRESSION_RESULT);
+    });
   });
 
-  it('/ (NaN via mathjs)', () => {
-    return request(app.getHttpServer())
-      .post('/')
-      .set('Content-Type', 'text/plain')
-      .send(NOT_AN_EXPRESSION)
-      .expect(200)
-      .expect(NOT_AN_EXPRESSION);
+  describe("POST / (mathjs)", () => {
+    it("should evaluate complex expression via mathjs", async () => {
+      return request(app.getHttpServer())
+        .post('/')
+        .set('Content-Type', 'text/plain')
+        .send(COMPLEX_EXPRESSION)
+        .expect(200)
+        .expect(COMPLEX_EXPRESSION_RESULT);
+    });
   });
 
-  it('/ (expression via exprtk)', () => {
-    return request(app.getHttpServer())
-      .post('/exprtk')
-      .set('Content-Type', 'text/plain')
-      .send(EXPRESSION)
-      .expect(200)
-      .expect(MATHJS_EXPECTED);
+  describe("POST / (mathjs)", () => {
+    it("should evaluate invalid expression via mathjs", async () => {
+      return request(app.getHttpServer())
+        .post('/')
+        .set('Content-Type', 'text/plain')
+        .send(NAN)
+        .expect(200)
+        .expect(NAN);
+    });
   });
 
-  it('/ (NaN via exprtk)', () => {
-    return request(app.getHttpServer())
-      .post('/exprtk')
-      .set('Content-Type', 'text/plain')
-      .send(NOT_AN_EXPRESSION)
-      .expect(200)
-      .expect(NOT_AN_EXPRESSION);
+  describe("POST / (exprtk)", () => {
+    it("should evaluate simple expression via exprtk", async () => {
+      return request(app.getHttpServer())
+        .post('/' + EXPRTK)
+        .set('Content-Type', 'text/plain')
+        .send(SIMPLE_EXPRESSION)
+        .expect(200)
+        .expect(SIMPLE_EXPRESSION_RESULT);
+    });
+  });
+
+  describe("POST / (exprtk)", () => {
+    it("should evaluate complex expression via exprtk", async () => {
+      return request(app.getHttpServer())
+        .post('/' + EXPRTK)
+        .set('Content-Type', 'text/plain')
+        .send(COMPLEX_EXPRESSION)
+        .expect(200)
+        .expect(COMPLEX_EXPRESSION_RESULT);
+    });
+  });
+
+  describe("POST / (exprtk)", () => {
+    it("should evaluate invalid expression via exprtk", async () => {
+      return request(app.getHttpServer())
+        .post('/' + EXPRTK)
+        .set('Content-Type', 'text/plain')
+        .send(NAN)
+        .expect(200)
+        .expect(NAN);
+    });
   });
 });

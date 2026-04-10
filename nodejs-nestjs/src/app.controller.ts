@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService, EXPRTK } from './app.service';
 
 @Controller()
 export class AppController {
@@ -17,7 +17,7 @@ export class AppController {
     return this.appService.welcome();
   }
   @HttpCode(HttpStatus.OK)
-  @Post('/exprtk')
+  @Post('/' + EXPRTK)
   exprtk(@Body() expr: string): string {
     return this.appService.doViaExprtk(expr);
   }
