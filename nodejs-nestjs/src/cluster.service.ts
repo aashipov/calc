@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import cluster from 'node:cluster';
-import { availableParallelism } from 'node:os';
+import cluster from 'cluster';
+import { availableParallelism } from 'os';
 
 const numCPUs = Math.max(2, availableParallelism());
 
 const gracefulShutdown = (
-  mainProcess: typeof process,
-  sig: 'SIGINT' | 'SIGTERM',
+  mainProcess: NodeJS.Process,
+  sig: NodeJS.Signals,
 ) => {
   mainProcess.on(sig, () => {
-    Object.values(cluster.workers).forEach((w) => {
-      w.process.kill(sig);
-    });
+    if (cluster.workers) {
+      Object.values(cluster.workers).forEach((w) => {
+        if (w) {
+          w.process.kill(sig);
+        }
+      });
+    }
     mainProcess.exit(0);
   });
 };

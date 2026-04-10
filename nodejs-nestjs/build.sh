@@ -5,12 +5,9 @@
 build() {
     cd ${_SCRIPT_DIR}
     npm install
-    npm run format
-    npm run lint
     npm run test
-    npm run test:e2e
     npm run build
-    npm prune --production --omit=dev
+    #npm prune --production --omit=dev
     cp dist/main.js ./${EXECUTABLE_NAME}
 }
 

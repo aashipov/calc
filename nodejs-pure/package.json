@@ -20,6 +20,6 @@
     "dev": "tsx server.ts",
     "build": "esbuild ./server.ts --bundle --platform=node --external:koffi --outfile=server.js",
     "test": "vitest run",
-    "start": "node ./dist/server.js"
+    "start": "node ./server.js"
   }
 }
