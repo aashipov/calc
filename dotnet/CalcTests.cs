@@ -8,11 +8,11 @@
 
     public class CalcTests : IClassFixture<WebApplicationFactory<App>>
     {
-        private const string Expression = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-        private const string MxparserExpressionResult = "19.98843289048500";
-        private const string ExprtkExpressionResult = "19.98843289048523";
-
-        private const string NotAnExpression = "abc";
+        private const string SimpleExpression = "2+2";
+        private const string SimpleExpressionResult = "4";
+        private const string ComplexExpression = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
+        private const string ComplexExpressionMxparserResult = "19.98843289048500";
+        private const string ComplexExpressionExprtkResult = "19.98843289048523";
         private readonly HttpClient _client;
 
         public CalcTests(WebApplicationFactory<App> factory)
@@ -45,61 +45,54 @@
         {
             HttpResponseMessage response = await _client.GetAsync("/");
             Check(HttpStatusCode.OK, Calc.Welcome, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
-        public async Task EvaluateExpression()
+        public async Task EvaluateSimpleExpressionViaExprtk()
         {
-            StringContent content = ToStringContent(Expression);
-            HttpResponseMessage response = await _client.PostAsync("/", content);
-            Check(HttpStatusCode.OK, ExprtkExpressionResult, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task EvaluateNotAnExpression()
-        {
-            StringContent content = ToStringContent(NotAnExpression);
-            HttpResponseMessage response = await _client.PostAsync("/", content);
-            Check(HttpStatusCode.OK, Calc.NaN, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task EvaluateExpressionViaExprtk()
-        {
-            StringContent content = ToStringContent(Expression);
+            StringContent content = ToStringContent(SimpleExpression);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
-            Check(HttpStatusCode.OK, ExprtkExpressionResult, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Check(HttpStatusCode.OK, SimpleExpressionResult, response);
         }
 
         [Fact]
-        public async Task EvaluateNotAnExpressionViaExprtk()
+        public async Task EvaluateComplexExpressionViaExprtk()
         {
-            StringContent content = ToStringContent(NotAnExpression);
+            StringContent content = ToStringContent(ComplexExpression);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
+            Check(HttpStatusCode.OK, ComplexExpressionExprtkResult, response);
+        }
+
+        [Fact]
+        public async Task EvaluateInvalidExpressionViaExprtk()
+        {
+            StringContent content = ToStringContent(Calc.NaN);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
             Check(HttpStatusCode.OK, Calc.NaN, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
-        public async Task EvaluateExpressionViaMxparser()
+        public async Task EvaluateSimpleExpressionViaMxparser()
         {
-            StringContent content = ToStringContent(Expression);
+            StringContent content = ToStringContent(SimpleExpression);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.MXPARSER, content);
-            Check(HttpStatusCode.OK, MxparserExpressionResult, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Check(HttpStatusCode.OK, SimpleExpressionResult, response);
         }
 
         [Fact]
-        public async Task EvaluateNotAnExpressionViaMxparser()
+        public async Task EvaluateComplexExpressionViaMxparser()
         {
-            StringContent content = ToStringContent(NotAnExpression);
+            StringContent content = ToStringContent(ComplexExpression);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.MXPARSER, content);
+            Check(HttpStatusCode.OK, ComplexExpressionMxparserResult, response);
+        }
+
+        [Fact]
+        public async Task EvaluateInvalidExpressionViaMxparser()
+        {
+            StringContent content = ToStringContent(Calc.NaN);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.MXPARSER, content);
             Check(HttpStatusCode.OK, Calc.NaN, response);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }

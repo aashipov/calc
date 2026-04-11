@@ -20,7 +20,7 @@
 ## Development
 
 ```shell
-dotnet clean && dotnet build && dotnet test && ./bin/Debug/net10.0/calc
+dotnet clean && dotnet build && Logging__LogLevel__Default=Warning dotnet test && Logging__LogLevel__Default=Warning ./bin/Debug/net10.0/calc
 ```
 
 ## Release
