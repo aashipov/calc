@@ -5,7 +5,7 @@
     "adapter": "Debugpy",
     "request": "launch",
     "cwd": "$ZED_WORKTREE_ROOT",
-    "program": "$ZED_WORKTREE_ROOT/calc/calc.py",
+    "program": "$ZED_WORKTREE_ROOT/src/app.py",
     "python": "$ZED_WORKTREE_ROOT/.venv/bin/python3",
   },
   {
