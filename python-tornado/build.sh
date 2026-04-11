@@ -20,6 +20,24 @@ test() {
     pytest
 }
 
+integration_test() {
+    cd ${_SCRIPT_DIR}
+
+    ./${EXECUTABLE_NAME} &
+    sleep 5s
+
+    ${_SCRIPT_DIR}/../test/calc-test.sh
+    local TEST_STATUS=${?}
+
+    pkill -f ${EXECUTABLE_NAME}
+
+    if [ ${TEST_STATUS} -ne 0 ]
+    then
+        printf "Test failed\n"
+        exit ${TEST_STATUS}
+    fi
+}
+
 distro() {
     python3 -m build --wheel
     pip3 install ./dist/$(ls dist | grep whl)
@@ -33,10 +51,12 @@ closure() {
     set -e
 
     local DOT_VENV=.venv
+    local EXECUTABLE_NAME="run.sh"
 
     enter_venv
     build
     test
+    integration_test
     distro
 }
 
