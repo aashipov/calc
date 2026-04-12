@@ -59,7 +59,7 @@ cpp_flavors() {
 }
 
 python_flavor() {
-    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic"
+    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic python-tornado"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         ${CALC_DIR}/${IMPLEMENTATION}/run.sh &
@@ -76,7 +76,7 @@ dart_flavor() {
         cd ${CALC_DIR}/${IMPLEMENTATION}
         dart run &
         sleep 1s
-        
+
         cd ${_SCRIPT_DIR}
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f dart
@@ -90,7 +90,7 @@ nodejs_flavors() {
         cd ${CALC_DIR}/${IMPLEMENTATION}
         node server.js &
         sleep 1s
-        
+
         cd ${_SCRIPT_DIR}
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f "server.js"
@@ -104,7 +104,7 @@ deno_flavors() {
         cd ${CALC_DIR}/${IMPLEMENTATION}
         ./calc &
         sleep 1s
-        
+
         cd ${_SCRIPT_DIR}
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f "calc"
@@ -115,6 +115,7 @@ ruby_flavor() {
     local IMPLEMENTATIONS="ruby-falcon"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
+        cd ${CALC_DIR}/${IMPLEMENTATION}
         falcon serve --bind http://0.0.0.0:8080 &
         sleep 1s
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
@@ -122,11 +123,24 @@ ruby_flavor() {
     done
 }
 
+bun_flavor() {
+    local IMPLEMENTATIONS="bun-pure"
+    local EXECUTABLE_NAME="calc-cluster.ts"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        cd ${CALC_DIR}/${IMPLEMENTATION}
+        bun ${EXECUTABLE_NAME} &
+        sleep 1s
+        DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
+        pkill -f ${EXECUTABLE_NAME}
+    done
+}
+
 closure() {
     # https://stackoverflow.com/a/1482133
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
-    
+
     set -x
 
     local CALC_DIR=${_SCRIPT_DIR}/../calc/
@@ -142,7 +156,8 @@ closure() {
     dart_flavor
     nodejs_flavors
     deno_flavors
-    #ruby_flavor
+    ruby_flavor
+    bun_flavor
 
     ${_SCRIPT_DIR}/stats/do-stats.sh
 }
