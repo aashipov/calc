@@ -2,10 +2,10 @@ import express from "express";
 import { postMiddleware, getMiddleware } from "./middleware/middleware.js";
 import bodyParser from "body-parser";
 import cluster from "cluster";
-import { availableParallelism } from "os";
+import { availableParallelism, hostname } from "os";
 
 const NUM_CPUS = Math.max(2, availableParallelism());
-export const PORT = 8080;
+export const HTTP_PORT: number = 8080;
 
 export const buildApp = (): express.Express => {
   const app = express();
@@ -43,5 +43,5 @@ if (cluster.isPrimary) {
   process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
 } else {
   console.log(`Worker process ${process.pid}`);
-  buildApp().listen(PORT, "0.0.0.0", () => {});
+  buildApp().listen(HTTP_PORT, "0.0.0.0", () => {});
 }
