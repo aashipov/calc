@@ -24,41 +24,54 @@ pub extern "C" fn via_exprtk(expr: *const std::os::raw::c_char) -> std::os::raw:
 mod tests {
     use std::ffi::CString;
 
-    use crate::{via_exprtk, via_meval};
+    const NAN: &'static str = "NaN";
+    const SIMPLE_EXPRESSION: &'static str = "2+2";
+    const SIMPLE_EXPRESSION_RESULT: &'static str = "4";
+    const COMPLEX_EXPRESSION: &'static str =
+        "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
+    const COMPLEX_EXPRESSION_RESULT: &'static str = "19.988432890485228";
 
-    const EXPRESSION: &'static str = "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
-    const EXPRESSION_RESULT_MEVAL: f64 = 19.988432890485228;
-    const NOT_AN_EXPRESSION: &'static str = "NaN";
-
-    #[test]
-    fn test_via_meval_expr() {
-        let expr = CString::new(EXPRESSION.to_string()).expect("CString::new failed");
-        let ptr = expr.as_ptr();
-        let result = via_meval(ptr);
-        assert_eq!(EXPRESSION_RESULT_MEVAL.to_owned(), result);
+    macro_rules! test_lib_inner {
+        ($name:ident, $f:expr, $expr:expr, $expected:expr) => {
+            #[test]
+            fn $name() {
+                let expr_cstring = CString::new($expr.to_string()).expect("CString::new failed");
+                let ptr = expr_cstring.as_ptr();
+                let actual = ($f)(ptr);
+                assert_eq!(actual.to_string(), $expected);
+            }
+        };
     }
 
-    #[test]
-    fn test_via_meval_not_an_expr() {
-        let expr = CString::new(NOT_AN_EXPRESSION.to_string()).expect("CString::new failed");
-        let ptr = expr.as_ptr();
-        let result = via_meval(ptr);
-        assert!(result.is_nan());
-    }
+    test_lib_inner!(
+        via_meval_simple,
+        crate::via_meval,
+        SIMPLE_EXPRESSION,
+        SIMPLE_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_via_exprtk_expr() {
-        let expr = CString::new(EXPRESSION.to_string()).expect("CString::new failed");
-        let ptr = expr.as_ptr();
-        let result = via_exprtk(ptr);
-        assert_eq!(EXPRESSION_RESULT_MEVAL, result);
-    }
+    test_lib_inner!(
+        via_meval_complex,
+        crate::via_meval,
+        COMPLEX_EXPRESSION,
+        COMPLEX_EXPRESSION_RESULT
+    );
 
-    #[test]
-    fn test_via_exprtk_not_an_expr() {
-        let expr = CString::new(NOT_AN_EXPRESSION.to_string()).expect("CString::new failed");
-        let ptr = expr.as_ptr();
-        let result = via_exprtk(ptr);
-        assert!(result.is_nan());
-    }
+    test_lib_inner!(via_meval_invalid, crate::via_meval, NAN, NAN);
+
+    test_lib_inner!(
+        via_exprtk_simple,
+        crate::via_exprtk,
+        SIMPLE_EXPRESSION,
+        SIMPLE_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(
+        via_exprtk_complex,
+        crate::via_exprtk,
+        COMPLEX_EXPRESSION,
+        COMPLEX_EXPRESSION_RESULT
+    );
+
+    test_lib_inner!(via_exprtk_invalid, crate::via_exprtk, NAN, NAN);
 }

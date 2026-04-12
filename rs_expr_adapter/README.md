@@ -1,7 +1,13 @@
-# Rust expression adapter #
+# Rust expression adapter
 
-c-exprtk-adapter and pure rust meval (reduced compilation time, no visible overhead)
+`c-exprtk-adapter` and pure rust `meval` joint adapter (reduced compilation time, no visible overhead)
 
 ## Requirements
 
 Build `../c-exprtk-adapter` first
+
+## Build & deploy
+
+```shell
+./release.sh
+```
