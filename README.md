@@ -86,6 +86,8 @@ Build local images:
 
 Download and extract the latest Apache JMeter distro, copy `./test` catalog to JMeter dir, run harness `./test/composed-runner.sh`
 
+### Showcase
+
 [Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
 
 ## License
