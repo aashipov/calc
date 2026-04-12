@@ -118,6 +118,8 @@ ruby_flavor() {
         cd ${CALC_DIR}/${IMPLEMENTATION}
         falcon serve --bind http://0.0.0.0:8080 &
         sleep 1s
+        
+        cd ${_SCRIPT_DIR}
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f falcon
     done
@@ -131,6 +133,8 @@ bun_flavor() {
         cd ${CALC_DIR}/${IMPLEMENTATION}
         bun ${EXECUTABLE_NAME} &
         sleep 1s
+        
+        cd ${_SCRIPT_DIR}
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f ${EXECUTABLE_NAME}
     done
