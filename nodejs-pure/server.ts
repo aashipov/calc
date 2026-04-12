@@ -9,6 +9,7 @@ export const WELCOME: string =
 export const NAN = "NaN";
 export const EXPRTK: string = "exprtk";
 const NUM_CPUS = Math.max(2, availableParallelism());
+const HTTP_PORT: Number = 8080;
 
 /**
  * Calculate expression via mathjs.
@@ -88,10 +89,11 @@ export const handler = (request: IncomingMessage, response: ServerResponse) => {
  * @param port HTTP port
  * @returns {@link Server}
  */
-export const buildServerInstance = (
-  port = 8080,
-): Server<typeof IncomingMessage, typeof ServerResponse> => {
-  return createServer(handler).listen({ host: "0.0.0.0", port });
+export const buildServerInstance = (): Server<
+  typeof IncomingMessage,
+  typeof ServerResponse
+> => {
+  return createServer(handler).listen({ host: "0.0.0.0", port: HTTP_PORT, reusePort: true });
 };
 
 /**
