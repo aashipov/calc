@@ -3,7 +3,7 @@
 # Builds everything locally.
 
 adapters() {
-    local IMPLEMENTATIONS="c-exprtk-adapter java-exprtk-adapter"
+    local IMPLEMENTATIONS="c-exprtk-adapter java-exprtk-adapter rs_expr_adapter"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -66,7 +66,7 @@ dotnet_flavor(){
 }
 
 python_flavor(){
-    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic"
+    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic python-tornado"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -77,6 +77,16 @@ python_flavor(){
 
 nodejs_flavors() {
     local IMPLEMENTATIONS="nodejs-expressjs nodejs-nestjs nodejs-pure"
+    for IMPLEMENTATION in ${IMPLEMENTATIONS}
+    do
+        printf "\n${IMPLEMENTATION}\n"
+        cd ${SOURCE_TREE_ROOT}/${IMPLEMENTATION}
+        ./build.sh
+    done
+}
+
+alternative_js_flavors() {
+    local IMPLEMENTATIONS="bun-pure deno-oak deno-pure"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
@@ -103,6 +113,7 @@ closure() {
     dotnet_flavor
     python_flavor
     nodejs_flavors
+    alternative_js_flavors
 }
 
 closure
