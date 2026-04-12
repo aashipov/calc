@@ -67,4 +67,5 @@ const handler = async (req: Request): Promise<Response> => {
 Bun.serve({
   port: 8080,
   fetch: handler,
+  reusePort: true,
 });
