@@ -72,6 +72,9 @@ python_flavor(){
         printf "\n${IMPLEMENTATION}\n"
         cd ${SOURCE_TREE_ROOT}/${IMPLEMENTATION}
         ./build.sh
+        set +e
+        pkill -f gunicorn
+        set -e
     done
 }
 

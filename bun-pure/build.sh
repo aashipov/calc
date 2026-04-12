@@ -36,7 +36,7 @@ cluster_integration_test() {
     ${_SCRIPT_DIR}/../test/calc-test.sh
     local TEST_STATUS=${?}
 
-    pkill -f ${CLUSTER_NAME}
+    pkill -f bun
 
     if [ ${TEST_STATUS} -ne 0 ]
     then
