@@ -5,6 +5,7 @@ const NAN: string = "NaN";
 const EXPRTK: string = "exprtk";
 const MXPARSER: string = "mxparser";
 const RS_EXPR_ADAPTER_NAME: string = `librs_expr_adapter.${suffix}`;
+const TEXT_ENCODER: TextEncoder = new TextEncoder();
 
 const RS_EXPR_ADAPTER = dlopen(RS_EXPR_ADAPTER_NAME, {
   via_exprtk: {
@@ -22,15 +23,13 @@ const viaMathJs = (expr: string): number => {
 };
 
 const viaExprtk = (expr: string): number => {
-  const enc = new TextEncoder();
-  const c_string_buf = enc.encode(expr + "\0");
+  const c_string_buf = TEXT_ENCODER.encode(expr + "\0");
   const result: number = RS_EXPR_ADAPTER.symbols.via_exprtk(c_string_buf);
   return result;
 };
 
 const viaMeval = (expr: string): number => {
-  const enc = new TextEncoder();
-  const c_string_buf = enc.encode(expr + "\0");
+  const c_string_buf = TEXT_ENCODER.encode(expr + "\0");
   const result: number = RS_EXPR_ADAPTER.symbols.via_meval(c_string_buf);
   return result;
 };
