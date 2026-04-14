@@ -1,0 +1,4 @@
+pyramid==2.1
+gunicorn==25.0.2
+pytest==9.0.2
+webtest==3.0.1
