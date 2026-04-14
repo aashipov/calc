@@ -14,7 +14,7 @@ build() {
 integration_test() {
     cd ${_SCRIPT_DIR}
 
-    node ${EXECUTABLE_NAME} &
+    HTTP_PORT=8080 node ${EXECUTABLE_NAME} &
     sleep 5s
 
     ${_SCRIPT_DIR}/../test/calc-test.sh

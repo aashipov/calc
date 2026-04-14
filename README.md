@@ -90,6 +90,8 @@ Download and extract the latest Apache JMeter distro, copy `./test` catalog to J
 
 [Result on a consumer-grade PC](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test.zip)
 
+'Slow by design' ecosystems (like python or ECMAScript) baremetal throughput in cluster form (bun/Node.js built-in or gunicorn) is a bit faster than haproxy with multiple copies on different ports [results](https://github.com/aashipov/openjdk-build/releases/download/1.0.0/i5-calc-load-test-baremetal-haproxied.zip)
+
 ## License
 
 Perl The "Artistic License"

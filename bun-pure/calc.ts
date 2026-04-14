@@ -18,6 +18,9 @@ const RS_EXPR_ADAPTER = dlopen(RS_EXPR_ADAPTER_NAME, {
   },
 });
 
+const HTTP_PORT: number =
+  process.env.HTTP_PORT === undefined ? 8080 : parseInt(process.env.HTTP_PORT);
+
 const viaMathJs = (expr: string): number => {
   return evaluate(expr).entries[0];
 };
@@ -64,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 Bun.serve({
-  port: 8080,
+  port: HTTP_PORT,
   fetch: handler,
   reusePort: true,
 });

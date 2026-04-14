@@ -1,3 +1,4 @@
+import os
 from wsgiref.simple_server import WSGIServer, make_server
 
 from pyramid.config import Configurator
@@ -8,10 +9,9 @@ from pyramid.router import Router
 from src.c_exprtk_adapter import calculate_via_exprtk
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-
 NAN = "nan"
-
 TEXT_PLAIN: str = "text/plain"
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
 
 
 def catchall(request: Request) -> Response:
@@ -34,5 +34,5 @@ app: Router = create_calc()
 
 
 if __name__ == "__main__":
-    srv: WSGIServer = make_server("0.0.0.0", 8080, app)
+    srv: WSGIServer = make_server("0.0.0.0", HTTP_PORT, app)
     srv.serve_forever()

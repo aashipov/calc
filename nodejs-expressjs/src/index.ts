@@ -5,7 +5,10 @@ import cluster from "cluster";
 import { availableParallelism, hostname } from "os";
 
 const NUM_CPUS = Math.max(2, availableParallelism());
-export const HTTP_PORT: number = 8080;
+const isClustered = (): boolean => process.env.HTTP_PORT === undefined;
+const HTTP_PORT: number = isClustered()
+  ? 8080
+  : parseInt(process.env.HTTP_PORT!);
 
 export const buildApp = (): express.Express => {
   const app = express();
@@ -34,14 +37,19 @@ const gracefulShutdown = (mainProcess: NodeJS.Process, sig: NodeJS.Signals) => {
 /**
  * Cluster and worker launch statements.
  */
-if (cluster.isPrimary) {
-  console.log(`Primary process ${process.pid}`);
-  for (let i = 0; i < NUM_CPUS; i++) {
-    cluster.fork();
+if (isClustered()) {
+  if (cluster.isPrimary) {
+    console.log(`Primary process ${process.pid}`);
+    for (let i = 0; i < NUM_CPUS; i++) {
+      cluster.fork();
+    }
+    process.on("SIGTERM", () => gracefulShutdown(process, "SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
+  } else {
+    console.log(`Worker process ${process.pid}`);
+    buildApp().listen(HTTP_PORT, "0.0.0.0", () => {});
   }
-  process.on("SIGTERM", () => gracefulShutdown(process, "SIGTERM"));
-  process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
 } else {
-  console.log(`Worker process ${process.pid}`);
+  console.log(`Single process ${process.pid}`);
   buildApp().listen(HTTP_PORT, "0.0.0.0", () => {});
 }

@@ -59,7 +59,7 @@ cpp_flavors() {
 }
 
 python_flavor() {
-    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic python-tornado"
+    local IMPLEMENTATIONS="python-fastapi python-flask python-sanic python-tornado python-pyramid"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         ${CALC_DIR}/${IMPLEMENTATION}/run.sh &

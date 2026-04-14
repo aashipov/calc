@@ -21,6 +21,10 @@ const C_EXPRTK_ADAPTER = Deno.dlopen(C_EXPRTK_ADAPTER_NAME, {
   calculate: { parameters: ["buffer"], result: "f64" },
 });
 
+const HTTP_PORT: number = Deno.env.has("HTTP_PORT")
+  ? parseInt(Deno.env.get("HTTP_PORT")!)
+  : 8080;
+
 const viaMathJs = (expr: string): number => {
   return evaluate(expr).entries[0];
 };
@@ -52,4 +56,4 @@ const handler = async (
 
 const app = new Application();
 app.use(handler);
-await app.listen({ hostname: "0.0.0.0", port: 8080 });
+await app.listen({ hostname: "0.0.0.0", port: HTTP_PORT });

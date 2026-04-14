@@ -1,8 +1,12 @@
+import os
+
 from flask import Flask, request
+
 from src.c_exprtk_adapter import calculate_via_exprtk
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
 NAN: str = "nan"
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
 
 
 def create_calc(is_testing: bool) -> Flask:
@@ -34,4 +38,4 @@ app = create_calc(False)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=HTTP_PORT)

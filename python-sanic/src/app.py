@@ -1,10 +1,13 @@
+import os
+
 from sanic import Sanic
 from sanic.response import text
+
 from src.c_exprtk_adapter import calculate_via_exprtk
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-
-NAN = "nan"
+NAN: str = "nan"
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
 
 
 def create_calc(app_name: str, is_testing: bool) -> Sanic:
@@ -35,4 +38,4 @@ def create_calc(app_name: str, is_testing: bool) -> Sanic:
 app = create_calc("__main__", False)
 
 if __name__ == "__main__":
-    app.run(port=8080)
+    app.run(host="0.0.0.0", port=HTTP_PORT)

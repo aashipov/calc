@@ -1,3 +1,5 @@
+import os
+
 import uvicorn
 from fastapi import Body, FastAPI
 from fastapi.responses import PlainTextResponse
@@ -5,7 +7,8 @@ from fastapi.responses import PlainTextResponse
 from src.c_exprtk_adapter import calculate_via_exprtk
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-NAN = "NaN"
+NAN: str = "NaN"
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
 
 
 def create_calc() -> FastAPI:
@@ -30,4 +33,4 @@ def create_calc() -> FastAPI:
 app = create_calc()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="error")
+    uvicorn.run(app, host="0.0.0.0", port=HTTP_PORT, log_level="error")

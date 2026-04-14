@@ -1,4 +1,5 @@
 import asyncio
+import os
 from typing import override
 
 import tornado
@@ -6,8 +7,8 @@ import tornado
 from src.c_exprtk_adapter import calculate_via_exprtk
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-
-NAN = "nan"
+NAN: str = "nan"
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
 
 
 class CalcHandler(tornado.web.RequestHandler):
@@ -42,7 +43,7 @@ app = create_calc()
 
 
 async def create_standalone_calc():
-    _ = app.listen(port=8080)
+    _ = app.listen(port=HTTP_PORT)
     _ = await asyncio.Event().wait()
 
 

@@ -14,7 +14,7 @@ build() {
 integration_test() {
     cd ${_SCRIPT_DIR}
 
-    node ${EXECUTABLE_NAME} &
+    HTTP_PORT=8080 node ${EXECUTABLE_NAME} &
     sleep 5s
 
     ${_SCRIPT_DIR}/../test/calc-test.sh
@@ -34,7 +34,7 @@ closure() {
     # Consistent across Linux bash, Cygwin terminal and Git Bash
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
-    
+
     local EXECUTABLE_NAME="server.js"
 
     build

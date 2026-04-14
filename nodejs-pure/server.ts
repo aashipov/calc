@@ -9,7 +9,10 @@ export const WELCOME: string =
 export const NAN = "NaN";
 export const EXPRTK: string = "exprtk";
 const NUM_CPUS = Math.max(2, availableParallelism());
-const HTTP_PORT: Number = 8080;
+const isClustered = (): boolean => process.env.HTTP_PORT === undefined;
+const HTTP_PORT: Number = isClustered()
+  ? 8080
+  : parseInt(process.env.HTTP_PORT!);
 
 /**
  * Calculate expression via mathjs.
@@ -93,7 +96,11 @@ export const buildServerInstance = (): Server<
   typeof IncomingMessage,
   typeof ServerResponse
 > => {
-  return createServer(handler).listen({ host: "0.0.0.0", port: HTTP_PORT, reusePort: true });
+  return createServer(handler).listen({
+    host: "0.0.0.0",
+    port: HTTP_PORT,
+    reusePort: true,
+  });
 };
 
 /**
@@ -115,14 +122,19 @@ const gracefulShutdown = (mainProcess: NodeJS.Process, sig: NodeJS.Signals) => {
 /**
  * Cluster and worker launch statements.
  */
-if (cluster.isPrimary) {
-  console.log(`Primary process ${process.pid}`);
-  for (let i = 0; i < NUM_CPUS; i++) {
-    cluster.fork();
+if (isClustered()) {
+  if (cluster.isPrimary) {
+    console.log(`Primary process ${process.pid}`);
+    for (let i = 0; i < NUM_CPUS; i++) {
+      cluster.fork();
+    }
+    process.on("SIGTERM", () => gracefulShutdown(process, "SIGTERM"));
+    process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
+  } else {
+    console.log(`Worker process ${process.pid}`);
+    buildServerInstance();
   }
-  process.on("SIGTERM", () => gracefulShutdown(process, "SIGTERM"));
-  process.on("SIGINT", () => gracefulShutdown(process, "SIGINT"));
 } else {
-  console.log(`Worker process ${process.pid}`);
+  console.log(`Single process ${process.pid}`);
   buildServerInstance();
 }
