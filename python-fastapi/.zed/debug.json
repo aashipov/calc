@@ -17,4 +17,19 @@
     "program": "$ZED_WORKTREE_ROOT/.venv/bin/pytest",
     "python": "$ZED_WORKTREE_ROOT/.venv/bin/python3",
   },
+  {
+    "request": "attach",
+    "adapter": "Debugpy",
+    "label": "Remote Debug",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "host": "0.0.0.0",
+    "port": 5678,
+    "log": true,
+    "pathMappings": [
+      {
+        "localRoot": "${ZED_WORKTREE_ROOT}",
+        "remoteRoot": "${ZED_WORKTREE_ROOT}",
+      },
+    ],
+  },
 ]
