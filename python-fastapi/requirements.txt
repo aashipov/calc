@@ -3,3 +3,5 @@ gunicorn==25.0.2
 pytest==9.0.2
 debugpy==1.8.20
 snakeviz==2.2.2
+build==1.4.0
+hatch==1.16.3
