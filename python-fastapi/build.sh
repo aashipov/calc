@@ -22,7 +22,7 @@ distro() {
     python3 -m build --wheel
     local WHEEL_FILE=./dist/$(ls dist | grep whl)
     python3 -m pip install --force-reinstall ${WHEEL_FILE}
-    python3 -m pip uninstall -y ${WHEEL_FILE}
+    #python3 -m pip uninstall -y ${WHEEL_FILE}
 }
 
 closure() {
