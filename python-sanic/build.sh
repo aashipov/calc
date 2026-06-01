@@ -3,26 +3,26 @@
 enter_venv() {
     if [ ! -d ${_SCRIPT_DIR}/${DOT_VENV} ]
     then
-        mkdir -p ${_SCRIPT_DIR}/${DOT_VENV}
         python3 -m venv ${_SCRIPT_DIR}/${DOT_VENV}
         . ${_SCRIPT_DIR}/${DOT_VENV}/bin/activate
-        pip3 install hatch==1.16.3 build==1.4.0
+        pip3 install -e .
     else
         . ${_SCRIPT_DIR}/${DOT_VENV}/bin/activate
     fi
 }
 
-build() {
-    pip3 install .
-}
-
 test() {
-    pytest
+    if [ -d ${_SCRIPT_DIR}/tests ]
+    then
+        python3 -m pytest
+    fi
 }
 
 distro() {
     python3 -m build --wheel
-    pip3 install ./dist/$(ls dist | grep whl)
+    local WHEEL_FILE=./dist/$(ls dist | grep whl)
+    python3 -m pip install --force-reinstall ${WHEEL_FILE}
+    #python3 -m pip uninstall -y ${WHEEL_FILE}
 }
 
 closure() {
@@ -35,7 +35,6 @@ closure() {
     local DOT_VENV=.venv
 
     enter_venv
-    build
     test
     distro
 }

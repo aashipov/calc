@@ -3,3 +3,5 @@ gunicorn==25.0.2
 uvicorn==0.40.0
 pytest==9.0.2
 sanic-testing==24.6.0
+build==1.4.0
+hatch==1.16.3

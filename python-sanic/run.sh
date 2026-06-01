@@ -3,10 +3,9 @@
 enter_venv() {
     if [ ! -d ${_SCRIPT_DIR}/${DOT_VENV} ]
     then
-        mkdir -p ${_SCRIPT_DIR}/${DOT_VENV}
         python3 -m venv ${_SCRIPT_DIR}/${DOT_VENV}
         . ${_SCRIPT_DIR}/${DOT_VENV}/bin/activate
-        pip3 install hatch==1.16.3 build==1.4.0
+        pip3 install -e .
     else
         . ${_SCRIPT_DIR}/${DOT_VENV}/bin/activate
     fi
