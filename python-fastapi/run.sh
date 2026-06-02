@@ -12,8 +12,8 @@ enter_venv() {
 }
 
 run() {
-    gunicorn --chdir src app:app
-    #uvicorn --log-level error --host 0.0.0.0 --workers 8 --app-dir src app:app
+    #gunicorn --chdir src app:app
+    uvicorn --log-level error --host 0.0.0.0 --port 8080 --workers 4 --app-dir src app:app
 }
 
 closure() {
