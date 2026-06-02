@@ -13,6 +13,7 @@ enter_venv() {
 
 run() {
     gunicorn --chdir src app:app
+    #uvicorn --log-level error --host 0.0.0.0 --workers 8 --app-dir src app:app
 }
 
 closure() {
