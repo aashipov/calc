@@ -6,15 +6,17 @@ DOT_SO: str = ".so"
 DOT_DLL: str = ".dll"
 NAN: str = "NaN"
 
+# Detect platform type
+def is_windows() -> bool:
+    return platform.system().lower() == "win"
 
 def get_c_exprtk_adapter():
-    os_name = platform.system().lower()
     library_full_name: str = LIBRARY_NAME
-    if os_name.__contains__("win"):
+    if is_windows():
         library_full_name += DOT_DLL
     else:
         library_full_name += DOT_SO
-    adapter = CDLL(library_full_name)
+    adapter: CDLL = CDLL(library_full_name)
     adapter.calculate.argtypes = [c_char_p]
     adapter.calculate.restype = c_double
     return adapter
