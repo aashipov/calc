@@ -1,7 +1,8 @@
 from fastapi.testclient import TestClient
 from httpx import Response
 
-from src.app import NAN, WELCOME
+from src.app import WELCOME
+from src.c_exprtk_adapter import NAN
 from tests.conf import test_client
 
 SIMPLE_EXPRESSION: str = "2+2"

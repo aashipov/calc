@@ -4,6 +4,7 @@ from ctypes import CDLL, c_char_p, c_double
 LIBRARY_NAME: str = "libc-exprtk-adapter"
 DOT_SO: str = ".so"
 DOT_DLL: str = ".dll"
+NAN: str = "NaN"
 
 
 def get_c_exprtk_adapter():
@@ -23,6 +24,11 @@ ADAPTER = get_c_exprtk_adapter()
 
 
 def calculate_via_exprtk(expression: str) -> str:
-    ptr: c_char_p = c_char_p(expression.encode("utf-8"))
-    res: c_double = ADAPTER.calculate(ptr)
-    return str(res)
+    res: str = NAN
+    try:
+        ptr: c_char_p = c_char_p(expression.encode("utf-8"))
+        res_double: c_double = ADAPTER.calculate(ptr)
+        res = str(res_double)
+    except:
+        pass
+    return res
