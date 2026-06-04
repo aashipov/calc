@@ -4,10 +4,11 @@ import uvicorn
 from fastapi import Body, FastAPI
 from fastapi.responses import PlainTextResponse
 
-from src.c_exprtk_adapter import calculate_via_exprtk
+from src.py_exprtk_adapter import PyExprtkAdapter
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
 HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
+PY_EXPRTK_ADAPTER: PyExprtkAdapter = PyExprtkAdapter()
 
 
 def create_calc() -> FastAPI:
@@ -19,7 +20,8 @@ def create_calc() -> FastAPI:
 
     @app.post("/{catch_all:path}", response_class=PlainTextResponse)
     async def evaluate(body: str = Body(..., media_type="text/plain")) -> str:
-        return calculate_via_exprtk(body)
+        res: float = PY_EXPRTK_ADAPTER.calculate(body)
+        return str(res)
 
     return app
 
