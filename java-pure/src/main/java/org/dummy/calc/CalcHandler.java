@@ -49,7 +49,7 @@ public class CalcHandler implements HttpHandler {
                 } else {
                     result = (new com.udojava.evalex.Expression(expr).eval()).toString();
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
             } finally {
                 textResponse(exchange, OK, result);
