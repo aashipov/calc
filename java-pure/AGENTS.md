@@ -1,36 +1,37 @@
-# Pure Java Calculator Service: Implementation Overview
+# Pure Java Calculator Service: Implementation Architecture
 
-This pure Java algebraic computation service is designed to handle incoming algebraic expressions via HTTP and return the computed results.
+This document provides a detailed technical overview of the pure Java algebraic computation service. This service is designed to accept algebraic expressions via HTTP and return the computed results by routing requests to specialized, high-performance calculation engines.
 
-## Dependencies and Core Technologies
+## Core Technologies and Dependencies
 
-The service relies on several external libraries for robust computation and communication:
+The service is built upon a diverse stack of components to manage HTTP communication, dependency resolution, and robust, high-performance computation.
 
-- **HTTP Server:** Uses `com.sun.net.httpserver.HttpServer` for request handling.
-- **Computation Engines:**
-  - `../java-exprtk-adapter` (and its C/C++ counterpart, `../c-exprtk-adapter`): Utilizes the `exprtk` library, accessed via JNI/FFM for high-performance native calculation.
-  - `org.mariuszgromada.math.MathParser.org-mXparser`: Used for specific, complex calculations when the URI suggests its use (Note: This engine is noted for being resource-intensive).
-  - `com.udojava.EvalEx`: Serves as a fallback or general-purpose evaluation engine.
+- **HTTP Server:** Leverages `com.sun.net.httpserver.HttpServer` for lightweight and native HTTP request handling.
+- **Computation Engines:** The service utilizes a polyglot computation strategy, routing calculations based on URI context:
+  - **`exprtk` (Native/High-Performance):** Accessed via JNI/FFM through the `../java-exprtk-adapter` (and its native counterpart, `../c-exprtk-adapter`). This engine is used for optimal speed and complex algebraic evaluation, provides an estimate of java-mediated native call overhead
+  - **`org-mXparser` (Specialized/Intensive):** Used when the URI specifies `mxparser`. This engine is reserved for highly specialized or complex calculation sets and is noted for its significant resource consumption.
+  - **`com.udojava.EvalEx` (Fallback/General Purpose):** Serves as a reliable general-purpose evaluator and the default fallback mechanism when no specialized engine is requested.
 
-## Project Structure
+## Architectural Design and Components
 
-Maven is utilized for stable dependency management and build orchestration. The core components are organized as follows:
+Maven manages dependency resolution and the overall build lifecycle. The core logic is structured within the `org.dummy.calc` package:
 
 ### Application Layer (`org.dummy.calc`)
 
-- **`App`:** The entry point. Initializes and encapsulates the `com.sun.net.httpserver.HttpServer` instance, allowing the service to begin accepting HTTP requests.
-- **`CalcHandler`:** Implements `com.sun.net.httpserver.HttpHandler` to manage all incoming GET and POST requests.
-  - **GET Requests:** Always returns a `WELCOME` status/message.
-  - **POST Requests:**
-    - If the URI contains `mxparser`, the calculation is handled by `org-mXparser`.
-    - If the URI specifies `exprtk`, the request triggers a JNI/FFM call to the native C library (`../c-exprtk-adapter`).
-    - Otherwise, the calculation falls back to `com.udojava.EvalEx`.
-    - The response will contain either a computation result or a `NAN` status.
-- **`JavaExprtkAdapter`:** A shim layer that links the Java code to the native implementation (`../java-exprtk-adapter` symlinks to the JNI/FFM harness for `libc-exprtk-adapter`).
+- **`App` (Entry Point):** This class initializes and encapsulates the `com.sun.net.httpserver.HttpServer` instance, serving as the primary bootstrapper for the entire service.
+- **`CalcHandler` (Request Router):** Implements `com.sun.net.httpserver.HttpHandler` and functions as the central request router, managing all incoming GET and POST requests:
+  - **GET Requests:** Always responds with a defined `WELCOME` status, serving as an API health check.
+  - **POST Requests (Routing Logic):**
+    - If the URI contains `mxparser`, calculation is routed to the `org-mXparser` engine.
+    - If the URI specifies `exprtk`, the request triggers a JNI/FFM call to the native C/C++ implementation (`../java-exprtk-adapter` and `../c-exprtk-adapter`).
+    - Otherwise, the calculation is processed by `com.udojava.EvalEx`.
+    - Responses will contain either the computation result or a specific `NAN` status indicating an error.
 
-### Testing and Build System
+### Testing and Deployment
 
-- **`AppTestBase`:** A minimalistic, abstract base class used for standardized test coverage.
-- **`AppTest`:** The pure Java test harness for functional validation.
-- **`ExprtkAdapterTest`:** `../java-exprtk-adapter`, hence `../c-exprtk-adapter` consistency check
-- **`build.sh`:** A utility script that acts as a lightweight CI environment. It validates both the Java and native (JNI/FFM) components, and includes an additional curl-driven integration test (Note: `SHARED_LIBRARY_HARNESS` environment variable set to `FFM` enables FFM harness).
+- **Test Harness:**
+  - **`AppTestBase`:** An abstract base class providing standardized utilities and setup for all unit and integration tests.
+  - **`AppTest`:** The comprehensive pure Java test harness used for validating application logic and routing correctness.
+  - **`ExprtkAdapterTest`:** Ensures functional parity and consistency between the Java-facing adapter (`../java-exprtk-adapter`) and the native implementation (`../c-exprtk-adapter`).
+- **Build and CI (`build.sh`):** A utility script designed to function as a lightweight CI environment. It orchestrates validation checks for both the Java and native (JNI/FFM) components, including an integration test driven by `curl`. _(Note: Setting `SHARED_LIBRARY_HARNESS` to `FFM` activates the FFM harness for execution.)_
+- **Launch:** with openJDK 25 in `${PATH}`, execute `java -jar target/calc-shaded.jar` or `SHARED_LIBRARY_HARNESS=FFM java -jar target/calc-shaded.jar` in console
