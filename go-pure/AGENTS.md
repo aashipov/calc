@@ -1,6 +1,8 @@
-# Pure Go Calculator Service
+# Calculator Service: pure Go flavor
 
-This document provides a detailed technical overview of the pure Go algebraic computation service. The service is designed to accept algebraic expressions via HTTP and return computed results by routing requests to specialized, high-performance calculation engines selected based on workload requirements.
+This document provides a detailed technical overview of [C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter written in pure Go.
+
+Main goal/purpose - dd hoc throughput framework, which compares language-specific algebraic library to native library call. 
 
 ## 1. Architecture & Structure
 
@@ -12,7 +14,7 @@ The service is composed of the following main components:
 
 ## 2. Dependencies & Setup
 
-*   **Native Library:** Requires the `c-exprtk-adapter` native library to be present and correctly linked during the build process. Ensure the native library is compiled for the target architecture.
+*   **Native Library:** Requires the `../c-exprtk-adapter` native library to be present and correctly linked during the build process. Ensure the native library is compiled for the target architecture.
 
 ## 3. API Contract
 
