@@ -2,14 +2,25 @@
 
 This document provides a detailed technical overview of the pure Go algebraic computation service. The service is designed to accept algebraic expressions via HTTP and return computed results by routing requests to specialized, high-performance calculation engines selected based on workload requirements.
 
-## File Structure
+## 1. Architecture & Structure
+
+The service is composed of the following main components:
 
 - `main.go`: Main entry point of the application.
-- `exprtk.go`: Go bridge to `../c-exprtk-adapter` native library.
 - `handler.go`: Implements the HTTP request handling logic and coordinates the calculation process.
-- `main_test.go` / `handler_test.go` / `exprtk_test.go`: Unit, integration and end-to-end tests for the respective components.
+- `exprtk.go`: Go bridge to `../c-exprtk-adapter` native library.
 
-## Building and Testing
+## 2. Dependencies & Setup
+
+*   **Native Library:** Requires the `c-exprtk-adapter` native library to be present and correctly linked during the build process. Ensure the native library is compiled for the target architecture.
+
+## 3. API Contract
+
+HTTP GET returns welcome message (healthcheck).
+
+HTTP POST with expression to evaluate (plain text body) returns NaN or calculation result.
+
+## 4. Building and Testing
 
 ### Testing
 
@@ -42,15 +53,15 @@ The release build is optimized for production deployment, focusing on performanc
     go build -o app
     ```
 
-## Run
+## 5. Running the Service
 
 ### Development Run
 
-See above
+Run the debug binary for local development and debugging. (See Build: Debug Configuration for command details).
 
 ### Production Run
 
-To execute the optimized production binary:
+Execute the optimized production binary.
 
 ```bash
 ./app

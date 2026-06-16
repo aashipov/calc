@@ -1,5 +1,6 @@
 package main
 
+//// CGO Bridge to libc-exprtk-adapter
 // #cgo LDFLAGS: -lc-exprtk-adapter
 // #include "c-exprtk-adapter.h"
 // #include <stdlib.h>
