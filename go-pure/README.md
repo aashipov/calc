@@ -4,11 +4,13 @@
 
 ## Requirements ##
 
-`go`, [dlv](https://github.com/go-delve/delve) in `${PATH}`
+`go`, `gcc-go`, [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
 Build `../c-exprtk-adapter` first
 
 ## Build ##
+
+Call `make` to test & build everything or follow paragraphs below
 
 ### Debug ###
 

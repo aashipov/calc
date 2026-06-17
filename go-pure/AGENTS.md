@@ -16,6 +16,8 @@ The service is composed of the following main components:
 
 *   **Native Library:** Requires the `../c-exprtk-adapter` native library to be present and correctly linked during the build process. Ensure the native library is compiled for the target architecture.
 
+* `go`, `gcc-go` in `${PATH}`
+
 ## 3. API Contract
 
 HTTP GET returns welcome message (healthcheck).
@@ -23,6 +25,8 @@ HTTP GET returns welcome message (healthcheck).
 HTTP POST with expression to evaluate (plain text body) returns NaN or calculation result.
 
 ## 4. Building and Testing
+
+Call `make` to test & build everything or follow paragraphs below
 
 ### Testing
 
