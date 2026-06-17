@@ -1,5 +1,7 @@
 # Calculator service: FastAPI flavor
 
+Refer to [README.md](./README.md) for human-facing project details.
+
 Relies upon `../c-exprtk-adapter` to perform algebraic computation
 
 ## Project Structure
