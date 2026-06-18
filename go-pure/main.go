@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -19,18 +19,16 @@ func enableGracefulShutdown(server *http.Server) {
 	go func() {
 		sig := <-gracefulShutdown
 		log.Printf("%s received, shutdown", sig)
-		server.Close()
-		os.Exit(0)
+		server.Shutdown(context.Background())
 	}()
 }
 
 func main() {
-	http.HandleFunc("/", CalcHandler)
 	server := http.Server{Addr: ":" + httpPort, Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		CalcHandler(w, req)
 	})}
 	enableGracefulShutdown(&server)
-	fmt.Println("Starting server on :" + httpPort)
+	log.Printf("Starting server on : %s", httpPort)
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)

@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 func request(t *testing.T, url string, method string, statusCode int, reqBody io.Reader) (body string) {
 	req, _ := http.NewRequest(method, url, reqBody)
 	if reqBody != nil {
-		req.Header.Add("Content-Type", TEXT_PLAIN)
+		req.Header.Add("Content-Type", TextPlain)
 	}
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -35,7 +35,7 @@ func request(t *testing.T, url string, method string, statusCode int, reqBody io
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != statusCode {
-		t.Errorf("API request failed with status code: %s", fmt.Errorf("%+v", resp))
+		t.Errorf("API request failed with status code: %+v", resp)
 	}
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {

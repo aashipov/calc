@@ -7,7 +7,7 @@ clean:
 	rm -rf ./app-debug
 
 test:
-	go test
+	go test -v
 
 debug-build:
 	go build -gcflags "all=-N -l" -o app-debug
