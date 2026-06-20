@@ -2,22 +2,25 @@
 
 namespace calc {
 
-template <typename T> inline static T calculate(std::string expression_string) {
-  typedef exprtk::symbol_table<T> symbol_table_t;
-  typedef exprtk::expression<T> expression_t;
-  typedef exprtk::parser<T> parser_t;
-
-  symbol_table_t symbol_table;
+template <typename T> static exprtk::symbol_table<T> build_symbol_table() {
+  exprtk::symbol_table<T> symbol_table;
   symbol_table.add_constants();
-  // symbol_table.add_constant("pi", exprtk::details::numeric::constant::pi);
+  symbol_table.add_constant("pi", exprtk::details::numeric::constant::pi);
   symbol_table.add_constant("e", exprtk::details::numeric::constant::e);
+  return symbol_table;
+};
 
-  expression_t expression;
-  expression.register_symbol_table(symbol_table);
+template <typename T> static T calculate_inner(const char *expression) {
+  exprtk::symbol_table<T> symbol_table = build_symbol_table<T>();
+  exprtk::expression<T> exprtk_expression;
+  exprtk_expression.register_symbol_table(symbol_table);
 
-  parser_t parser;
-  parser.compile(expression_string, expression);
-  const T result = expression.value();
+  exprtk::parser<T> parser;
+  if (!parser.compile(expression, exprtk_expression)) {
+    return std::numeric_limits<T>::quiet_NaN();
+  }
+
+  const T result = exprtk_expression.value();
   return result;
 }
 
@@ -30,8 +33,7 @@ extern "C" {
 #include "c-exprtk-adapter.h"
 
 double calculate(const char *expression) {
-  std::string expression_string(expression);
-  return calc::calculate<double>(expression_string);
+  return calc::calculate_inner<double>(expression);
 }
 
 #ifdef __cplusplus

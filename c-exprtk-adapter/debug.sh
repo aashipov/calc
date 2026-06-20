@@ -12,9 +12,14 @@ with_cmake() {
     cd ${_SCRIPT_DIR}
     rm -rf ${BUILD_DIR_NAME}
     mkdir ${BUILD_DIR_NAME} && cd ${BUILD_DIR_NAME}
-    cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/.local/ -DCMAKE_BUILD_TYPE=Release #-DENABLE_CALCULATOR=ON
+    cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/.local/ -DCMAKE_BUILD_TYPE=Debug -DENABLE_CALCULATOR=ON
     make
     make install
+}
+
+test_with_calculator() {
+    local EXECUTABLE=${_SCRIPT_DIR}/${BUILD_DIR_NAME}/exprtk-calculator/exprtk-calculator
+    eval ${EXECUTABLE} "2+2"
 }
 
 closure() {
@@ -26,6 +31,7 @@ closure() {
 
     download_exprtk
     with_cmake
+    test_with_calculator
 }
 
 closure
