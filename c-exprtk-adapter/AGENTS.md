@@ -22,7 +22,9 @@ Modern `make`, `cmake`
 
 ## 3. API Contract
 
-Defined in `c-exprtk-adapter.h`
+Defined in `c-exprtk-adapter.h`. 
+
+Caching repetitive calculations at client's end may improve throughput.
 
 ## 4. Building
 
