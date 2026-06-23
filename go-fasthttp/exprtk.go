@@ -1,8 +1,10 @@
 package main
 
-// #cgo LDFLAGS: -lc-exprtk-adapter
-// #include "c-exprtk-adapter.h"
-// #include <stdlib.h>
+/*
+#cgo LDFLAGS: -lc-exprtk-adapter
+#include "c-exprtk-adapter.h"
+#include <stdlib.h>
+*/
 import "C"
 import (
 	"strconv"

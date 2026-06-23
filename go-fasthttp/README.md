@@ -1,16 +1,18 @@
-# Go Fast HTTP flavor #
+# Go FastHTTP flavor
 
 [C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter in Go
 
-## Requirements ##
+## Requirements
 
-`go`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
+`go`, `gcc-go`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
 Build `../c-exprtk-adapter` first
 
-## Build ##
+## Build
 
-### Debug ###
+Call `make` to test & build everything or follow paragraphs below
+
+### Debug
 
 ```shell
 swag init --output ./swagger && go build -gcflags "all=-N -l" -o app-debug && go test
@@ -22,20 +24,16 @@ dlv exec --listen=:2345 --headless --api-version=2 --accept-multiclient --contin
 
 Use remote debug
 
-### Release ###
+### Release
 
 ```shell
 swag init --output ./swagger && go build -o app && go test
 ```
 
-## Run ##
+## Run
 
 `app` or `app-debug`
 
-## Swagger UI ##
+## Swagger UI
 
 [SwaggerUI](http://0.0.0.0:8080/openapi-ui/index.html)
-
-## Prior Art ##
-
-[cgo to call C++](https://github.com/arrieta/golang-cpp-basic-example)
