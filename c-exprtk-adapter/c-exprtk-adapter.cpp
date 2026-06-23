@@ -1,3 +1,4 @@
+#include "c-exprtk-adapter.h"
 #include "exprtk.hpp"
 
 namespace calc {
@@ -17,37 +18,37 @@ inline exprtk::symbol_table<T> &thread_local_symbol_table() {
   return table;
 }
 
+template <typename T> inline exprtk::expression<T> &thread_local_expression() {
+  exprtk::symbol_table<T> &symbol_table = thread_local_symbol_table<T>();
+  static thread_local exprtk::expression<T> exprtk_expression;
+  exprtk_expression.register_symbol_table(symbol_table);
+  return exprtk_expression;
+}
+
 template <typename T> inline exprtk::parser<T> &thread_local_parser() {
   static thread_local exprtk::parser<T> parser;
   return parser;
 }
 
-template <typename T> inline T calculate_inner(const char *expression) {
-  exprtk::symbol_table<T> &symbol_table = thread_local_symbol_table<T>();
-  exprtk::expression<T> exprtk_expression;
-  exprtk_expression.register_symbol_table(symbol_table);
-
+template <typename T>
+[[nodiscard]] inline T calculate_inner(const char *expression) noexcept {
+  exprtk::expression<T> &exprtk_expression = thread_local_expression<T>();
   exprtk::parser<T> &parser = thread_local_parser<T>();
   if (!parser.compile(expression, exprtk_expression)) {
     return std::numeric_limits<T>::quiet_NaN();
   }
-
   const T result = exprtk_expression.value();
   return result;
 }
 
-} // namespace calc
+/* C wrapper -------------------------------------------------------------- */
 
-#ifdef __cplusplus
 extern "C" {
-#endif
-
-#include "c-exprtk-adapter.h"
 
 double calculate(const char *expression) {
   return calc::calculate_inner<double>(expression);
 }
 
-#ifdef __cplusplus
-}
-#endif
+} // extern "C"
+
+} // namespace calc
