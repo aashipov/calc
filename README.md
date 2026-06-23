@@ -1,16 +1,14 @@
-# Algebraic Expression Evaluation Service #
+# Algebraic Expression Evaluation Service
 
-## Why? ##
+## Why?
 
-Ad hoc throughput framework. Compare language-specific algebraic library to native library call. 
+Ad hoc throughput framework. Compare language-specific algebraic library to native library call; compare native call RESTful harness overhead.
 
 Findings: native call is less expensive, the 'lower' the language the higher the throughput ('inconvenient convenience'), dockerized (bridged net) is twice as slow as baremetal at least.
 
-## Requirements ##
+## Requirements
 
-Common: bash, curl
-
-Runtime: Docker, docker-compose
+POSIX environment with bash, curl. Optional: Docker, docker-compose
 
 Development: OpenJDK, .NET, C++, Go, Python, Rust, Julia, Node.js, D, Dart, OCaml
 
@@ -24,7 +22,9 @@ CPLUS_INCLUDE_PATH=${HOME}/.local/include:${JAVA_HOME}/include:${JAVA_HOME}/incl
 CMAKE_POLICY_VERSION_MINIMUM=3.5
 ```
 
-## Flavors ##
+`c-exprt-adapter`
+
+## Flavors
 
 C++ (cpprestsdk, Crow, Drogon, httplib, oatpp, POCO).
 
@@ -46,7 +46,7 @@ D (serverino, Vibe.d)
 
 Dart
 
-## Showcase for any flavor up & running ##
+## Showcase for any flavor up & running
 
 ```shell
 ./test/calc-test.bash
@@ -54,21 +54,21 @@ Dart
 
 [OpenAPI UI](http://localhost:8080/openapi-ui) (a few flavors)
 
-## Load test ##
+## Load test
 
-### Apache Benchmark ###
+### Apache Benchmark
 
 ```shell
 ./test/calc-benchmark.sh
 ```
 
-### wrk ###
+### wrk
 
 ```shell
 ./test/calc-wrk.sh
 ```
 
-### Apache JMeter Baremetal ###
+### Apache JMeter Baremetal
 
 Build all the implementations, copy `test` dir to jmeter dir (same parent dir as this repo), the call:
 
@@ -76,7 +76,7 @@ Build all the implementations, copy `test` dir to jmeter dir (same parent dir as
 ./baremetal-load-runner.sh
 ```
 
-### Apache JMeter Dockerized ###
+### Apache JMeter Dockerized
 
 Build local images:
 
