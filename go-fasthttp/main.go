@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -20,8 +21,7 @@ func enableGracefulShutdown(server *fasthttp.Server) {
 	go func() {
 		sig := <-gracefulShutdown
 		log.Printf("%s received, shutdown", sig)
-		server.Shutdown()
-		os.Exit(0)
+		server.ShutdownWithContext(context.Background())
 	}()
 }
 

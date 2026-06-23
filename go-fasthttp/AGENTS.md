@@ -2,7 +2,7 @@
 
 Refer to [README.md](./README.md) for human-facing project details.
 
-This document provides a detailed technical overview of [C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter written in pure Go.
+This document provides a detailed technical overview of [C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter written in Go (FastHTTP).
 
 Main goal/purpose - ad hoc throughput framework, which compares language-specific algebraic library to native library call. 
 
