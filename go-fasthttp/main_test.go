@@ -68,7 +68,7 @@ func TestApp(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			doTest(t, "http://localhost", tt.requestMethod, tt.expression, tt.expected)
+			doTest(t, "http://localhost/", tt.requestMethod, tt.expression, tt.expected)
 		})
 	}
 }

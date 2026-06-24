@@ -8,6 +8,7 @@ import (
 )
 
 func checkResponse(t *testing.T, ctx *fasthttp.RequestCtx, expected string) {
+	t.Helper()
 	if ctx.Response.StatusCode() != fasthttp.StatusOK {
 		t.Errorf("Expected status %d, got %d", fasthttp.StatusOK, ctx.Response.StatusCode())
 	}

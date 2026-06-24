@@ -23,6 +23,8 @@ var (
 // @Produce      text/plain
 // @Success      200  {string} Welcome
 func welcome(ctx *fasthttp.RequestCtx) {
+	ctx.SetContentType("text/plain; charset=utf-8")
+	ctx.SetStatusCode(fasthttp.StatusOK)
 	ctx.Write(Welcome)
 }
 
@@ -36,18 +38,20 @@ func welcome(ctx *fasthttp.RequestCtx) {
 func evaluate(ctx *fasthttp.RequestCtx) {
 	expression := string(ctx.Request.Body())
 	result := CalculateViaExprtk(expression)
-	ctx.Write([]byte(result))
+	ctx.SetContentType("text/plain; charset=utf-8")
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.WriteString(result)
 }
-
 func CalcHandler(ctx *fasthttp.RequestCtx) {
-	path := string(ctx.RequestURI())
+	uri := string(ctx.RequestURI())
 	method := string(ctx.Method())
 	switch {
-	case strings.Contains(path, OPENAPI_UI):
+	case strings.Contains(uri, OPENAPI_UI):
 		fastHttpSwagger.WrapHandler(fastHttpSwagger.InstanceName(SWAGGER))(ctx)
+
 	default:
 		switch method {
-		case "POST":
+		case fasthttp.MethodPost:
 			evaluate(ctx)
 		default:
 			welcome(ctx)
