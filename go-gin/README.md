@@ -4,9 +4,9 @@
 
 ## Requirements ##
 
-`go`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
+`go 1.26`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
-Build `../c-exprtk-adapter` first
+Build the native `../c-exprtk-adapter` library first.
 
 ## Build ##
 

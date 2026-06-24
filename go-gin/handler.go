@@ -25,8 +25,9 @@ func welcome(ctx *gin.Context) {
 // @Summary      Evaluate
 // @Description  Responds Calculation Result
 // @Router       / [post]
+// @Tags         Calc
 // @Param        body body string true "body"
-// @Accept text/plain
+// @Accept       text/plain
 // @Produce      text/plain
 // @Success      200  {string} Evaluate
 func evaluate(ctx *gin.Context) {

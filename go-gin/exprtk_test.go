@@ -3,6 +3,7 @@ package main
 import "testing"
 
 func TestCalculateViaExprtk(t *testing.T) {
+	t.Helper()
 	tests := []struct {
 		name       string
 		expression string
@@ -17,7 +18,7 @@ func TestCalculateViaExprtk(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := CalculateViaExprtk(tt.expression)
 			if actual != tt.expected {
-				t.Fail()
+				t.Errorf("expected %s, got %s", tt.expected, actual)
 			}
 		})
 	}
