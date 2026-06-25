@@ -17,7 +17,7 @@ func TestCalculateViaExprtk(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := CalculateViaExprtk(tt.expression)
 			if actual != tt.expected {
-				t.Fail()
+				t.FailNow()
 			}
 		})
 	}
