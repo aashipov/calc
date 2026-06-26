@@ -19,7 +19,7 @@ protected:
 
   inline static const std::string NOT_AN_EXPRESSION = "nan";
 
-  Poco::Net::HTTPServer server = calc::build_http_server(calc::HTTP_PORT);
+  Poco::Net::HTTPServer server = calc::build_http_server();
 
   void SetUp() override { server.start(); }
   void TearDown() override { server.stop(); }
