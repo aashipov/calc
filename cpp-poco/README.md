@@ -2,22 +2,16 @@
 
 ## Requirements
 
-Build `../c-exprtk-adapter`, `../test/build-googletest.sh` first
-
-For tests, download the lib to user's include directory:
-
-```shell
-curl -L https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h -o ${HOME}/.local/include/httplib.h
-```
+Build POCO `build-framework.sh`, adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
 
 ## Build
 
 ```shell
-./build.sh
+./release.sh
 ```
 
 ## Run
 
 ```shell
-./build/calc
+./Release/calc
 ```
