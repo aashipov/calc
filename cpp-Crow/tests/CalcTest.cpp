@@ -22,7 +22,7 @@ protected:
 
   inline static const std::string NOT_AN_EXPRESSION = "nan";
 
-  crow::SimpleApp server = calc::build_calc_app(calc::HTTP_PORT);
+  crow::SimpleApp server = calc::build_calc_app();
   // pristine server.run_async() or wrapped into std::async(...) block forever
   std::thread server_thread = std::thread([&]() { server.run(); });
 
