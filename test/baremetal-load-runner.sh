@@ -51,7 +51,7 @@ cpp_flavors() {
     local IMPLEMENTATIONS="cpp-cpprestsdk cpp-Crow cpp-poco"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
-        ${CALC_DIR}/${IMPLEMENTATION}/build/calc &
+        ${CALC_DIR}/${IMPLEMENTATION}/Release/calc &
         sleep 1s
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
         pkill -f calc

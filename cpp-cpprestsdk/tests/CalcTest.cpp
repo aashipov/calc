@@ -26,7 +26,7 @@ protected:
   std::thread server_thread;
 
   void SetUp() override {
-    server = calc::build_calc_app(calc::BASE_URL);
+    server = calc::build_calc_app();
     // pristine server.run_async() or wrapped into std::async(...) block forever
     server_thread = std::thread([&]() {
       try {

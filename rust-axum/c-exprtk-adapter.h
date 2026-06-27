@@ -1,5 +1,4 @@
-#ifndef C_EXPRTK_ADAPTER_H
-#define C_EXPRTK_ADAPTER_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,5 +9,3 @@ double calculate(const char *expression);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // C_EXPRTK_ADAPTER_H

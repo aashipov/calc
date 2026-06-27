@@ -1,4 +1,4 @@
-# Tiny Http Flavor
+# Tiny HTTP Flavor
 
 ## Requirements
 

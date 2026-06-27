@@ -1,4 +1,4 @@
-# Calculator Service: Crow flavor
+# Calculator Service: C++ REST SDK
 
 Refer to [README.md](./README.md) for human-facing project details.
 
@@ -19,7 +19,7 @@ The service is composed of the following main components:
 
 - Functioning C/C++ toolchain
 
-- Modern `make`, `cmake`, `Crow`, `Google Test`
+- Modern `make`, `cmake`, `C++ REST SDK`, `Google Test`
 
 - **Native Library:** Requires the `../c-exprtk-adapter` native library to be present and correctly linked during the build process. Ensure the native library is compiled for the target architecture.
 

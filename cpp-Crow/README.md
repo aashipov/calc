@@ -2,16 +2,16 @@
 
 ## Requirements
 
-Build Crow `build-framework.sh`, adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
+Build framework `build-framework.sh`, adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
 
 ## Build
 
 ```shell
-./build.sh
+./release.sh
 ```
 
 ## Run
 
 ```shell
-./build/calc
+./Release/calc
 ```

@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Build POCO `build-framework.sh`, adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
+Build framework `build-framework.sh`, adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
 
 ## Build
 

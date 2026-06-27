@@ -1,25 +1,17 @@
-# Crow flavor
+# C++ REST SDK
 
 ## Requirements
 
-[cpprestsdk](https://github.com/Microsoft/cpprestsdk/) installed, e.g. as a [package](https://aur.archlinux.org/cpprestsdk.git) (needs patching for modern Boost & toolchain)
-
-Build `../c-exprtk-adapter` first
-
-For tests, download the lib to user's include directory:
-
-```shell
-curl -L https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h -o ${HOME}/.local/include/httplib.h
-```
+Build adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
 
 ## Build
 
 ```shell
-./build.sh
+./release.sh
 ```
 
 ## Run
 
 ```shell
-./build/calc
+./Release/calc
 ```
