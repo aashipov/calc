@@ -1,4 +1,4 @@
-# Python Sanic flavor
+# Python Tornado flavor
 
 ## Requirements
 

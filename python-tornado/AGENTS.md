@@ -1,4 +1,4 @@
-# Calculator service: Flask flavor
+# Calculator service: Tornado flavor
 
 Refer to [README.md](./README.md) for human-facing project details.
 
