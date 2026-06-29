@@ -3,13 +3,12 @@ pub const WELCOME: &'static str = "Welcome to calc service\nHTTP POST your expre
 fn body_to_string(request: &mut tiny_http::Request) -> String {
     let mut body = String::new();
     let read_result = request.as_reader().read_to_string(&mut body);
-    match read_result {
-        Ok(_ok) => (),
-        Err(_e) => return calc_tiny_http::NAN.to_owned(),
+    if let Err(_) = read_result {
+        return calc_tiny_http::NAN.to_owned();
     }
     match body.parse() {
         Ok(b) => b,
-        Err(_e) => calc_tiny_http::NAN.to_owned(),
+        Err(_) => calc_tiny_http::NAN.to_owned(),
     }
 }
 
