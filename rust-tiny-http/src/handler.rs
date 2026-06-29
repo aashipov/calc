@@ -20,7 +20,6 @@ fn str_response(request: tiny_http::Request, response_str: &str) -> Result<(), s
 pub fn handler(server: std::sync::Arc<tiny_http::Server>) {
     for mut request in server.incoming_requests() {
         if let &tiny_http::Method::Post = request.method() {
-            request.url();
             let body = body_to_string(&mut request);
             let mut response_text = body.to_owned();
             if body != calc_tiny_http::NAN {
