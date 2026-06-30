@@ -136,7 +136,7 @@ bun_flavor() {
         
         cd ${_SCRIPT_DIR}
         DISTRO=${DISTRO} IMPLEMENTATION=${IMPLEMENTATION} ./jmeter-runner.sh
-        pkill -f ${EXECUTABLE_NAME}
+        pkill -f bun
     done
 }
 
@@ -157,10 +157,10 @@ closure() {
     dotnet_flavor
     cpp_flavors
     python_flavor
-    dart_flavor
+    #dart_flavor
     nodejs_flavors
     deno_flavors
-    ruby_flavor
+    #ruby_flavor
     bun_flavor
 
     ${_SCRIPT_DIR}/stats/do-stats.sh

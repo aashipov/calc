@@ -16,7 +16,7 @@ cpp_flavors() {
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
-        ${SOURCE_TREE_ROOT}/${IMPLEMENTATION}/build.sh
+        ${SOURCE_TREE_ROOT}/${IMPLEMENTATION}/release.sh
     done
 }
 
