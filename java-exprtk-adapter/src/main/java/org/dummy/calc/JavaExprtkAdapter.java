@@ -12,11 +12,14 @@ import java.util.logging.Logger;
 
 public class JavaExprtkAdapter {
 
+    private static final Logger LOG = Logger.getLogger(JavaExprtkAdapter.class.getSimpleName());
     private static final String JNI = "JNI";
     private static final String SHARED_LIBRARY_NAME = "libc-exprtk-adapter.so";
     private static final String SHARED_LIBRARY_FUNCTION_NAME = "calculate";
     private static final String ADAPTER_NAME = "java-exprtk-adapter";
-    private static final Logger LOG = Logger.getLogger(JavaExprtkAdapter.class.getSimpleName());
+    private static final Linker LINKER = Linker.nativeLinker();
+    private static final FunctionDescriptor FUNCTION_DESCRIPTOR = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
+
     /**
      * Environment variable, native library harness name, either JNI or FFM.
      */
@@ -42,8 +45,6 @@ public class JavaExprtkAdapter {
      * @return result
      */
     static double calculateFfm(String expression) {
-        FunctionDescriptor functionDescriptor = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
-        Linker linker = Linker.nativeLinker();
         Arena arena = Arena.ofAuto();
         SymbolLookup lookup = SymbolLookup.libraryLookup(SHARED_LIBRARY_NAME, arena);
         Optional<MemorySegment> memorySegmentOptional = lookup.find(SHARED_LIBRARY_FUNCTION_NAME);
@@ -52,7 +53,7 @@ public class JavaExprtkAdapter {
         }
         MemorySegment funcArg = arena.allocateFrom(expression);
         try {
-            return (double) linker.downcallHandle(memorySegmentOptional.get(), functionDescriptor).invoke(funcArg);
+            return (double) LINKER.downcallHandle(memorySegmentOptional.get(), FUNCTION_DESCRIPTOR).invoke(funcArg);
         } catch (Throwable ex) {
             return Double.NaN;
         }

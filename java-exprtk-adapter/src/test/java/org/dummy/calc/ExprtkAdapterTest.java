@@ -38,4 +38,12 @@ class ExprtkAdapterTest {
         double actual = JavaExprtkAdapter.calculate("         \r  \n \t          ");
         Assertions.assertEquals(Double.NaN, actual, 0.00000000000000000000000000001);
     }
+
+    @Test
+    void consecutiveCallsTest() {
+        double actual = JavaExprtkAdapter.calculate("1+1");
+        Assertions.assertEquals(2.0, actual, 0.00000000000000000000000000001);
+        actual = JavaExprtkAdapter.calculate("2+2");
+        Assertions.assertEquals(4.0, actual, 0.00000000000000000000000000001);
+    }
 }
