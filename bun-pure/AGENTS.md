@@ -1,4 +1,4 @@
-# Calculator Service: Pure Deno flavor
+# Calculator Service: Pure Bun flavor
 
 This document provides a detailed technical overview of [C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter.
 

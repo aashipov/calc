@@ -1,18 +1,14 @@
-import { evaluate } from "mathjs";
+import { evaluate, ResultSet } from "mathjs";
 import { dlopen, FFIType, suffix } from "bun:ffi";
 
 const NAN: string = "NaN";
 const EXPRTK: string = "exprtk";
 const MXPARSER: string = "mxparser";
-const RS_EXPR_ADAPTER_NAME: string = `librs_expr_adapter.${suffix}`;
+const C_EXPRTK_ADAPTER_NAME: string = `libc-exprtk-adapter.${suffix}`;
 const TEXT_ENCODER: TextEncoder = new TextEncoder();
 
-const RS_EXPR_ADAPTER = dlopen(RS_EXPR_ADAPTER_NAME, {
-  via_exprtk: {
-    args: [FFIType.cstring],
-    returns: FFIType.double,
-  },
-  via_meval: {
+const C_EXPRTK_ADAPTER = dlopen(C_EXPRTK_ADAPTER_NAME, {
+  calculate: {
     args: [FFIType.cstring],
     returns: FFIType.double,
   },
@@ -22,18 +18,20 @@ const HTTP_PORT: number =
   process.env.HTTP_PORT === undefined ? 8080 : parseInt(process.env.HTTP_PORT);
 
 const viaMathJs = (expr: string): number => {
-  return evaluate(expr).entries[0];
+  let result: unknown = evaluate(expr);
+  if (result === undefined || result === null) {
+    return Number.NaN;
+  }
+  if ((result as ResultSet).entries !== undefined) {
+    const entries = (result as ResultSet).entries;
+    result = entries.length === 0 ? Number.NaN : entries[0];
+  }
+  return result as number;
 };
 
 const viaExprtk = (expr: string): number => {
   const c_string_buf = TEXT_ENCODER.encode(expr + "\0");
-  const result: number = RS_EXPR_ADAPTER.symbols.via_exprtk(c_string_buf);
-  return result;
-};
-
-const viaMeval = (expr: string): number => {
-  const c_string_buf = TEXT_ENCODER.encode(expr + "\0");
-  const result: number = RS_EXPR_ADAPTER.symbols.via_meval(c_string_buf);
+  const result: number = C_EXPRTK_ADAPTER.symbols.calculate(c_string_buf);
   return result;
 };
 
@@ -53,9 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
     const expr: string = await req.text();
     let result: string = NAN;
     const url: string = req.url;
-    if (url.includes(MXPARSER)) {
-      result = "" + viaMeval(expr);
-    } else if (url.includes(EXPRTK)) {
+    if (url.includes(EXPRTK)) {
       result = "" + viaExprtk(expr);
     } else {
       result = "" + viaMathJs(expr);
