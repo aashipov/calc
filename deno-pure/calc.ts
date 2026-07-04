@@ -1,4 +1,4 @@
-import { evaluate } from "mathjs";
+import { evaluate, ResultSet } from "mathjs";
 
 const WELCOME: string =
   "Welcome to calc service\nHTTP POST your expression / (via mathjs)";
@@ -15,7 +15,15 @@ const HTTP_PORT: number = Deno.env.has("HTTP_PORT")
   : 8080;
 
 const viaMathJs = (expr: string): number => {
-  return evaluate(expr).entries[0];
+  let result: unknown = evaluate(expr);
+  if (result === undefined || result === null) {
+    return Number.NaN;
+  }
+  if ((result as ResultSet).entries !== undefined) {
+    const entries = (result as ResultSet).entries;
+    result = entries.length === 0 ? Number.NaN : entries[0];
+  }
+  return result as number;
 };
 
 const viaExprtk = (expr: string): number => {
