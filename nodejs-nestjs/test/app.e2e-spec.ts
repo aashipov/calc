@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
-import { EXPRTK, NAN, WELCOME } from '../src/app.service';
+import { EXPRTK, NAN_STR, WELCOME } from '../src/app.service';
 import bodyParser from 'body-parser';
 import { COMPLEX_EXPRESSION, COMPLEX_EXPRESSION_RESULT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT } from "./constants";
 
@@ -59,9 +59,9 @@ describe("Server", () => {
       return request(app.getHttpServer())
         .post('/')
         .set('Content-Type', 'text/plain')
-        .send(NAN)
+        .send(NAN_STR)
         .expect(200)
-        .expect(NAN);
+        .expect(NAN_STR);
     });
   });
 
@@ -92,9 +92,9 @@ describe("Server", () => {
       return request(app.getHttpServer())
         .post('/' + EXPRTK)
         .set('Content-Type', 'text/plain')
-        .send(NAN)
+        .send(NAN_STR)
         .expect(200)
-        .expect(NAN);
+        .expect(NAN_STR);
     });
   });
 });

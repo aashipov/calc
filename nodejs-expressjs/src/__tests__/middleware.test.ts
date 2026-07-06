@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { NAN, viaExprtk, viaMathJs } from "../middleware/middleware.js";
+import { NAN_STR, viaExprtk, viaMathJs } from "../middleware/middleware.js";
 import {
   COMPLEX_EXPRESSION,
   COMPLEX_EXPRESSION_RESULT,
@@ -9,32 +9,32 @@ import {
 
 describe("Library", () => {
   it("should evaluate simple expression via mathjs", () => {
-    let actual: string = viaMathJs(SIMPLE_EXPRESSION);
+    let actual: string = "" + viaMathJs(SIMPLE_EXPRESSION);
     expect(actual).toContain(SIMPLE_EXPRESSION_RESULT);
   });
 
   it("should evaluate complex expression via mathjs", () => {
-    let actual: string = viaMathJs(COMPLEX_EXPRESSION);
+    let actual: string = "" + viaMathJs(COMPLEX_EXPRESSION);
     expect(actual).toContain(COMPLEX_EXPRESSION_RESULT);
   });
 
   it("should evaluate invalid expression via mathjs", () => {
-    let actual: string = viaMathJs(NAN);
-    expect(actual).toContain(NAN);
+    let actual: string = "" + viaMathJs(NAN_STR);
+    expect(actual).toContain(NAN_STR);
   });
 
   it("should evaluate simple expression via exprtk", () => {
-    let actual: string = viaExprtk(SIMPLE_EXPRESSION);
+    let actual: string = "" + viaExprtk(SIMPLE_EXPRESSION);
     expect(actual).toContain(SIMPLE_EXPRESSION_RESULT);
   });
 
   it("should evaluate complex expression via exprtk", () => {
-    let actual: string = viaExprtk(COMPLEX_EXPRESSION);
+    let actual: string = "" + viaExprtk(COMPLEX_EXPRESSION);
     expect(actual).toContain(COMPLEX_EXPRESSION_RESULT);
   });
 
   it("should evaluate invalid expression via exprtk", () => {
-    let actual: string = viaExprtk(NAN);
-    expect(actual).toContain(NAN);
+    let actual: string = "" + viaExprtk(NAN_STR);
+    expect(actual).toContain(NAN_STR);
   });
 });

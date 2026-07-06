@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import { buildApp } from "../index";
-import { NAN, EXPRTK } from "../middleware/middleware";
+import { NAN_STR, EXPRTK } from "../middleware/middleware";
 
 import {
   COMPLEX_EXPRESSION,
@@ -48,9 +48,9 @@ describe("Server", () => {
       const response = await request(app)
         .post("/")
         .set("Content-Type", "text/plain")
-        .send(NAN);
+        .send(NAN_STR);
       expect(response.status).toBe(200);
-      expect(response.text).toContain(NAN);
+      expect(response.text).toContain(NAN_STR);
     });
   });
 
@@ -81,9 +81,9 @@ describe("Server", () => {
       const response = await request(app)
         .post("/" + EXPRTK)
         .set("Content-Type", "text/plain")
-        .send(NAN);
+        .send(NAN_STR);
       expect(response.status).toBe(200);
-      expect(response.text).toContain(NAN);
+      expect(response.text).toContain(NAN_STR);
     });
   });
 });
