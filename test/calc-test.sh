@@ -17,7 +17,7 @@ do_get(){
 do_post(){
     local ENDPOINT="${1}"
     printf "\nPOST ${ENDPOINT}: "
-    local RESULT=`curl -s -X POST -H "Content-Type: text/plain" --data-binary @"${SAMPLE_EXPRESSION}" ${BASE_URL}/${ENDPOINT}`
+    local RESULT=`curl -s -X POST -H "Content-Type: text/plain" -d ${COMPLEX_EXPRESSION} ${BASE_URL}/${ENDPOINT}`
     case "$RESULT" in
         *19.9884*)
             printf "OK"
@@ -35,8 +35,8 @@ closure() {
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
     cd ${_SCRIPT_DIR}
     set -e
-
-    local SAMPLE_EXPRESSION="sample.expression"
+    
+    local COMPLEX_EXPRESSION=`cat ${_SCRIPT_DIR}/sample.expression`
     local BASE_URL="http://0.0.0.0:8080"
     
     printf "***"
