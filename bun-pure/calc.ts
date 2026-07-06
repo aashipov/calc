@@ -20,7 +20,7 @@ const viaMathJs = (expression: string): number => {
   try {
     let result = evaluate(expression);
     if (result != undefined && result != null) {
-      if (result instanceof ResultSet) {
+      if (result.entries) {
         const entries = (result as ResultSet).entries;
         if (entries.length > 0 && entries[0] instanceof Number) {
           return entries[0] as number;
