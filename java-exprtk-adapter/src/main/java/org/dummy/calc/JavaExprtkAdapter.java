@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Native library adapter.
+ */
 public class JavaExprtkAdapter {
 
     private static final Logger LOG = Logger.getLogger(JavaExprtkAdapter.class.getSimpleName());

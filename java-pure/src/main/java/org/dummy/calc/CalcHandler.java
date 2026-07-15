@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+/**
+ * {@link HttpHandler} implementation.
+ */
 public class CalcHandler implements HttpHandler {
 
     private static final Logger LOGGER = Logger.getLogger(CalcHandler.class.getSimpleName());
@@ -62,7 +65,7 @@ public class CalcHandler implements HttpHandler {
     /**
      * Is {@link String} blank?.
      *
-     * @param cs {@link String}
+     * @param s {@link String}
      * @return is blank?
      */
     static boolean isEmpty(final String s) {
