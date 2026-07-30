@@ -25,16 +25,16 @@ public:
 };
 
 inline Poco::Net::HTTPServer build_http_server(
+    Poco::ThreadPool &tp,
     unsigned short httpPort = HTTP_PORT,
     unsigned int threadCount = std::max(2, (int)std::thread::hardware_concurrency())) {
-  Poco::ThreadPool *tp = new Poco::ThreadPool;
-  tp->addCapacity(threadCount);
+  tp.addCapacity(threadCount);
   Poco::Net::HTTPServerParams *httpServerParams =
       new Poco::Net::HTTPServerParams;
   httpServerParams->setMaxQueued(MAX_QUEUED);
   httpServerParams->setMaxThreads(threadCount);
   Poco::Net::ServerSocket serverSocket(httpPort);
-  return Poco::Net::HTTPServer(new CalcRequestHandlerFactory, *tp, serverSocket,
+  return Poco::Net::HTTPServer(new CalcRequestHandlerFactory, tp, serverSocket,
                                httpServerParams);
 }
 

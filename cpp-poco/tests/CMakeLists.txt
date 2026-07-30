@@ -6,20 +6,19 @@ project(${project_name} VERSION 0.1.0)
 
 include(GNUInstallDirs)
 
-find_library(Poco_LIBRARIES NAMES PocoFoundation PocoUtil PocoNet)
-include_directories(${Poco_INCLUDE_DIRS})
+find_package(Poco REQUIRED COMPONENTS Foundation Util Net)
 
 find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
 
 enable_testing()
 
 add_executable(${project_name} CalcTest.cpp)
+target_include_directories(${project_name} PRIVATE "${CMAKE_SOURCE_DIR}/src")
 target_link_libraries(${project_name}
     PRIVATE
-        PocoFoundation
-        PocoNet
-        PocoUtil
+        Poco::Foundation
+        Poco::Net
+        Poco::Util
         c-exprtk-adapter
         GTest::gtest_main
 )

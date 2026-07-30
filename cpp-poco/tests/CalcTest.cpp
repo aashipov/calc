@@ -1,6 +1,7 @@
 #include "CalcConstants.hpp"
 #include "CalcRequestHandlerFactory.hpp"
 #include "Poco/Net/HTTPServer.h"
+#include "Poco/ThreadPool.h"
 #include <gtest/gtest.h>
 #include <httplib.h>
 #include <string>
@@ -19,7 +20,8 @@ protected:
 
   inline static const std::string NOT_AN_EXPRESSION = "nan";
 
-  Poco::Net::HTTPServer server = calc::build_http_server();
+  Poco::ThreadPool tp;
+  Poco::Net::HTTPServer server = calc::build_http_server(tp);
 
   void SetUp() override { server.start(); }
   void TearDown() override { server.stop(); }

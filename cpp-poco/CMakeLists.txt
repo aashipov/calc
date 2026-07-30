@@ -6,21 +6,17 @@ project(${project_name} VERSION 0.1.0)
 
 include(GNUInstallDirs)
 
-include_directories("src")
-
-find_library(Poco_LIBRARIES NAMES PocoFoundation PocoUtil PocoNet)
-if(NOT ${Poco_FOUND})
-    message(FATAL_ERROR "Poco C++ Libraries not found.")
-endif()
-include_directories(${Poco_INCLUDE_DIRS})
+find_package(Poco REQUIRED COMPONENTS Foundation Util Net)
 
 add_executable(${project_name} app.cpp)
 
+target_include_directories(${project_name} PRIVATE "src")
+
 target_link_libraries(${project_name}
     PRIVATE
-        PocoFoundation
-        PocoNet
-        PocoUtil
+        Poco::Foundation
+        Poco::Net
+        Poco::Util
         c-exprtk-adapter
 )
 

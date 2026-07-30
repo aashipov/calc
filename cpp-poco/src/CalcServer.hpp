@@ -4,6 +4,7 @@
 #include "CalcConstants.hpp"
 #include "CalcRequestHandlerFactory.hpp"
 #include "Poco/Net/HTTPServer.h"
+#include "Poco/ThreadPool.h"
 #include "Poco/Util/ServerApplication.h"
 
 namespace calc {
@@ -21,7 +22,8 @@ protected:
   void uninitialize() { ServerApplication::uninitialize(); }
 
   int main(const std::vector<std::string> &args) {
-    Poco::Net::HTTPServer httpServer = build_http_server();
+    Poco::ThreadPool tp;
+    Poco::Net::HTTPServer httpServer = build_http_server(tp);
     // start the HTTPServer
     httpServer.start();
     // wait for CTRL-C or kill

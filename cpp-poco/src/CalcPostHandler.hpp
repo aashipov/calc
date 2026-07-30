@@ -25,7 +25,7 @@ public:
     Poco::StreamCopier::copyToString(request.stream(), expression);
     double result = calculate(expression.c_str());
     std::string result_string = to_string(result, DOUBLE_PRECISION);
-    response.setContentType(calc::TEXT_PLAIN);
+    response.setContentType(TEXT_PLAIN);
     std::ostream &responseBodyStream = response.send();
     responseBodyStream << result_string;
   }
