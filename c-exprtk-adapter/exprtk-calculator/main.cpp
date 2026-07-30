@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <iostream>
 #include <ostream>
+#include <sstream>
+#include <string>
 
 static inline const unsigned short DOUBLE_PRECISION = 40;
 
@@ -14,7 +16,7 @@ static inline std::string doubleToStringWithPrecision(double value,
 }
 
 static constexpr const char* DEFAULT_EXAMPLE_EXPRESSION =
-    "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4)+1.9e2";
+    "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2";
 
 int main(int argc, char *argv[]) {
   if (argc >= 2) {
@@ -27,5 +29,5 @@ int main(int argc, char *argv[]) {
               << DEFAULT_EXAMPLE_EXPRESSION
               << std::endl;
   }
-  EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }

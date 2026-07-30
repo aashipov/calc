@@ -35,7 +35,7 @@ closure() {
     local _CMAKE_BUILD_TYPE=Release
     #local _CMAKE_BUILD_TYPE=Debug
     local _ENABLE_CALCULATOR=ON
-    local _ENABLE_CALCULATOR=OFF
+    #local _ENABLE_CALCULATOR=OFF
     local _BUILD_DIR_NAME=${_CMAKE_BUILD_TYPE}
 
     download_exprtk

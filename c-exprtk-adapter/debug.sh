@@ -32,7 +32,7 @@ closure() {
     # Consistent across Linux bash, Cygwin terminal and Git Bash
     local _SCRIPT_DIR=$(dirname -- "$(readlink -f -- "$0")")
 
-    local _CMAKE_BUILD_TYPE=Release
+    #local _CMAKE_BUILD_TYPE=Release
     local _CMAKE_BUILD_TYPE=Debug
     local _ENABLE_CALCULATOR=ON
     #local _ENABLE_CALCULATOR=OFF

@@ -1,6 +1,9 @@
 #include "c-exprtk-adapter.h"
 #include "exprtk.hpp"
 
+#include <limits>
+#include <type_traits>
+
 namespace calc {
 
 template <typename T> inline exprtk::symbol_table<T> build_symbol_table() {
@@ -12,34 +15,28 @@ template <typename T> inline exprtk::symbol_table<T> build_symbol_table() {
   return symbol_table;
 };
 
-template <typename T>
-inline exprtk::symbol_table<T> &thread_local_symbol_table() {
-  static thread_local exprtk::symbol_table<T> table = build_symbol_table<T>();
-  return table;
-}
+template <typename T> struct thread_local_context {
+  exprtk::symbol_table<T> symbol_table = build_symbol_table<T>();
+  exprtk::expression<T> expression;
+  exprtk::parser<T> parser;
+};
 
-template <typename T> inline exprtk::expression<T> &thread_local_expression() {
-  exprtk::symbol_table<T> &symbol_table = thread_local_symbol_table<T>();
-  static thread_local exprtk::expression<T> exprtk_expression;
-  exprtk_expression.register_symbol_table(symbol_table);
-  return exprtk_expression;
-}
-
-template <typename T> inline exprtk::parser<T> &thread_local_parser() {
-  static thread_local exprtk::parser<T> parser;
-  return parser;
+template <typename T> inline thread_local_context<T> &build_context() {
+  static thread_local thread_local_context<T> ctx;
+  ctx.expression.register_symbol_table(ctx.symbol_table);
+  return ctx;
 }
 
 template <typename T>
 [[nodiscard]] inline T calculate_inner(const char *expression) noexcept {
-  exprtk::expression<T> &exprtk_expression = thread_local_expression<T>();
-  exprtk::parser<T> &parser = thread_local_parser<T>();
-  if (!parser.compile(expression, exprtk_expression)) {
+  thread_local_context<T> &ctx = build_context<T>();
+  if (!ctx.parser.compile(expression, ctx.expression)) {
     return std::numeric_limits<T>::quiet_NaN();
   }
-  const T result = exprtk_expression.value();
-  return result;
+  return ctx.expression.value();
 }
+
+} // namespace calc
 
 /* C wrapper -------------------------------------------------------------- */
 
@@ -50,5 +47,3 @@ double calculate(const char *expression) {
 }
 
 } // extern "C"
-
-} // namespace calc
