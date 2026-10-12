@@ -28,3 +28,5 @@ target/
 nohup.out
 .idea/
 .vscode/
+test/native-client/main.o
+test/native-client/native-client

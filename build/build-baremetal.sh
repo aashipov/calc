@@ -3,7 +3,7 @@
 # Builds everything locally.
 
 adapters() {
-    local IMPLEMENTATIONS="c-exprtk-adapter java-exprtk-adapter rs_expr_adapter"
+    local IMPLEMENTATIONS="c-exprtk-adapter java-exprtk-adapter"
     for IMPLEMENTATION in ${IMPLEMENTATIONS}
     do
         printf "\n${IMPLEMENTATION}\n"
