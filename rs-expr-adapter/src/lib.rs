@@ -9,12 +9,14 @@ pub extern "C" fn calculate_via_meval(expr: *const std::os::raw::c_char) -> std:
     if expr.is_null() {
         return f64::NAN;
     }
-    let expression = unsafe { CStr::from_ptr(expr).to_string_lossy() };
-    let eval = meval::eval_str(expression);
-    match eval {
-        Ok(result) => return result,
-        Err(_err) => f64::NAN,
+    let c_str = unsafe { CStr::from_ptr(expr) };
+    let Ok(expr_str) = c_str.to_str() else {
+        return f64::NAN;
+    };
+    if expr_str.chars().all(|c| c.is_whitespace()) {
+        return f64::NAN;
     }
+    return meval::eval_str(expr_str).unwrap_or(f64::NAN);
 }
 
 #[cfg(test)]

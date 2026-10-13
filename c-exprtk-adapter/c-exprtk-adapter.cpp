@@ -46,4 +46,8 @@ double calculate(const char *expression) {
   return calc::calculate_inner<double>(expression);
 }
 
+double calculate_via_exprtk(const char *expression) {
+  return calc::calculate_inner<double>(expression);
+}
+
 } // extern "C"

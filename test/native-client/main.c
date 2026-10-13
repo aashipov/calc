@@ -7,7 +7,7 @@
 double exprtk_time(const char *expr, long long max_cycles) {
   clock_t start = clock();
   for (long long i = 0; i < max_cycles; i++) {
-    calculate(expr);
+    calculate_via_exprtk(expr);
   }
   clock_t finish = clock();
   return (double)(finish - start) / CLOCKS_PER_SEC;
@@ -24,7 +24,7 @@ double meval_time(const char *expr, long long max_cycles) {
 
 void evaluate(const char *expr, long long max_cycles) {
   printf("Evaluating %s\n", expr);
-  double result = calculate(expr);
+  double result = calculate_via_exprtk(expr);
   printf("\texprtk:\t%lf\n", result);
   result = calculate_via_meval(expr);
   printf("\tmeval:\t%lf\n", result);
