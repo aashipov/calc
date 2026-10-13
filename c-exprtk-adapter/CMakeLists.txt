@@ -13,7 +13,7 @@ set_target_properties(${project_name} PROPERTIES
     PUBLIC_HEADER ${project_name}.h
 )
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${project_name}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

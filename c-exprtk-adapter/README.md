@@ -6,16 +6,30 @@ Download exprtk the lib to user's include directory:
 curl -L https://raw.githubusercontent.com/ArashPartow/exprtk/refs/heads/master/exprtk.hpp -o ${HOME}/.local/include/exprtk.hpp
 ```
 
-## Build
+## Build with script
 
 ### Debug
 
-```shell
+```sh
 ./debug.sh
 ```
 
 ### Release
 
-```shell
+```sh
 ./release.sh
+```
+
+## Build with make
+
+### user
+
+```sh
+make clean && make PREFIX=${HOME}/.local && make install PREFIX=${HOME}/.local
+```
+
+### system
+
+```sh
+make clean && sudo make && sudo make install
 ```
