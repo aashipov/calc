@@ -26,7 +26,7 @@ SRCS     := java-expr-adapter.c
 HEADERS := org_dummy_calc_JavaExprAdapter.h
 OBJS     := $(SRCS:.c=.o)
 
-LDLIBS   = -lc-exprtk-adapter -lrs-expr-adapter
+LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
 
 .PHONY: all clean generate-jni-header install-native mvn-clean-package
 

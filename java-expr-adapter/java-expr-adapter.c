@@ -1,6 +1,6 @@
 #include "c-exprtk-adapter.h"
 #include "org_dummy_calc_JavaExprAdapter.h"
-#include "rs-expr-adapter.h"
+#include "c-meval-adapter.h"
 #include <jni.h>
 
 JNIEXPORT jdouble JNICALL

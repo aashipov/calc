@@ -1,6 +1,6 @@
-# Rust meval C ABI adapter
+# meval C ABI adapter
 
-Rust [meval-rs](https://github.com/rekka/meval-rs) math expression parsing & evaluation C ABI adapter
+[meval-rs](https://github.com/rekka/meval-rs) math expression parsing & evaluation C ABI adapter
 
 ## Build
 

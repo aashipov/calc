@@ -31,6 +31,7 @@ closure() {
     do_post ${BASE_URL} ${COMPLEX_EXPRESSION}
     do_post ${BASE_URL}/mxparser ${COMPLEX_EXPRESSION}
     do_post ${BASE_URL}/exprtk ${COMPLEX_EXPRESSION}
+    do_post ${BASE_URL}/meval ${COMPLEX_EXPRESSION}
 }
 
 closure

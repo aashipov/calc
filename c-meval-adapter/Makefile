@@ -26,9 +26,9 @@ endif
 
 CARGO        := cargo
 TARGET_DIR   := target
-HEADERS := rs-expr-adapter.h
-LIB_FILE_NAME_ORIG := librs_expr_adapter.$(LIB_EXT)
-LIB_FILE_NAME := librs-expr-adapter.$(LIB_EXT)
+HEADERS := c-meval-adapter.h
+LIB_FILE_NAME_ORIG := libc_meval_adapter.$(LIB_EXT)
+LIB_FILE_NAME := libc-meval-adapter.$(LIB_EXT)
 LIB_FILE_IN_TARGET := $(TARGET_DIR)/$(PROFILE)/$(LIB_FILE_NAME_ORIG)
 
 .PHONY: all clean build test install uninstall

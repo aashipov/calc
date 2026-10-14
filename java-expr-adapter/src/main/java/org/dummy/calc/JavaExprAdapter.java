@@ -19,7 +19,7 @@ public class JavaExprAdapter {
     private static final String JNI = "JNI";
     private static final String EXPRTK_LIBRARY_NAME = "libc-exprtk-adapter.so";
     private static final String EXPRTK_LIBRARY_FUNCTION_NAME = "calculate_via_exprtk";
-    private static final String MEVAL_LIBRARY_NAME = "librs-expr-adapter.so";
+    private static final String MEVAL_LIBRARY_NAME = "libc-meval-adapter.so";
     private static final String MEVAL_LIBRARY_FUNCTION_NAME = "calculate_via_meval";
     private static final String ADAPTER_NAME = "java-expr-adapter";
     private static final Linker LINKER = Linker.nativeLinker();

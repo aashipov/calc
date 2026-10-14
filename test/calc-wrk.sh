@@ -30,6 +30,7 @@ closure() {
     do_post
     do_post "mxparser"
     do_post "exprtk"
+    do_post "meval"
 }
 
 closure
