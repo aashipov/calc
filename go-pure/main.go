@@ -2,15 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-)
-
-var (
-	httpPort = "8080"
+	"time"
 )
 
 func enableGracefulShutdown(server *http.Server) {
@@ -19,18 +17,20 @@ func enableGracefulShutdown(server *http.Server) {
 	go func() {
 		sig := <-gracefulShutdown
 		log.Printf("%s received, shutdown", sig)
-		server.Shutdown(context.Background())
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		server.Shutdown(ctx)
 	}()
 }
 
 func main() {
-	server := http.Server{Addr: ":" + httpPort, Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+	server := http.Server{Addr: ":" + HttpPort, Handler: http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		CalcHandler(w, req)
 	})}
 	enableGracefulShutdown(&server)
-	log.Printf("Starting server on : %s", httpPort)
+	log.Printf("Starting server on : %s", HttpPort)
 	err := server.ListenAndServe()
-	if err != nil {
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}
 }

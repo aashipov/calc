@@ -13,7 +13,6 @@ import (
 var baseUrl = NaN
 
 func TestMain(m *testing.M) {
-	http.HandleFunc("/", CalcHandler)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		CalcHandler(w, req)
 	}))
@@ -49,22 +48,26 @@ func TestApp(t *testing.T) {
 	tests := []struct {
 		name          string
 		requestMethod string
+		path          string
 		expression    string
 		expected      string
 	}{
-		{"welcome", "GET", "", string(Welcome)},
-		{"simple addition", "POST", "2+2", "4"},
-		{"complex expression", "POST", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
-		{"invalid expression", "POST", "invalid", NaN},
+		{"welcome", "GET", "/", "", string(Welcome)},
+		{"exprtk: simple addition", "POST", "/", "2+2", "4"},
+		{"exprtk: complex expression", "POST", "/", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
+		{"exprtk: invalid expression", "POST", "/", "invalid", NaN},
+		{"meval: simple addition", "POST", "/meval", "2+2", "4"},
+		{"meval: complex expression", "POST", "/meval", "(-abs(pi*2-e-(32-4)/(23+4/5)-(2-4)*(4+6-98.2)+4))+1.9e2", "19.988432890485228"},
+		{"meval: invalid expression", "POST", "/meval", "invalid", NaN},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var actual string
 			if strings.EqualFold("POST", tt.requestMethod) {
-				actual = request(t, fmt.Sprintf("http://%s/", baseUrl), tt.requestMethod, 200, strings.NewReader(tt.expression))
+				actual = request(t, fmt.Sprintf("http://%s/", baseUrl+tt.path), tt.requestMethod, 200, strings.NewReader(tt.expression))
 			} else {
-				actual = request(t, fmt.Sprintf("http://%s/", baseUrl), tt.requestMethod, 200, nil)
+				actual = request(t, fmt.Sprintf("http://%s/", baseUrl+tt.path), tt.requestMethod, 200, nil)
 			}
 			if actual != tt.expected {
 				t.Errorf("Expected %s but got %v", tt.expected, actual)

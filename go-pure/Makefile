@@ -1,10 +1,9 @@
-.PHONY: all
+.PHONY: all clean test debug-build release-build
 
 all: clean test debug-build release-build
 
 clean:
-	rm -rf ./app
-	rm -rf ./app-debug
+	rm -rf ./app ./app-debug
 
 test:
 	go test -v

@@ -3,14 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
-)
-
-const (
-	TextPlain = "text/plain"
-)
-
-var (
-	Welcome = []byte("Welcome to calc service\nHTTP POST your expression")
+	"strings"
 )
 
 func CalcHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +19,13 @@ func CalcHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		expression := string(bodyBytes)
-		resultString := CalculateViaExprtk(expression)
+		path := r.URL.Path
+		resultString := ""
+		if strings.HasPrefix(path, "/meval") {
+			resultString = CalculateViaMeval(expression)
+		} else {
+			resultString = CalculateViaExprtk(expression)
+		}
 		w.Write([]byte(resultString))
 	}
 }

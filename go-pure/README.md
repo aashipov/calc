@@ -1,12 +1,12 @@
 # Go flavor #
 
-[C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter in Go
+[c-exprtk-adapter](./c-exprtk-adapter) and [c-meval-adapter](./c-meval-adapter) RESTFul adapter in pure Go.
 
 ## Requirements ##
 
 `go`, `gcc-go`, [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
-Build `../c-exprtk-adapter` first
+Build `../c-exprtk-adapter` and `../c-meval-adapter` first
 
 ## Build ##
 
