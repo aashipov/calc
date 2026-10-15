@@ -1,6 +1,6 @@
 # Go flavor #
 
-[c-exprtk-adapter](./c-exprtk-adapter) and [c-meval-adapter](./c-meval-adapter) RESTFul adapter in pure Go.
+[c-exprtk-adapter](../c-exprtk-adapter) and [c-meval-adapter](../c-meval-adapter) RESTFul adapter in pure Go.
 
 ## Requirements ##
 

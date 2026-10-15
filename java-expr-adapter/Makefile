@@ -28,6 +28,8 @@ OBJS     := $(SRCS:.c=.o)
 
 LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
 
+JAVA_BUILD_CMD := mvn clean package
+
 .PHONY: all clean generate-jni-header install-native mvn-clean-package
 
 all: clean generate-jni-header $(TARGET) install-native mvn-clean-package
@@ -53,5 +55,5 @@ install-native:
 	install -m 755 $(TARGET) $(LIBDIR)/
 
 mvn-clean-package:
-	mvn clean install
-	SHARED_LIBRARY_HARNESS=FFM mvn clean install
+	$(JAVA_BUILD_CMD)
+	SHARED_LIBRARY_HARNESS=FFM $(JAVA_BUILD_CMD)
