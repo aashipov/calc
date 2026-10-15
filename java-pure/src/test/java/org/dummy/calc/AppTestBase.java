@@ -33,6 +33,7 @@ public abstract class AppTestBase {
     private static final String MXPARSER_EXPECTED = "19.98843289048526";
     private static final String EXPRTK_EXPECTED = "19.988432890485228";
     private static final String EXPRTK_ENDPOINT = "/exprtk";
+    private static final String MEVAL_ENDPOINT = "/meval";
     private static final String INVALID_EXPRESSION = "abc";
     protected static final String BASE_URL = "http://0.0.0.0:" + DEFAULT_HTTP_PORT;
     private static final String NAN = "NaN";
@@ -75,7 +76,10 @@ public abstract class AppTestBase {
                     Arguments.of(new CalcTestConfig("mxparserInvalidExpression", RequestMethod.POST, BASE_URL + MXPARSER_ENDPOINT, INVALID_EXPRESSION, NAN)),
                     Arguments.of(new CalcTestConfig("exprtkSimpleExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT_FLOAT)),
                     Arguments.of(new CalcTestConfig("exprtkComplexExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, COMPLEX_EXPRESSION, EXPRTK_EXPECTED)),
-                    Arguments.of(new CalcTestConfig("exprtkInvalidExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, INVALID_EXPRESSION, NAN))
+                    Arguments.of(new CalcTestConfig("exprtkInvalidExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, INVALID_EXPRESSION, NAN)),
+                    Arguments.of(new CalcTestConfig("mevalSimpleExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT_FLOAT)),
+                    Arguments.of(new CalcTestConfig("mevalComplexExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, COMPLEX_EXPRESSION, EXPRTK_EXPECTED)),
+                    Arguments.of(new CalcTestConfig("mevalInvalidExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, INVALID_EXPRESSION, NAN))
             );
         }
     }

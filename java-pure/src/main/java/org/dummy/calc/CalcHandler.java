@@ -30,6 +30,8 @@ public class CalcHandler implements HttpHandler {
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
     private static final String EXPRTK = "exprtk";
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+    private static final String MEVAL = "meval";
+    private static final Pattern MEVAL_PATTERN = Pattern.compile(MEVAL);
     static final String NAN = "NaN";
 
     static {
@@ -48,7 +50,9 @@ public class CalcHandler implements HttpHandler {
                 if (MXPARSER_PATTERN.matcher(url).find()) {
                     result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
                 } else if (EXPRTK_PATTERN.matcher(url).find()) {
-                    result = "" + JavaExprtkAdapter.calculate(expr);
+                    result = "" + JavaExprAdapter.calculateViaExprtk(expr);
+                } else if (MEVAL_PATTERN.matcher(url).find()) {
+                    result = "" + JavaExprAdapter.calculateViaMeval(expr);
                 } else {
                     result = (new com.udojava.evalex.Expression(expr).eval()).toString();
                 }
