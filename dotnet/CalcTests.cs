@@ -23,7 +23,7 @@
             });
         }
 
-        static async void Check(HttpStatusCode code, string content, HttpResponseMessage response)
+        static async Task Check(HttpStatusCode code, string content, HttpResponseMessage response)
         {
             Assert.Equal(code, response.StatusCode);
             string responseBody = await response.Content.ReadAsStringAsync();
@@ -44,7 +44,7 @@
         public async Task Welcome()
         {
             HttpResponseMessage response = await _client.GetAsync("/");
-            Check(HttpStatusCode.OK, Calc.Welcome, response);
+            await Check(HttpStatusCode.OK, Calc.Welcome, response);
         }
 
         [Fact]
@@ -52,7 +52,7 @@
         {
             StringContent content = ToStringContent(SimpleExpression);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
-            Check(HttpStatusCode.OK, SimpleExpressionResult, response);
+            await Check(HttpStatusCode.OK, SimpleExpressionResult, response);
         }
 
         [Fact]
@@ -60,7 +60,7 @@
         {
             StringContent content = ToStringContent(ComplexExpression);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
-            Check(HttpStatusCode.OK, ComplexExpressionExprtkResult, response);
+            await Check(HttpStatusCode.OK, ComplexExpressionExprtkResult, response);
         }
 
         [Fact]
@@ -68,7 +68,7 @@
         {
             StringContent content = ToStringContent(Calc.NaN);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.EXPRTK, content);
-            Check(HttpStatusCode.OK, Calc.NaN, response);
+            await Check(HttpStatusCode.OK, Calc.NaN, response);
         }
 
         [Fact]
@@ -76,7 +76,7 @@
         {
             StringContent content = ToStringContent(SimpleExpression);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.MXPARSER, content);
-            Check(HttpStatusCode.OK, SimpleExpressionResult, response);
+            await Check(HttpStatusCode.OK, SimpleExpressionResult, response);
         }
 
         [Fact]
@@ -84,7 +84,7 @@
         {
             StringContent content = ToStringContent(ComplexExpression);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.MXPARSER, content);
-            Check(HttpStatusCode.OK, ComplexExpressionMxparserResult, response);
+            await Check(HttpStatusCode.OK, ComplexExpressionMxparserResult, response);
         }
 
         [Fact]
@@ -92,7 +92,31 @@
         {
             StringContent content = ToStringContent(Calc.NaN);
             HttpResponseMessage response = await _client.PostAsync("/" + Calc.MXPARSER, content);
-            Check(HttpStatusCode.OK, Calc.NaN, response);
+            await Check(HttpStatusCode.OK, Calc.NaN, response);
+        }
+
+        [Fact]
+        public async Task EvaluateSimpleExpressionViaMeval()
+        {
+            StringContent content = ToStringContent(SimpleExpression);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.MEVAL, content);
+            await Check(HttpStatusCode.OK, SimpleExpressionResult, response);
+        }
+
+        [Fact]
+        public async Task EvaluateComplexExpressionViaMeval()
+        {
+            StringContent content = ToStringContent(ComplexExpression);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.MEVAL, content);
+            await Check(HttpStatusCode.OK, ComplexExpressionExprtkResult, response);
+        }
+
+        [Fact]
+        public async Task EvaluateInvalidExpressionViaMeval()
+        {
+            StringContent content = ToStringContent(Calc.NaN);
+            HttpResponseMessage response = await _client.PostAsync("/" + Calc.MEVAL, content);
+            await Check(HttpStatusCode.OK, Calc.NaN, response);
         }
     }
 }

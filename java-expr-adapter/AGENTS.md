@@ -2,7 +2,7 @@
 
 Refer to [README.md](./README.md) for human-facing project details.
 
-A Java class exposing a API for FFM & JNI native calls to [c-exprtk-adapter](./c-exprtk-adapter) and [c-meval-adapter](./c-meval-adapter)
+A Java class exposing a API for FFM & JNI native calls to [c-exprtk-adapter](../c-exprtk-adapter) and [c-meval-adapter](../c-meval-adapter)
 
 ## Core Operational Mantra
 

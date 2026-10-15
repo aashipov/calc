@@ -19,16 +19,16 @@
 
 ## Development
 
-```shell
+```sh
 dotnet clean && dotnet build && Logging__LogLevel__Default=Warning dotnet test && Logging__LogLevel__Default=Warning ./bin/Debug/net10.0/calc
 ```
 
 ## Release
 
-```shell
+```sh
 dotnet publish -c Release
 ```
 
-```shell
+```sh
 Logging__LogLevel__Default=Warning ./bin/Release/net10.0/calc
 ```

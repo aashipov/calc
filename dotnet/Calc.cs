@@ -6,7 +6,10 @@ namespace Calc
     public static class Calc
     {
         [System.Runtime.InteropServices.DllImport("c-exprtk-adapter")]
-        static extern double calculate(string expression);
+        static extern double calculate_via_exprtk(string expression);
+
+        [System.Runtime.InteropServices.DllImport("c-meval-adapter")]
+        static extern double calculate_via_meval(string expression);
 
         public const string Welcome = "Welcome to calc service\nHTTP POST your expression\n";
 
@@ -14,6 +17,8 @@ namespace Calc
 
         public const string EXPRTK = "exprtk";
         public const string MXPARSER = "mxparser";
+
+        public const string MEVAL = "meval";
 
         static async Task<IResult> Get()
         {
@@ -28,13 +33,18 @@ namespace Calc
                 using StreamReader stream = new(request.Body, System.Text.Encoding.UTF8);
                 string expr = await stream.ReadToEndAsync();
                 double result = double.NaN;
-                if (request.GetDisplayUrl().Contains(MXPARSER))
+                string path = request.Path;
+                if (path.Contains(MXPARSER))
                 {
                     result = new org.mariuszgromada.math.mxparser.Expression(expr).calculate();
                 }
+                else if (path.Contains(MEVAL))
+                {
+                    result = calculate_via_meval(expr);
+                }
                 else
                 {
-                    result = calculate(expr);
+                    result = calculate_via_exprtk(expr);
                 }
                 responseText = result.ToString("F14");
             }
