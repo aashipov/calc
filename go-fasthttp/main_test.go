@@ -21,8 +21,8 @@ func TestMain(m *testing.M) {
 			log.Fatalf("Test fasthttp server failed: %v", err.Error())
 		}
 	}()
-	defer listener.Close()
 	exitCode := m.Run()
+	listener.Close()
 	os.Exit(exitCode)
 }
 

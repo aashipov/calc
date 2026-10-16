@@ -8,12 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	_ "bitbucket.org/anatoly_a_shipov/calc-go-fasthttp/swagger"
 	"github.com/valyala/fasthttp"
-)
-
-const (
-	httpPort = "8080"
 )
 
 // enableGracefulShutdown listens for SIGINT and SIGTERM signals and shuts down the server gracefully.
@@ -23,19 +18,21 @@ func enableGracefulShutdown(server *fasthttp.Server) {
 	go func() {
 		sig := <-gracefulShutdown
 		log.Printf("%s received, shutdown", sig)
-		server.ShutdownWithContext(context.Background())
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		server.ShutdownWithContext(ctx)
 	}()
 }
 
 func main() {
-server := &fasthttp.Server{
-	Handler:     CalcHandler,
-	ReadTimeout:  5 * time.Second,
-	WriteTimeout: 5 * time.Second,
-}
+	server := &fasthttp.Server{
+		Handler:      CalcHandler,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+	}
 
 	enableGracefulShutdown(server)
-	err := server.ListenAndServe("0.0.0.0:" + httpPort)
+	err := server.ListenAndServe("0.0.0.0:" + HttpPort)
 	if err != nil {
 		log.Fatalf("server failed: %v", err)
 	}

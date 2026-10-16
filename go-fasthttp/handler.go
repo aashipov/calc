@@ -8,40 +8,48 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-const (
-	SWAGGER    = "swagger"
-	OPENAPI_UI = "openapi-ui"
-)
-
-var (
-	Welcome = []byte("Welcome to calc service\nHTTP POST your expression")
-)
-
 // @Summary      Welcome
 // @Description  Responds Welcome
 // @Router       / [get]
 // @Produce      text/plain
 // @Success      200  {string} Welcome
 func welcome(ctx *fasthttp.RequestCtx) {
-	ctx.SetContentType("text/plain; charset=utf-8")
+	ctx.SetContentType(TextPlain)
 	ctx.SetStatusCode(fasthttp.StatusOK)
 	ctx.Write(Welcome)
 }
 
-// @Summary      Evaluate
+// @Summary      ViaExprtk
 // @Description  Responds Calculation Result
 // @Router       / [post]
+// @Router       /exprtk [post]
 // @Param        body body string true "body"
 // @Accept text/plain
 // @Produce      text/plain
-// @Success      200  {string} Evaluate
-func evaluate(ctx *fasthttp.RequestCtx) {
+// @Success      200  {string} ViaExprtk
+func viaExprtk(ctx *fasthttp.RequestCtx) {
 	expression := string(ctx.Request.Body())
 	result := CalculateViaExprtk(expression)
-	ctx.SetContentType("text/plain; charset=utf-8")
+	ctx.SetContentType(TextPlain)
 	ctx.SetStatusCode(fasthttp.StatusOK)
 	ctx.WriteString(result)
 }
+
+// @Summary      ViaMeval
+// @Description  Responds Calculation Result
+// @Router       /meval [post]
+// @Param        body body string true "body"
+// @Accept text/plain
+// @Produce      text/plain
+// @Success      200  {string} ViaMeval
+func viaMeval(ctx *fasthttp.RequestCtx) {
+	expression := string(ctx.Request.Body())
+	result := CalculateViaMeval(expression)
+	ctx.SetContentType(TextPlain)
+	ctx.SetStatusCode(fasthttp.StatusOK)
+	ctx.WriteString(result)
+}
+
 func CalcHandler(ctx *fasthttp.RequestCtx) {
 	uri := string(ctx.RequestURI())
 	method := string(ctx.Method())
@@ -52,7 +60,12 @@ func CalcHandler(ctx *fasthttp.RequestCtx) {
 	default:
 		switch method {
 		case fasthttp.MethodPost:
-			evaluate(ctx)
+			path := string(ctx.Path())
+			if strings.HasPrefix(path, "/meval") {
+				viaMeval(ctx)
+			} else {
+				viaExprtk(ctx)
+			}
 		default:
 			welcome(ctx)
 		}

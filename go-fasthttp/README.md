@@ -1,12 +1,16 @@
 # Go FastHTTP flavor
 
-[C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter in Go
+[c-exprtk-adapter](../c-exprtk-adapter) and [c-meval-adapter](../c-meval-adapter) RESTFul adapter in Go FastHTTP
 
 ## Requirements
 
 `go`, `gcc-go`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
-Build `../c-exprtk-adapter` first
+```sh
+go install github.com/go-delve/delve/cmd/dlv@latest && go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+Build `../c-exprtk-adapter` and `../c-meval-adapter` first
 
 ## Build
 

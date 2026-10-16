@@ -30,5 +30,45 @@ paths:
           description: OK
           schema:
             type: string
-      summary: Evaluate
+      summary: ViaExprtk
+  /exprtk:
+    post:
+      consumes:
+      - text/plain
+      description: Responds Calculation Result
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ViaExprtk
+  /meval:
+    post:
+      consumes:
+      - text/plain
+      description: Responds Calculation Result
+      parameters:
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ViaMeval
 swagger: "2.0"
