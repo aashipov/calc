@@ -1,4 +1,4 @@
-.PHONY: all clean test debug-build release-build
+.PHONY: all clean test debug-build release-build debug-run release-run
 
 all: clean test debug-build release-build
 
