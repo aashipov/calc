@@ -5,7 +5,7 @@ TARGET   = native-client
 SRCS     = main.c
 OBJS     = $(SRCS:.c=.o)
 
-LDLIBS   = -lc-exprtk-adapter -lrs-expr-adapter
+LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
 
 .PHONY: all clean
 

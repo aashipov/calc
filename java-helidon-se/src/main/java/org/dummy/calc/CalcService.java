@@ -17,6 +17,7 @@ class CalcService implements HttpService {
     private static final byte[] WELCOME_BYTES = WELCOME.getBytes(StandardCharsets.UTF_8);
     private static final String MXPARSER = "mxparser";
     private static final String EXPRTK = "exprtk";
+    private static final String MEVAL = "meval";
     private static final String NAN = "NaN";
 
     static {
@@ -29,7 +30,8 @@ class CalcService implements HttpService {
                 .get("/", this::respondWelcome)
                 .post("/", this::respondViaEvalex)
                 .post("/" + MXPARSER, this::respondViaMxParser)
-                .post("/" + EXPRTK, this::respondViaMxExprtk);
+                .post("/" + EXPRTK, this::respondViaMxExprtk)
+                .post("/" + MEVAL, this::respondViaMeval);
     }
 
     private void textResponse(ServerResponse response, Status status, byte[] body) {
@@ -56,7 +58,7 @@ class CalcService implements HttpService {
         String expr = request.content().as(String.class);
         String result = NAN;
         try {
-            result = "" + JavaExprtkAdapter.calculate(expr);
+            result = "" + JavaExprAdapter.calculateViaExprtk(expr);
         } catch (Exception ex) {
             LOGGER.log(Level.INFO, ex.getMessage());
         } finally {
@@ -69,6 +71,18 @@ class CalcService implements HttpService {
         String result = NAN;
         try {
             result = (new com.udojava.evalex.Expression(expr).eval()).toString();
+        } catch (Exception ex) {
+            LOGGER.log(Level.INFO, ex.getMessage());
+        } finally {
+            textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private void respondViaMeval(ServerRequest request, ServerResponse response) {
+        String expr = request.content().as(String.class);
+        String result = NAN;
+        try {
+            result = "" + JavaExprAdapter.calculateViaMeval(expr);
         } catch (Exception ex) {
             LOGGER.log(Level.INFO, ex.getMessage());
         } finally {

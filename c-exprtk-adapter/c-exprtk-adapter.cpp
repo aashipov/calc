@@ -27,13 +27,39 @@ template <typename T> inline thread_local_context<T> &build_context() {
   return ctx;
 }
 
+bool is_null_or_blank_c_string(const char *str) {
+  // 1. Safety check for null
+  if (!str) {
+    return true;
+  }
+
+  // 2. Check for empty string "" or advance past whitespace
+  while (*str != '\0') {
+    if (!std::isspace(static_cast<unsigned char>(*str))) {
+      return false; // Found a valid visible character
+    }
+    str++;
+  }
+
+  return true; // Iterated through the whole string and found only spaces or
+               // '\0'
+}
+
 template <typename T>
-[[nodiscard]] inline T calculate_inner(const char *expression) noexcept {
-  thread_local_context<T> &ctx = build_context<T>();
-  if (!ctx.parser.compile(expression, ctx.expression)) {
+[[nodiscard]] inline T calculate_inner(const char *expression) {
+  if (is_null_or_blank_c_string(expression)) {
+    double my_nan = std::numeric_limits<double>::quiet_NaN();
     return std::numeric_limits<T>::quiet_NaN();
   }
-  return ctx.expression.value();
+  try {
+    thread_local_context<T> &ctx = build_context<T>();
+    if (!ctx.parser.compile(expression, ctx.expression)) {
+      return std::numeric_limits<T>::quiet_NaN();
+    }
+    return ctx.expression.value();
+  } catch (...) {
+    return std::numeric_limits<T>::quiet_NaN();
+  }
 }
 
 } // namespace calc
