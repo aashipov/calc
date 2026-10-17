@@ -1,5 +1,7 @@
 # Calculator Service: Pure Java flavor
 
+Build `../c-exprtk-adapter`, `../c-meval-adapter` and `../java-expr-adapter` first
+
 ## Build & run via make
 
 ### JNI
