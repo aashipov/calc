@@ -1,9 +1,11 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 pub const EXPRTK: &'static str = "exprtk";
+pub const MEVAL: &'static str = "meval";
 pub const NAN: &'static str = "NaN";
 pub const SIMPLE_EXPRESSION: &'static str = "2+2";
 pub const SIMPLE_EXPRESSION_RESULT: &'static str = "4";
@@ -12,20 +14,29 @@ pub const COMPLEX_EXPRESSION: &'static str =
 pub const COMPLEX_EXPRESSION_RESULT: &'static str = "19.988432890485228";
 
 pub fn via_meval(expr: String) -> String {
-    let eval = meval::eval_str(expr);
-    match eval {
-        Ok(result) => return result.to_string(),
-        Err(_) => return NAN.to_string(),
+    let trimmed = expr.trim();
+    if trimmed.is_empty() {
+        return NAN.to_owned();
     }
+    let Ok(expr_cstring) = std::ffi::CString::new(trimmed) else {
+        return NAN.to_owned();
+    };
+    let ptr = expr_cstring.as_ptr();
+    let result = unsafe { calculate_via_meval(ptr) };
+    result.to_string()
 }
 
 pub fn via_exprtk(expr: String) -> String {
-    let expr_c_string = std::ffi::CString::new(expr).expect("CString::new failed");
-    let expr_c_ptr: *const std::ffi::c_char = expr_c_string.as_ptr();
-    unsafe {
-        let result = calculate(expr_c_ptr);
-        return result.to_string();
+    let trimmed = expr.trim();
+    if trimmed.is_empty() {
+        return NAN.to_owned();
     }
+    let Ok(expr_cstring) = std::ffi::CString::new(trimmed) else {
+        return NAN.to_owned();
+    };
+    let ptr = expr_cstring.as_ptr();
+    let result = unsafe { calculate_via_exprtk(ptr) };
+    result.to_string()
 }
 
 #[cfg(test)]
