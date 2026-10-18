@@ -43,18 +43,25 @@ mod tests {
     }
 
     test_lib_inner!(
-        calculate_simple,
+        lib_simple_expression,
         crate::calculate_via_meval,
         SIMPLE_EXPRESSION,
         SIMPLE_EXPRESSION_RESULT
     );
 
     test_lib_inner!(
-        calculate_complex,
+        lib_complex_expression,
         crate::calculate_via_meval,
         COMPLEX_EXPRESSION,
         COMPLEX_EXPRESSION_RESULT
     );
 
-    test_lib_inner!(calculate_invalid, crate::calculate_via_meval, NAN, NAN);
+    test_lib_inner!(lib_blank, crate::calculate_via_meval, "", NAN);
+
+    test_lib_inner!(
+        lib_whitespace_only,
+        crate::calculate_via_meval,
+        "   \\n\\r\\l\\t       \\n",
+        NAN
+    );
 }
