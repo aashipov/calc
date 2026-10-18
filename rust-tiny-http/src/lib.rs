@@ -53,34 +53,48 @@ mod tests {
     }
 
     test_lib_inner!(
-        meval_simple,
+        lib_simple_expression_meval,
         crate::via_meval,
         crate::SIMPLE_EXPRESSION,
         crate::SIMPLE_EXPRESSION_RESULT
     );
 
     test_lib_inner!(
-        meval_complex,
+        lib_complex_expression_meval,
         crate::via_meval,
         crate::COMPLEX_EXPRESSION,
         crate::COMPLEX_EXPRESSION_RESULT
     );
 
-    test_lib_inner!(meval_invalid, crate::via_meval, crate::NAN, crate::NAN);
+    test_lib_inner!(lib_blank_meval, crate::via_meval, "", crate::NAN);
 
     test_lib_inner!(
-        exprtk_simple,
+        lib_whitespace_meval,
+        crate::via_meval,
+        "   \\n\\r\\l\\t       \\n",
+        crate::NAN
+    );
+
+    test_lib_inner!(
+        lib_simple_expression_exprtk,
         crate::via_exprtk,
         crate::SIMPLE_EXPRESSION,
         crate::SIMPLE_EXPRESSION_RESULT
     );
 
     test_lib_inner!(
-        exprtk_complex,
+        lib_complex_expression_exprtk,
         crate::via_exprtk,
         crate::COMPLEX_EXPRESSION,
         crate::COMPLEX_EXPRESSION_RESULT
     );
 
-    test_lib_inner!(exprtk_invalid, crate::via_exprtk, crate::NAN, crate::NAN);
+    test_lib_inner!(lib_blank_exprtk, crate::via_exprtk, crate::NAN, crate::NAN);
+
+    test_lib_inner!(
+        lib_whitespace_exprtk,
+        crate::via_exprtk,
+        "   \\n\\r\\l\\t       \\n",
+        crate::NAN
+    );
 }
