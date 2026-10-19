@@ -13,13 +13,13 @@ async fn respond_welcome() -> HttpResponse {
     return text_response(WELCOME.to_owned());
 }
 
-#[post("{tails:.*}")]
+#[post("/meval")]
 async fn respond_via_meval(expr: String) -> HttpResponse {
     let result = via_meval(expr);
     return text_response(result);
 }
 
-#[post("/exprtk")]
+#[post("{tails:.*}")]
 async fn respond_via_exprkt(expr: String) -> HttpResponse {
     let result = via_exprtk(expr);
     return text_response(result);

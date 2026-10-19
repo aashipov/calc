@@ -60,25 +60,39 @@ mod tests {
     test_calc_inner!(welcome, "GET", "/", "", crate::handler::WELCOME);
 
     test_calc_inner!(
-        meval_simple,
+        simple_expression_meval,
         "POST",
-        "/",
+        format!("/{}", calc_ntex::MEVAL).as_str(),
         calc_ntex::SIMPLE_EXPRESSION,
         calc_ntex::SIMPLE_EXPRESSION_RESULT
     );
 
     test_calc_inner!(
-        meval_complex,
+        complex_expression_meval,
         "POST",
-        "/",
+        format!("/{}", calc_ntex::MEVAL).as_str(),
         calc_ntex::COMPLEX_EXPRESSION,
         calc_ntex::COMPLEX_EXPRESSION_RESULT
     );
 
-    test_calc_inner!(meval_invalid, "POST", "/", calc_ntex::NAN, calc_ntex::NAN);
+    test_calc_inner!(
+        blank_meval,
+        "POST",
+        format!("/{}", calc_ntex::MEVAL).as_str(),
+        "",
+        calc_ntex::NAN
+    );
 
     test_calc_inner!(
-        exprtk_simple,
+        whitespace_meval,
+        "POST",
+        format!("/{}", calc_ntex::MEVAL).as_str(),
+        "   \\n\\r\\l\\t       \\n",
+        calc_ntex::NAN
+    );
+
+    test_calc_inner!(
+        simple_expression_exprtk,
         "POST",
         format!("/{}", calc_ntex::EXPRTK).as_str(),
         calc_ntex::SIMPLE_EXPRESSION,
@@ -86,7 +100,7 @@ mod tests {
     );
 
     test_calc_inner!(
-        exprtk_complex,
+        complex_expression_exprtk,
         "POST",
         format!("/{}", calc_ntex::EXPRTK).as_str(),
         calc_ntex::COMPLEX_EXPRESSION,
@@ -94,10 +108,18 @@ mod tests {
     );
 
     test_calc_inner!(
-        exprtk_invalid,
+        blank_exprtk,
         "POST",
         format!("/{}", calc_ntex::EXPRTK).as_str(),
-        calc_ntex::NAN,
+        "",
+        calc_ntex::NAN
+    );
+
+    test_calc_inner!(
+        whitespace_exprtk,
+        "POST",
+        format!("/{}", calc_ntex::EXPRTK).as_str(),
+        "   \\n\\r\\l\\t       \\n",
         calc_ntex::NAN
     );
 }

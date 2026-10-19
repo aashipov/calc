@@ -1,9 +1,11 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
+
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 pub const EXPRTK: &'static str = "exprtk";
+pub const MEVAL: &'static str = "meval";
 pub const NAN: &'static str = "NaN";
 pub const SIMPLE_EXPRESSION: &'static str = "2+2";
 pub const SIMPLE_EXPRESSION_RESULT: &'static str = "4";
@@ -12,20 +14,29 @@ pub const COMPLEX_EXPRESSION: &'static str =
 pub const COMPLEX_EXPRESSION_RESULT: &'static str = "19.988432890485228";
 
 pub fn via_meval(expr: String) -> String {
-    let eval = meval::eval_str(expr);
-    match eval {
-        Ok(result) => return result.to_string(),
-        Err(_) => return NAN.to_string(),
+    let trimmed = expr.trim();
+    if trimmed.is_empty() {
+        return NAN.to_owned();
     }
+    let Ok(expr_cstring) = std::ffi::CString::new(trimmed) else {
+        return NAN.to_owned();
+    };
+    let ptr = expr_cstring.as_ptr();
+    let result = unsafe { calculate_via_meval(ptr) };
+    result.to_string()
 }
 
 pub fn via_exprtk(expr: String) -> String {
-    let expr_c_string = std::ffi::CString::new(expr).expect("CString::new failed");
-    let expr_c_ptr: *const std::ffi::c_char = expr_c_string.as_ptr();
-    unsafe {
-        let result = calculate(expr_c_ptr);
-        return result.to_string();
+    let trimmed = expr.trim();
+    if trimmed.is_empty() {
+        return NAN.to_owned();
     }
+    let Ok(expr_cstring) = std::ffi::CString::new(trimmed) else {
+        return NAN.to_owned();
+    };
+    let ptr = expr_cstring.as_ptr();
+    let result = unsafe { calculate_via_exprtk(ptr) };
+    result.to_string()
 }
 
 #[cfg(test)]
@@ -42,34 +53,48 @@ mod tests {
     }
 
     test_lib_inner!(
-        meval_simple,
+        lib_simple_expression_meval,
         crate::via_meval,
         crate::SIMPLE_EXPRESSION,
         crate::SIMPLE_EXPRESSION_RESULT
     );
 
     test_lib_inner!(
-        meval_complex,
+        lib_complex_expression_meval,
         crate::via_meval,
         crate::COMPLEX_EXPRESSION,
         crate::COMPLEX_EXPRESSION_RESULT
     );
 
-    test_lib_inner!(meval_invalid, crate::via_meval, crate::NAN, crate::NAN);
+    test_lib_inner!(lib_blank_meval, crate::via_meval, "", crate::NAN);
 
     test_lib_inner!(
-        exprtk_simple,
+        lib_whitespace_meval,
+        crate::via_meval,
+        "   \\n\\r\\l\\t       \\n",
+        crate::NAN
+    );
+
+    test_lib_inner!(
+        lib_simple_expression_exprtk,
         crate::via_exprtk,
         crate::SIMPLE_EXPRESSION,
         crate::SIMPLE_EXPRESSION_RESULT
     );
 
     test_lib_inner!(
-        exprtk_complex,
+        lib_complex_expression_exprtk,
         crate::via_exprtk,
         crate::COMPLEX_EXPRESSION,
         crate::COMPLEX_EXPRESSION_RESULT
     );
 
-    test_lib_inner!(exprtk_invalid, crate::via_exprtk, crate::NAN, crate::NAN);
+    test_lib_inner!(lib_blank_exprtk, crate::via_exprtk, crate::NAN, crate::NAN);
+
+    test_lib_inner!(
+        lib_whitespace_exprtk,
+        crate::via_exprtk,
+        "   \\n\\r\\l\\t       \\n",
+        crate::NAN
+    );
 }
