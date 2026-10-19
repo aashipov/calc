@@ -2,12 +2,13 @@ import os
 
 from flask import Flask, request
 
-from src.py_exprtk_adapter import PyExprtkAdapter
+from src.expr_adapter import ExprAdapter
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
 HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
-PY_EXPRTK_ADAPTER: PyExprtkAdapter = PyExprtkAdapter()
-NAN: str = str(PY_EXPRTK_ADAPTER.NAN)
+EXPR_ADAPTER: ExprAdapter = ExprAdapter()
+NAN: str = str(EXPR_ADAPTER.NAN)
+MEVAL: str = "meval"
 
 
 def create_calc(is_testing: bool) -> Flask:
@@ -27,7 +28,11 @@ def create_calc(is_testing: bool) -> Flask:
         result: str = NAN
         try:
             body_string: str = request.data.decode("utf-8")
-            res: float = PY_EXPRTK_ADAPTER.calculate(body_string)
+            res: float = (
+                EXPR_ADAPTER.via_meval(body_string)
+                if MEVAL in path
+                else EXPR_ADAPTER.via_exprtk(body_string)
+            )
             result = str(res)
         except Exception:
             pass

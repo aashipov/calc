@@ -1,1 +1,0 @@
-../../python-fastapi/tests/test_py_exprtk_adapter.py

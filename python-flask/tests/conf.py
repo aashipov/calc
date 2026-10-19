@@ -19,6 +19,6 @@ def app() -> Generator[Flask]:
 
 
 @pytest.fixture
-def client(app: Flask) -> Generator[FlaskClient]:
+def test_client(app: Flask) -> Generator[FlaskClient]:
     with app.test_client() as test_client:
         yield test_client
