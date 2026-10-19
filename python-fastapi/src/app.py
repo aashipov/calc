@@ -8,7 +8,7 @@ from src.expr_adapter import ExprAdapter
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
 HTTP_PORT: int = int(os.getenv("HTTP_PORT", "8080"))
-ADAPTER: ExprAdapter = ExprAdapter()
+EXPR_ADAPTER: ExprAdapter = ExprAdapter()
 MEVAL: str = "meval"
 
 
@@ -24,7 +24,7 @@ def create_calc() -> FastAPI:
         catch_all: str, body: str = Body(..., media_type="text/plain")
     ) -> str:
         res: float = (
-            ADAPTER.via_meval(body) if MEVAL in catch_all else ADAPTER.via_exprtk(body)
+            EXPR_ADAPTER.via_meval(body) if MEVAL in catch_all else EXPR_ADAPTER.via_exprtk(body)
         )
         return str(res)
 
