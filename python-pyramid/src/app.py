@@ -5,20 +5,25 @@ from pyramid.config import Configurator
 from pyramid.request import Request
 from pyramid.response import Response
 from pyramid.router import Router
-
-from src.c_exprtk_adapter import calculate_via_exprtk
+from src.expr_adapter import ExprAdapter
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-NAN = "nan"
 TEXT_PLAIN: str = "text/plain"
-HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", "8080"))
+EXPR_ADAPTER: ExprAdapter = ExprAdapter()
+NAN: str = str(EXPR_ADAPTER.NAN)
+MEVAL: str = "meval"
 
 
 def catchall(request: Request) -> Response:
     if "POST".__eq__(request.method):
-        expr: str = request.text
-        result: str = calculate_via_exprtk(expr)
-        return Response(result, content_type=TEXT_PLAIN)
+        body: str = request.text
+        res: float = (
+            EXPR_ADAPTER.via_meval(body)
+            if MEVAL in request.path
+            else EXPR_ADAPTER.via_exprtk(body)
+        )
+        return Response(str(res), content_type=TEXT_PLAIN)
     else:
         return Response(WELCOME, content_type=TEXT_PLAIN)
 

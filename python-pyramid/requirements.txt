@@ -2,3 +2,7 @@ pyramid==2.1
 gunicorn==25.0.2
 pytest==9.0.2
 webtest==3.0.1
+build==1.4.0
+hatch==1.16.3
+debugpy==1.8.20
+snakeviz==2.2.2
