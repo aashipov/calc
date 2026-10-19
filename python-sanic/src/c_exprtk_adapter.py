@@ -1,1 +1,0 @@
-../../python-fastapi/src/c_exprtk_adapter.py

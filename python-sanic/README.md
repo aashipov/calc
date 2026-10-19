@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Build `../c-exprtk-adapter` first
+Build `../c-exprtk-adapter` and `../c-meval-adapter` first
 
 ## Build
 

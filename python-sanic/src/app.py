@@ -3,11 +3,13 @@ import os
 from sanic import Sanic
 from sanic.response import text
 
-from src.c_exprtk_adapter import calculate_via_exprtk
+from src.expr_adapter import ExprAdapter
 
 WELCOME: str = "Welcome to calc service\nHTTP POST your expression\n"
-NAN: str = "nan"
-HTTP_PORT: int = int(os.getenv("HTTP_PORT", 8080))
+HTTP_PORT: int = int(os.getenv("HTTP_PORT", "8080"))
+EXPR_ADAPTER: ExprAdapter = ExprAdapter()
+NAN: str = str(EXPR_ADAPTER.NAN)
+MEVAL: str = "meval"
 
 
 def create_calc(app_name: str, is_testing: bool) -> Sanic:
@@ -27,10 +29,14 @@ def create_calc(app_name: str, is_testing: bool) -> Sanic:
                 await request.receive_body()
 
             body: str = request.body.decode("utf-8")
-            result = calculate_via_exprtk(body)
+            result: float = (
+                EXPR_ADAPTER.via_meval(body)
+                if MEVAL in request.path
+                else EXPR_ADAPTER.via_exprtk(body)
+            )
         except:
             pass
-        return text(result)
+        return text(str(result))
 
     return calc
 
