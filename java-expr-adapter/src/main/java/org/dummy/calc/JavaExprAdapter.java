@@ -9,6 +9,7 @@ import java.lang.foreign.ValueLayout;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Native library adapter.
@@ -26,6 +27,11 @@ public class JavaExprAdapter {
     private static final FunctionDescriptor FUNCTION_DESCRIPTOR = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
     public static final String EXPRTK = "exprtk";
     public static final String MEVAL = "meval";
+    public static final String MXPARSER = "mxparser";
+    public static final String EVALEX = "evalex";
+    private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
+    private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
+    private static final Pattern MEVAL_PATTERN = Pattern.compile(MEVAL);
 
     /**
      * Environment variable, native library harness name, either JNI or FFM.
@@ -35,6 +41,7 @@ public class JavaExprAdapter {
     static {
         System.loadLibrary(ADAPTER_NAME);
         LOG.log(Level.FINE, "Shared library harness: {0}", getSharedLibraryHarnessName());
+        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
     }
 
     static String getSharedLibraryHarnessName() {
@@ -127,5 +134,60 @@ public class JavaExprAdapter {
             return Double.NaN;
         }
         return isJniHarness() ? calculateViaMevalJni(expression) : calculateViaMevalFfm(expression);
+    }
+
+    /**
+     * Calculate via EvalEx.
+     *
+     * @param expression expression
+     * @return result
+     */
+    public static double calculateViaEvalEx(String expression) {
+        try {
+            return new com.udojava.evalex.Expression(expression).eval().doubleValue();
+        } catch (Exception ex) {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * Calculate via mXparser.
+     *
+     * @param expression expression
+     * @return result
+     */
+    public static double calculateViamXparser(String expression) {
+        try {
+            return new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
+        } catch (Exception e) {
+            return Double.NaN;
+        }
+    }
+
+    /**
+     * Calculate entrypoint.
+     *
+     * @param expression expression
+     * @param mayBeAdapteeName a string containing
+     * {@link JavaExprAdapter#EXPRTK} {@link JavaExprAdapter#MEVAL} {@link JavaExprAdapter#MXPARSER},
+     * null or blank
+     * @return result
+     */
+    public static double calculate(String expression, String mayBeAdapteeName) {
+        if (mayBeAdapteeName == null || mayBeAdapteeName.isBlank()) {
+            return calculateViaEvalEx(expression);
+        }
+        String mayBeAdapteeNameLowercase = mayBeAdapteeName.toLowerCase();
+        double result;
+        if (MXPARSER_PATTERN.matcher(mayBeAdapteeNameLowercase).find()) {
+            result = calculateViamXparser(expression);
+        } else if (EXPRTK_PATTERN.matcher(mayBeAdapteeNameLowercase).find()) {
+            result = calculateViaExprtk(expression);
+        } else if (MEVAL_PATTERN.matcher(mayBeAdapteeNameLowercase).find()) {
+            result = calculateViaMeval(expression);
+        } else {
+            result = calculateViaEvalEx(expression);
+        }
+        return result;
     }
 }

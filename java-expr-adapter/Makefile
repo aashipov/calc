@@ -45,7 +45,9 @@ clean:
 	rm -rf target/
 
 generate-jni-header:
-	javac -h . src/main/java/org/dummy/calc/JavaExprAdapter.java
+	mvn compile
+	# keep cp in sync with pom.xml
+	javac -cp ".:${HOME}/.m2/repository/org/mariuszgromada/math/MathParser.org-mXparser/6.1.0/MathParser.org-mXparser-6.1.0.jar:${HOME}/.m2/repository/com/udojava/EvalEx/2.7/EvalEx-2.7.jar" -h . src/main/java/org/dummy/calc/JavaExprAdapter.java
 	rm src/main/java/org/dummy/calc/JavaExprAdapter.class
 
 install-native:
