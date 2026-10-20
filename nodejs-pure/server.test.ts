@@ -10,7 +10,6 @@ import {
   SIMPLE_EXPRESSION,
   SIMPLE_EXPRESSION_RESULT,
 } from "./test-constants";
-import { METHODS } from "http";
 
 const GET: string = "GET";
 const POST: string = "POST";
