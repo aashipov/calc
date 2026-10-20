@@ -24,6 +24,8 @@ public class JavaExprAdapter {
     private static final String ADAPTER_NAME = "java-expr-adapter";
     private static final Linker LINKER = Linker.nativeLinker();
     private static final FunctionDescriptor FUNCTION_DESCRIPTOR = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
+    public static final String EXPRTK = "exprtk";
+    public static final String MEVAL = "meval";
 
     /**
      * Environment variable, native library harness name, either JNI or FFM.

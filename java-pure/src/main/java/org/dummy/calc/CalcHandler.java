@@ -10,6 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import static org.dummy.calc.JavaExprAdapter.EXPRTK;
+import static org.dummy.calc.JavaExprAdapter.MEVAL;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -28,9 +31,7 @@ public class CalcHandler implements HttpHandler {
     static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String MXPARSER = "mxparser";
     private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
-    private static final String EXPRTK = "exprtk";
     private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
-    private static final String MEVAL = "meval";
     private static final Pattern MEVAL_PATTERN = Pattern.compile(MEVAL);
     static final String NAN = "NaN";
 

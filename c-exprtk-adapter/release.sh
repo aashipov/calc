@@ -12,7 +12,7 @@ with_cmake() {
     cd ${_SCRIPT_DIR}
     rm -rf ${_BUILD_DIR_NAME}
     mkdir ${_BUILD_DIR_NAME} && cd ${_BUILD_DIR_NAME}
-    cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/.local/ -DCMAKE_BUILD_TYPE=${_CMAKE_BUILD_TYPE} -DENABLE_CALCULATOR=${_ENABLE_CALCULATOR}
+    cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}/.local/ -DCMAKE_BUILD_TYPE=${_CMAKE_BUILD_TYPE}
     make
     make install
 }
@@ -34,8 +34,6 @@ closure() {
 
     local _CMAKE_BUILD_TYPE=Release
     #local _CMAKE_BUILD_TYPE=Debug
-    local _ENABLE_CALCULATOR=ON
-    #local _ENABLE_CALCULATOR=OFF
     local _BUILD_DIR_NAME=${_CMAKE_BUILD_TYPE}
 
     download_exprtk

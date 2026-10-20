@@ -2,7 +2,7 @@
 
 Download exprtk the lib to user's include directory:
 
-```shell
+```sh
 curl -L https://raw.githubusercontent.com/ArashPartow/exprtk/refs/heads/master/exprtk.hpp -o ${HOME}/.local/include/exprtk.hpp
 ```
 

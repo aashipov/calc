@@ -10,6 +10,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static org.dummy.calc.JavaExprAdapter.EXPRTK;
+import static org.dummy.calc.JavaExprAdapter.MEVAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -32,8 +34,8 @@ public abstract class AppTestBase {
     private static final String EVALEX_EXPECTED = "19.9884";
     private static final String MXPARSER_EXPECTED = "19.98843289048526";
     private static final String EXPRTK_EXPECTED = "19.988432890485228";
-    private static final String EXPRTK_ENDPOINT = "/exprtk";
-    private static final String MEVAL_ENDPOINT = "/meval";
+    private static final String EXPRTK_ENDPOINT = "/" + EXPRTK;
+    private static final String MEVAL_ENDPOINT = "/" + MEVAL;
     private static final String INVALID_EXPRESSION = "abc";
     protected static final String BASE_URL = "http://0.0.0.0:" + DEFAULT_HTTP_PORT;
     private static final String NAN = "NaN";
