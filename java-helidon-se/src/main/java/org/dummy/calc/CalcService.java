@@ -1,8 +1,11 @@
 package org.dummy.calc;
 
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static org.dummy.calc.JavaExprAdapter.EVALEX;
+import static org.dummy.calc.JavaExprAdapter.EXPRTK;
+import static org.dummy.calc.JavaExprAdapter.MEVAL;
+import static org.dummy.calc.JavaExprAdapter.MXPARSER;
 
 import io.helidon.http.Status;
 import io.helidon.webserver.http.HttpRules;
@@ -12,23 +15,16 @@ import io.helidon.webserver.http.ServerResponse;
 
 class CalcService implements HttpService {
 
-    private static final Logger LOGGER = Logger.getLogger(CalcService.class.getSimpleName());
     private static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final byte[] WELCOME_BYTES = WELCOME.getBytes(StandardCharsets.UTF_8);
-    private static final String MXPARSER = "mxparser";
-    private static final String EXPRTK = "exprtk";
-    private static final String MEVAL = "meval";
-    private static final String NAN = "NaN";
-
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
+    private static final String NAN = "" + Double.NaN;
 
     @Override
     public void routing(HttpRules rules) {
         rules
                 .get("/", this::respondWelcome)
                 .post("/", this::respondViaEvalex)
+                .post("/" + EVALEX, this::respondViaEvalex)
                 .post("/" + MXPARSER, this::respondViaMxParser)
                 .post("/" + EXPRTK, this::respondViaMxExprtk)
                 .post("/" + MEVAL, this::respondViaMeval);
@@ -43,50 +39,38 @@ class CalcService implements HttpService {
     }
 
     private void respondViaMxParser(ServerRequest request, ServerResponse response) {
-        String expr = request.content().as(String.class);
         String result = NAN;
-        try {
-            result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
-        } catch (Exception ex) {
-            LOGGER.log(Level.INFO, ex.getMessage());
-        } finally {
-            textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
+        if (request.content().hasEntity()) {
+            String expr = request.content().as(String.class);
+            result = "" + JavaExprAdapter.calculateViamXparser(expr);
         }
+        textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
     }
 
     private void respondViaMxExprtk(ServerRequest request, ServerResponse response) {
-        String expr = request.content().as(String.class);
         String result = NAN;
-        try {
+        if (request.content().hasEntity()) {
+            String expr = request.content().as(String.class);
             result = "" + JavaExprAdapter.calculateViaExprtk(expr);
-        } catch (Exception ex) {
-            LOGGER.log(Level.INFO, ex.getMessage());
-        } finally {
-            textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
         }
+        textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
     }
 
     private void respondViaEvalex(ServerRequest request, ServerResponse response) {
-        String expr = request.content().as(String.class);
         String result = NAN;
-        try {
-            result = (new com.udojava.evalex.Expression(expr).eval()).toString();
-        } catch (Exception ex) {
-            LOGGER.log(Level.INFO, ex.getMessage());
-        } finally {
-            textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
+        if (request.content().hasEntity()) {
+            String expr = request.content().as(String.class);
+            result = "" + JavaExprAdapter.calculateViaEvalEx(expr);
         }
+        textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
     }
 
     private void respondViaMeval(ServerRequest request, ServerResponse response) {
-        String expr = request.content().as(String.class);
         String result = NAN;
-        try {
+        if (request.content().hasEntity()) {
+            String expr = request.content().as(String.class);
             result = "" + JavaExprAdapter.calculateViaMeval(expr);
-        } catch (Exception ex) {
-            LOGGER.log(Level.INFO, ex.getMessage());
-        } finally {
-            textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
         }
+        textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
     }
 }
