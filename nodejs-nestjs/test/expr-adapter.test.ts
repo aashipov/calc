@@ -21,9 +21,7 @@ function executeCallable<K extends ViasNames>(
   callable: K,
   ...args: Parameters<(typeof vias)[K]>
 ) {
-  // Fix: Explicitly cast 'fn' to match the expected function signature for K
   const fn = vias[callable] as (...args: Parameters<(typeof vias)[K]>) => any;
-  
   return fn(...args);
 }
 

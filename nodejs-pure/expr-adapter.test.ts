@@ -14,12 +14,14 @@ const vias = {
   mathjs: (expr: string) => viaMathJs(expr),
   meval: (expr: string) => viaMeval(expr),
 };
+
 type ViasNames = keyof typeof vias;
+
 function executeCallable<K extends ViasNames>(
   callable: K,
   ...args: Parameters<(typeof vias)[K]>
 ) {
-  const fn = vias[callable];
+  const fn = vias[callable] as (...args: Parameters<(typeof vias)[K]>) => any;
   return fn(...args);
 }
 
@@ -73,11 +75,11 @@ describe.each([
   },
 ])("$expr $via is $expected", ({ via, expr, expected }) => {
   test("should", () => {
-    let actual: number = executeCallable(via, expr);
+    let actual: number = executeCallable(via as ViasNames, expr);
     if (expr === NAN_EXPRESSION) {
       expect(actual).toBe(expected);
     } else {
-      expect(actual).toBeCloseTo(expected);
+      expect(actual).toBeCloseTo(expected as number);
     }
   });
 });
