@@ -40,8 +40,7 @@ public abstract class AppTestBase {
     protected static final String BASE_URL = "http://0.0.0.0:" + DEFAULT_HTTP_PORT;
     private static final String NAN = "NaN";
     private static final String SIMPLE_EXPRESSION = "2+2";
-    private static final String SIMPLE_EXPRESSION_RESULT_INT = "4";
-    private static final String SIMPLE_EXPRESSION_RESULT_FLOAT = "4.0";
+    private static final String SIMPLE_EXPRESSION_RESULT = "4.0";
 
     static enum RequestMethod {
         GET, POST
@@ -70,16 +69,16 @@ public abstract class AppTestBase {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(Arguments.of(new CalcTestConfig("welcome", RequestMethod.GET, BASE_URL, null, WELCOME)),
-                    Arguments.of(new CalcTestConfig("evalexSimpleExpression", RequestMethod.POST, BASE_URL, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT_INT)),
+                    Arguments.of(new CalcTestConfig("evalexSimpleExpression", RequestMethod.POST, BASE_URL, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT)),
                     Arguments.of(new CalcTestConfig("evalexComplexExpression", RequestMethod.POST, BASE_URL, COMPLEX_EXPRESSION, EVALEX_EXPECTED)),
                     Arguments.of(new CalcTestConfig("evalexInvalidExpression", RequestMethod.POST, BASE_URL, INVALID_EXPRESSION, NAN)),
-                    Arguments.of(new CalcTestConfig("mxparserSimpleExpression", RequestMethod.POST, BASE_URL + MXPARSER_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT_FLOAT)),
+                    Arguments.of(new CalcTestConfig("mxparserSimpleExpression", RequestMethod.POST, BASE_URL + MXPARSER_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT)),
                     Arguments.of(new CalcTestConfig("mxparserComplexExpression", RequestMethod.POST, BASE_URL + MXPARSER_ENDPOINT, COMPLEX_EXPRESSION, MXPARSER_EXPECTED)),
                     Arguments.of(new CalcTestConfig("mxparserInvalidExpression", RequestMethod.POST, BASE_URL + MXPARSER_ENDPOINT, INVALID_EXPRESSION, NAN)),
-                    Arguments.of(new CalcTestConfig("exprtkSimpleExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT_FLOAT)),
+                    Arguments.of(new CalcTestConfig("exprtkSimpleExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT)),
                     Arguments.of(new CalcTestConfig("exprtkComplexExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, COMPLEX_EXPRESSION, EXPRTK_EXPECTED)),
                     Arguments.of(new CalcTestConfig("exprtkInvalidExpression", RequestMethod.POST, BASE_URL + EXPRTK_ENDPOINT, INVALID_EXPRESSION, NAN)),
-                    Arguments.of(new CalcTestConfig("mevalSimpleExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT_FLOAT)),
+                    Arguments.of(new CalcTestConfig("mevalSimpleExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, SIMPLE_EXPRESSION, SIMPLE_EXPRESSION_RESULT)),
                     Arguments.of(new CalcTestConfig("mevalComplexExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, COMPLEX_EXPRESSION, EXPRTK_EXPECTED)),
                     Arguments.of(new CalcTestConfig("mevalInvalidExpression", RequestMethod.POST, BASE_URL + MEVAL_ENDPOINT, INVALID_EXPRESSION, NAN))
             );

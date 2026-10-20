@@ -8,10 +8,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import static org.dummy.calc.JavaExprAdapter.EXPRTK;
-import static org.dummy.calc.JavaExprAdapter.MEVAL;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -29,15 +25,7 @@ public class CalcHandler implements HttpHandler {
     private static final String TEXT_PLAIN = "text/plain; charset=" + DEFAULT_CHARSET_NAME;
     private static final int OK = 200;
     static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
-    private static final String MXPARSER = "mxparser";
-    private static final Pattern MXPARSER_PATTERN = Pattern.compile(MXPARSER);
-    private static final Pattern EXPRTK_PATTERN = Pattern.compile(EXPRTK);
-    private static final Pattern MEVAL_PATTERN = Pattern.compile(MEVAL);
     static final String NAN = "NaN";
-
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
 
     @Override
     public void handle(HttpExchange exchange) {
@@ -48,15 +36,7 @@ public class CalcHandler implements HttpHandler {
             try (InputStream reqBodyInputStream = exchange.getRequestBody(); ByteArrayOutputStream reqBodyOutputStream = new ByteArrayOutputStream()) {
                 reqBodyInputStream.transferTo(reqBodyOutputStream);
                 String expr = reqBodyOutputStream.toString(DEFAULT_CHARSET);
-                if (MXPARSER_PATTERN.matcher(url).find()) {
-                    result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
-                } else if (EXPRTK_PATTERN.matcher(url).find()) {
-                    result = "" + JavaExprAdapter.calculateViaExprtk(expr);
-                } else if (MEVAL_PATTERN.matcher(url).find()) {
-                    result = "" + JavaExprAdapter.calculateViaMeval(expr);
-                } else {
-                    result = (new com.udojava.evalex.Expression(expr).eval()).toString();
-                }
+                result = "" + JavaExprAdapter.calculate(expr, url);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Can not evaluate {0}", e.getMessage());
             } finally {
