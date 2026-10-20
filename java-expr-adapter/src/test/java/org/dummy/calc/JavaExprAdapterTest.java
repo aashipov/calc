@@ -64,7 +64,10 @@ class JavaExprAdapterTest {
                         Arguments.of(new TestConfig(EVALEX, JavaExprAdapter::calculateViaEvalEx, NOT_AN_EXPRESSION, Double.NaN)),
                         Arguments.of(new TestConfig(EVALEX, JavaExprAdapter::calculateViaEvalEx, null, Double.NaN)),
                         Arguments.of(new TestConfig(EVALEX, JavaExprAdapter::calculateViaEvalEx, "", Double.NaN)),
-                        Arguments.of(new TestConfig(EVALEX, JavaExprAdapter::calculateViaEvalEx, " \n\r\t ", Double.NaN))
+                        Arguments.of(new TestConfig(EVALEX, JavaExprAdapter::calculateViaEvalEx, " \n\r\t ", Double.NaN)),
+                        Arguments.of(new TestConfig(null, JavaExprAdapter::calculateViaEvalEx, COMPLEX_EXPRESSION, COMPLEX_EXPRESSION_RESULT_EVALEX)),
+                        Arguments.of(new TestConfig("", JavaExprAdapter::calculateViaEvalEx, COMPLEX_EXPRESSION, COMPLEX_EXPRESSION_RESULT_EVALEX)),
+                        Arguments.of(new TestConfig(" \n\r\t ", JavaExprAdapter::calculateViaEvalEx, COMPLEX_EXPRESSION, COMPLEX_EXPRESSION_RESULT_EVALEX))
                 );
             }
         }
