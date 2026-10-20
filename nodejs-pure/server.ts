@@ -1,63 +1,16 @@
 import { createServer, IncomingMessage, ServerResponse, Server } from "http";
-import { evaluate, ResultSet } from "mathjs";
 import cluster from "cluster";
 import { availableParallelism } from "os";
-import koffi from "koffi";
+import { EXPRTK, MEVAL, viaExprtk, viaMathJs, viaMeval } from "./expr-adapter";
 
 export const WELCOME: string =
   "Welcome to calc service\nHTTP POST your expression / (via mathjs) or /exprtk (via exprtk)";
-export const NAN_STR = "NaN";
-export const EXPRTK: string = "exprtk";
-const C_EXPRTK_ADAPTER: koffi.IKoffiLib = koffi.load("libc-exprtk-adapter.so");
-const KOFFI_C_EXPRTK_ADAPTER: koffi.KoffiFunction = C_EXPRTK_ADAPTER.func(
-  "double calculate(str)",
-);
 const NUM_CPUS = Math.max(2, availableParallelism());
 const isClustered = (): boolean => process.env.HTTP_PORT === undefined;
 const HTTP_PORT: Number = isClustered()
   ? 8080
   : parseInt(process.env.HTTP_PORT!);
-
-/**
- * Calculate expression via mathjs.
- * @param expr expression
- * @returns result
- */
-export const viaMathJs = (expression: string): number => {
-  try {
-    let result = evaluate(expression);
-    if (result != undefined && result != null) {
-      if (result.entries) {
-        const entries = (result as ResultSet).entries;
-        if (entries.length > 0 && entries[0] instanceof Number) {
-          return entries[0] as number;
-        }
-      } else {
-        return result as number;
-      }
-    }
-  } catch {}
-  return Number.NaN;
-};
-
-/**
- * Calculate expression via exprtk.
- * @param expr expression
- * @returns result
- */
-export const viaExprtk = (expr: string): number => {
-  try {
-    let result: unknown = KOFFI_C_EXPRTK_ADAPTER(expr);
-    if (result != undefined && result != null) {
-      if (Array.isArray(result) && result.length > 0) {
-        return result[0];
-      } else {
-        return result as number;
-      }
-    }
-  } catch {}
-  return Number.NaN;
-};
+const RES_PLACEHOLDER = String(NaN);
 
 /**
  * {@link Server} handler.
@@ -72,12 +25,14 @@ export const handler = (request: IncomingMessage, response: ServerResponse) => {
         chunks.push(chunk);
       })
       .on("end", () => {
-        let result = NAN_STR;
+        let result = RES_PLACEHOLDER;
         let expr = "";
         try {
           expr = chunks.join("").trim();
           if (request.url?.includes(EXPRTK)) {
             result = "" + viaExprtk(expr);
+          } else if (request.url?.includes(MEVAL)) {
+            result = "" + viaMeval(expr);
           } else {
             result = "" + viaMathJs(expr);
           }
