@@ -1,1 +1,0 @@
-../../../../../../../java-pure/src/test/java/org/dummy/calc/JavaExprAdapterTest.java
