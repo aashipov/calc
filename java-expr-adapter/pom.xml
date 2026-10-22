@@ -53,6 +53,12 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude a specific test class by its path pattern -->
+                        <exclude>**/AppTestBase.java</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
             <groupId>org.apache.maven.plugins</groupId>

@@ -30,11 +30,12 @@ OBJS     := $(SRCS:.c=.o)
 
 LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
 
+JAVA_TARGET := java-build
 JAVA_BUILD_CMD := mvn install
 
-.PHONY: all clean generate-jni-header install-native $(JAVA_BUILD_CMD)
+.PHONY: all clean generate-jni-header install-native $(JAVA_TARGET)
 
-all: clean generate-jni-header $(TARGET) install-native $(JAVA_BUILD_CMD)
+all: clean generate-jni-header $(TARGET) install-native $(JAVA_TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
@@ -56,6 +57,6 @@ install-native:
 	install -m 644 $(HEADERS) $(INCDIR)/
 	install -m 755 $(TARGET) $(LIBDIR)/
 
-$(JAVA_BUILD_CMD):
+$(JAVA_TARGET):
 	$(JAVA_BUILD_CMD)
 	SHARED_LIBRARY_HARNESS=FFM $(JAVA_BUILD_CMD)
