@@ -13,13 +13,6 @@ import jakarta.ws.rs.core.MediaType;
 public class CalcResource {
 
     private static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
-    private static final String MXPARSER = "mxparser";
-    private static final String EXPRTK = "exprtk";
-    static final String NAN = "NaN";
-
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -31,33 +24,38 @@ public class CalcResource {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String evalex(String expr) {
-        String result = NAN;
-        try {
-            result = new com.udojava.evalex.Expression(expr).eval().toString();
-        } catch (Exception e) {
-
-        }
-        return result;
+        return "" + JavaExprAdapterManaged.calculateViaEvalEx(expr);
     }
 
     @POST
-    @Path(MXPARSER)
+    @Path(JavaExprAdapter.EVALEX)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String evalexEvalex(String expr) {
+        return "" + JavaExprAdapterManaged.calculateViaEvalEx(expr);
+    }
+
+    @POST
+    @Path(JavaExprAdapter.MXPARSER)
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String mxparser(String expr) {
-        String result = "" + new org.mariuszgromada.math.mxparser.Expression(expr).calculate();
-        return result;
+        return "" + JavaExprAdapterManaged.calculateViamXparser(expr);
     }
 
     @POST
-    @Path(EXPRTK)
+    @Path(JavaExprAdapter.EXPRTK)
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String exprtk(String expr) {
-        String result = NAN;
-        if (expr != null) {
-            result = String.valueOf(JavaExprtkAdapter.calculate(expr));
-        }
-        return result;
+        return "" + JavaExprAdapter.calculateViaExprtk(expr);
+    }
+
+    @POST
+    @Path(JavaExprAdapter.MEVAL)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String meval(String expr) {
+        return "" + JavaExprAdapter.calculateViaMeval(expr);
     }
 }
