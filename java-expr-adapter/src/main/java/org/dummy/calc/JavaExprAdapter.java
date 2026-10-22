@@ -46,7 +46,7 @@ public final class JavaExprAdapter {
      * @return result
      */
     public static double calculateViaExprtk(String expression) {
-        if (expression == null) {
+        if (expression == null || expression.isBlank()) {
             return Double.NaN;
         }
         return isJniHarness() ? JavaExprAdapterJni.calculateViaExprtkJni(expression) : JavaExprAdapterFfm.calculateViaExprtkFfm(expression);
@@ -59,7 +59,7 @@ public final class JavaExprAdapter {
      * @return result
      */
     public static double calculateViaMeval(String expression) {
-        if (expression == null) {
+        if (expression == null || expression.isBlank()) {
             return Double.NaN;
         }
         return isJniHarness() ? JavaExprAdapterJni.calculateViaMevalJni(expression) : JavaExprAdapterFfm.calculateViaMevalFfm(expression);
@@ -75,6 +75,9 @@ public final class JavaExprAdapter {
      * @return result
      */
     public static double calculate(String expression, String mayBeAdapteeName) {
+        if (expression == null || expression.isBlank()) {
+            return Double.NaN;
+        }
         if (mayBeAdapteeName == null || mayBeAdapteeName.isBlank()) {
             return JavaExprAdapterManaged.calculateViaEvalEx(expression);
         }

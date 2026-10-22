@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dummy</groupId>
-    <artifactId>calc</artifactId>
+    <artifactId>calc-java-micronaut</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <packaging>${packaging}</packaging>
 
     <parent>
         <groupId>io.micronaut.platform</groupId>
@@ -14,8 +14,8 @@
     </parent>
 
     <properties>
-        <evalex.version>2.7</evalex.version>
-        <exec.mainClass>org.dummy.calc.Application</exec.mainClass>
+        <java-expr-adapter.version>0.1.0-SNAPSHOT</java-expr-adapter.version>
+        <exec.mainClass>org.dummy.calc.App</exec.mainClass>
         <java.version>25</java.version>
         <jdk.version>${java.version}</jdk.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -25,21 +25,21 @@
         <micronaut.aot.enabled>false</micronaut.aot.enabled>
         <micronaut.aot.packageName>org.dummy.aot.generated</micronaut.aot.packageName>
         <micronaut.runtime>netty</micronaut.runtime>
-        <mxparxer.version>6.1.0</mxparxer.version>
         <packaging>jar</packaging>
         <release.version>${java.version}</release.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.udojava</groupId>
-            <artifactId>EvalEx</artifactId>
-            <version>${evalex.version}</version>
+            <groupId>org.dummy</groupId>
+            <artifactId>java-expr-adapter</artifactId>
+            <version>${java-expr-adapter.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mariuszgromada.math</groupId>
-            <artifactId>MathParser.org-mXparser</artifactId>
-            <version>${mxparxer.version}</version>
+            <groupId>org.dummy</groupId>
+            <artifactId>java-expr-adapter</artifactId>
+            <version>${java-expr-adapter.version}</version>
+            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>

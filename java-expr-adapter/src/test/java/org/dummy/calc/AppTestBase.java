@@ -9,9 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.dummy.calc.JavaExprAdapterTest.TestConfig;
-import org.dummy.calc.JavaExprAdapterTest.TestConfig.TestConfigProvider;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -27,7 +26,7 @@ public abstract class AppTestBase {
     protected static final String EMPTY_STRING = "";
     protected static final String BASE_URL = "http://0.0.0.0:" + DEFAULT_HTTP_PORT;
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "[{index}] Parameters: {argumentsWithNames}")
     @ArgumentsSource(TestConfigProvider.class)
     void testPost(TestConfig tc) {
         String url = BASE_URL + "/" + (tc.mayBeAdapteeName == null || tc.mayBeAdapteeName.isBlank() ? "" : tc.mayBeAdapteeName);
@@ -66,7 +65,7 @@ public abstract class AppTestBase {
     /**
      * Perform HTTP POST via {@link HttpClient}.
      *
-     * @param url URL
+     * @param url     URL
      * @param content content
      * @return {@link String} of {@link HttpResponse#body()}
      */
