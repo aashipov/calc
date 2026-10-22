@@ -1,12 +1,12 @@
 #include "c-exprtk-adapter.h"
-#include "org_dummy_calc_JavaExprAdapter.h"
 #include "c-meval-adapter.h"
+#include "org_dummy_calc_JavaExprAdapterJni.h"
 #include <jni.h>
 
 JNIEXPORT jdouble JNICALL
-Java_org_dummy_calc_JavaExprAdapter_calculateViaExprtkJni(JNIEnv *env,
-                                                          jclass jclass,
-                                                          jstring jstring) {
+Java_org_dummy_calc_JavaExprAdapterJni_calculateViaExprtkJni(JNIEnv *env,
+                                                             jclass jclass,
+                                                             jstring jstring) {
   jboolean isCopy;
   const char *expression = (*env)->GetStringUTFChars(env, jstring, &isCopy);
   double result = calculate_via_exprtk(expression);
@@ -15,9 +15,9 @@ Java_org_dummy_calc_JavaExprAdapter_calculateViaExprtkJni(JNIEnv *env,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_dummy_calc_JavaExprAdapter_calculateViaMevalJni(JNIEnv *env,
-                                                         jclass jclass,
-                                                         jstring jstring) {
+Java_org_dummy_calc_JavaExprAdapterJni_calculateViaMevalJni(JNIEnv *env,
+                                                            jclass jclass,
+                                                            jstring jstring) {
   jboolean isCopy;
   const char *expression = (*env)->GetStringUTFChars(env, jstring, &isCopy);
   double result = calculate_via_meval(expression);

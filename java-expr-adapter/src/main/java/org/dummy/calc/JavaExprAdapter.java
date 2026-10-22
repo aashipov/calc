@@ -1,30 +1,17 @@
 package org.dummy.calc;
 
-import java.lang.foreign.Arena;
-import java.lang.foreign.FunctionDescriptor;
-import java.lang.foreign.Linker;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.SymbolLookup;
-import java.lang.foreign.ValueLayout;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- * Native library adapter.
+ * Expression adapter facade.
  */
-public class JavaExprAdapter {
+public final class JavaExprAdapter {
 
     private static final Logger LOG = Logger.getLogger(JavaExprAdapter.class.getSimpleName());
     private static final String JNI = "JNI";
-    private static final String EXPRTK_LIBRARY_NAME = "libc-exprtk-adapter.so";
-    private static final String EXPRTK_LIBRARY_FUNCTION_NAME = "calculate_via_exprtk";
-    private static final String MEVAL_LIBRARY_NAME = "libc-meval-adapter.so";
-    private static final String MEVAL_LIBRARY_FUNCTION_NAME = "calculate_via_meval";
-    private static final String ADAPTER_NAME = "java-expr-adapter";
-    private static final Linker LINKER = Linker.nativeLinker();
-    private static final FunctionDescriptor FUNCTION_DESCRIPTOR = FunctionDescriptor.of(ValueLayout.JAVA_DOUBLE, ValueLayout.ADDRESS);
+    private static final String ADAPTER_NAME = "java-expr-adapter-jni";
     public static final String EXPRTK = "exprtk";
     public static final String MEVAL = "meval";
     public static final String MXPARSER = "mxparser";
@@ -53,35 +40,6 @@ public class JavaExprAdapter {
     }
 
     /**
-     * Calculate via exprtk (FFM).
-     *
-     * @param expression expression
-     * @return result
-     */
-    static double calculateViaExprtkFfm(String expression) {
-        Arena arena = Arena.ofAuto();
-        SymbolLookup lookup = SymbolLookup.libraryLookup(EXPRTK_LIBRARY_NAME, arena);
-        Optional<MemorySegment> memorySegmentOptional = lookup.find(EXPRTK_LIBRARY_FUNCTION_NAME);
-        if (memorySegmentOptional.isEmpty()) {
-            throw new IllegalStateException(EXPRTK_LIBRARY_NAME + " or its function " + EXPRTK_LIBRARY_FUNCTION_NAME + " not found");
-        }
-        MemorySegment funcArg = arena.allocateFrom(expression);
-        try {
-            return (double) LINKER.downcallHandle(memorySegmentOptional.get(), FUNCTION_DESCRIPTOR).invoke(funcArg);
-        } catch (Throwable ex) {
-            return Double.NaN;
-        }
-    }
-
-    /**
-     * Calculate via exprtk (JNI).
-     *
-     * @param expression expression
-     * @return result
-     */
-    static native double calculateViaExprtkJni(String expression);
-
-    /**
      * Calculate via exprtk.
      *
      * @param expression expression
@@ -91,37 +49,8 @@ public class JavaExprAdapter {
         if (expression == null) {
             return Double.NaN;
         }
-        return isJniHarness() ? calculateViaExprtkJni(expression) : calculateViaExprtkFfm(expression);
+        return isJniHarness() ? JavaExprAdapterJni.calculateViaExprtkJni(expression) : JavaExprAdapterFfm.calculateViaExprtkFfm(expression);
     }
-
-    /**
-     * Calculate via meval (FFM).
-     *
-     * @param expression expression
-     * @return result
-     */
-    static double calculateViaMevalFfm(String expression) {
-        Arena arena = Arena.ofAuto();
-        SymbolLookup lookup = SymbolLookup.libraryLookup(MEVAL_LIBRARY_NAME, arena);
-        Optional<MemorySegment> memorySegmentOptional = lookup.find(MEVAL_LIBRARY_FUNCTION_NAME);
-        if (memorySegmentOptional.isEmpty()) {
-            throw new IllegalStateException(MEVAL_LIBRARY_NAME + " or its function " + MEVAL_LIBRARY_FUNCTION_NAME + " not found");
-        }
-        MemorySegment funcArg = arena.allocateFrom(expression);
-        try {
-            return (double) LINKER.downcallHandle(memorySegmentOptional.get(), FUNCTION_DESCRIPTOR).invoke(funcArg);
-        } catch (Throwable ex) {
-            return Double.NaN;
-        }
-    }
-
-    /**
-     * Calculate via meval (JNI).
-     *
-     * @param expression expression
-     * @return result
-     */
-    static native double calculateViaMevalJni(String expression);
 
     /**
      * Calculate via meval.
@@ -133,35 +62,7 @@ public class JavaExprAdapter {
         if (expression == null) {
             return Double.NaN;
         }
-        return isJniHarness() ? calculateViaMevalJni(expression) : calculateViaMevalFfm(expression);
-    }
-
-    /**
-     * Calculate via EvalEx.
-     *
-     * @param expression expression
-     * @return result
-     */
-    public static double calculateViaEvalEx(String expression) {
-        try {
-            return new com.udojava.evalex.Expression(expression).eval().doubleValue();
-        } catch (Exception ex) {
-            return Double.NaN;
-        }
-    }
-
-    /**
-     * Calculate via mXparser.
-     *
-     * @param expression expression
-     * @return result
-     */
-    public static double calculateViamXparser(String expression) {
-        try {
-            return new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
-        } catch (Exception e) {
-            return Double.NaN;
-        }
+        return isJniHarness() ? JavaExprAdapterJni.calculateViaMevalJni(expression) : JavaExprAdapterFfm.calculateViaMevalFfm(expression);
     }
 
     /**
@@ -175,19 +76,23 @@ public class JavaExprAdapter {
      */
     public static double calculate(String expression, String mayBeAdapteeName) {
         if (mayBeAdapteeName == null || mayBeAdapteeName.isBlank()) {
-            return calculateViaEvalEx(expression);
+            return JavaExprAdapterManaged.calculateViaEvalEx(expression);
         }
         String mayBeAdapteeNameLowercase = mayBeAdapteeName.toLowerCase();
         double result;
         if (MXPARSER_PATTERN.matcher(mayBeAdapteeNameLowercase).find()) {
-            result = calculateViamXparser(expression);
+            result = JavaExprAdapterManaged.calculateViamXparser(expression);
         } else if (EXPRTK_PATTERN.matcher(mayBeAdapteeNameLowercase).find()) {
             result = calculateViaExprtk(expression);
         } else if (MEVAL_PATTERN.matcher(mayBeAdapteeNameLowercase).find()) {
             result = calculateViaMeval(expression);
         } else {
-            result = calculateViaEvalEx(expression);
+            result = JavaExprAdapterManaged.calculateViaEvalEx(expression);
         }
         return result;
+    }
+
+    private JavaExprAdapter() {
+        //
     }
 }

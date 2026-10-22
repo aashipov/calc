@@ -21,9 +21,11 @@ else
     endif
 endif
 
-TARGET   := libjava-expr-adapter.$(LIB_EXT)
-SRCS     := java-expr-adapter.c
-HEADERS := org_dummy_calc_JavaExprAdapter.h
+ADAPTER_NAME := java-expr-adapter-jni
+
+TARGET   := lib$(ADAPTER_NAME).$(LIB_EXT)
+SRCS     := $(ADAPTER_NAME).c
+HEADERS := org_dummy_calc_JavaExprAdapterJni.h
 OBJS     := $(SRCS:.c=.o)
 
 LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
@@ -41,14 +43,12 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) *.so
 	rm -rf target/
 
 generate-jni-header:
-	mvn compile
-	# keep cp in sync with pom.xml
-	javac -cp ".:${HOME}/.m2/repository/org/mariuszgromada/math/MathParser.org-mXparser/6.1.0/MathParser.org-mXparser-6.1.0.jar:${HOME}/.m2/repository/com/udojava/EvalEx/2.7/EvalEx-2.7.jar" -h . src/main/java/org/dummy/calc/JavaExprAdapter.java
-	rm src/main/java/org/dummy/calc/JavaExprAdapter.class
+	javac -h . src/main/java/org/dummy/calc/JavaExprAdapterJni.java
+	rm src/main/java/org/dummy/calc/JavaExprAdapterJni.class
 
 install-native:
 	install -d $(INCDIR)
