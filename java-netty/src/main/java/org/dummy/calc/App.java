@@ -31,10 +31,6 @@ public class App {
     private static EventLoopGroup workerGroup;
     private static ChannelFuture channelFuture;
 
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
-
     static class ServerInitializer extends ChannelInitializer<Channel> {
 
         @Override

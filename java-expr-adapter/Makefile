@@ -31,7 +31,7 @@ OBJS     := $(SRCS:.c=.o)
 LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
 
 JAVA_TARGET := java-build
-JAVA_BUILD_CMD := mvn install
+JAVA_BUILD_CMD := mvn surefire-report:report install
 
 .PHONY: all clean generate-jni-header install-native $(JAVA_TARGET)
 

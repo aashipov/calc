@@ -21,10 +21,6 @@ public class CalcServlet extends HttpServlet {
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String NAN = "NaN";
 
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         textResponse(resp, HttpServletResponse.SC_OK, "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)");

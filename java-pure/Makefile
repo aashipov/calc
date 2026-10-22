@@ -1,5 +1,5 @@
 JAVA_TARGET := java-build
-JAVA_BUILD_CMD := mvn install
+JAVA_BUILD_CMD := mvn surefire-report:report package
 SHARED_LIBRARY_HARNESS ?= JNI
 
 .PHONY: all clean $(JAVA_TARGET) run
