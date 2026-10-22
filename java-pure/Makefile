@@ -1,16 +1,15 @@
-JAVA_BUILD_CMD := mvn clean package
+JAVA_TARGET := java-build
+JAVA_BUILD_CMD := mvn install
 SHARED_LIBRARY_HARNESS ?= JNI
 
-JAVA_BUILD_CMD := mvn install
+.PHONY: all clean $(JAVA_TARGET) run
 
-.PHONY: all clean java-build run
-
-all: clean java-build
+all: clean $(JAVA_TARGET)
 
 clean:
 	rm -rf target/
 
-java-build:
+$(JAVA_TARGET):
 	$(JAVA_BUILD_CMD)
 	SHARED_LIBRARY_HARNESS=FFM $(JAVA_BUILD_CMD)
 
