@@ -42,7 +42,7 @@ class CalcService implements HttpService {
         String result = NAN;
         if (request.content().hasEntity()) {
             String expr = request.content().as(String.class);
-            result = "" + JavaExprAdapter.calculateViamXparser(expr);
+            result = "" + JavaExprAdapterManaged.calculateViamXparser(expr);
         }
         textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
     }
@@ -60,7 +60,7 @@ class CalcService implements HttpService {
         String result = NAN;
         if (request.content().hasEntity()) {
             String expr = request.content().as(String.class);
-            result = "" + JavaExprAdapter.calculateViaEvalEx(expr);
+            result = "" + JavaExprAdapterManaged.calculateViaEvalEx(expr);
         }
         textResponse(response, Status.OK_200, result.getBytes(StandardCharsets.UTF_8));
     }

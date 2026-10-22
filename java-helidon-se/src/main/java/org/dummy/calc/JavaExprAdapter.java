@@ -1,1 +1,1 @@
-../../../../../../../java-pure/src/main/java/org/dummy/calc/JavaExprAdapter.java
+../../../../../../../java-expr-adapter//src/main/java/org/dummy/calc/JavaExprAdapter.java
