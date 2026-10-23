@@ -20,6 +20,7 @@ target_link_libraries(${project_name}
         cpprestsdk::cpprest
         OpenSSL::Crypto
         c-exprtk-adapter
+        c-meval-adapter
 )
 
 gtest_discover_tests(${project_name})

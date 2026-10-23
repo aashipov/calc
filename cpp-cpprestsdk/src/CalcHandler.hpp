@@ -2,6 +2,7 @@
 #define CPP_CPPRESTSDK_CALC_HANDLER_H
 
 #include "c-exprtk-adapter.h"
+#include "c-meval-adapter.h"
 #include <cpprest/http_listener.h>
 #include <iomanip>
 
@@ -20,8 +21,10 @@ static inline std::string to_string(double value, int precision) {
   return ss.str();
 }
 
-static inline std::string via_exprtk(std::string expr) {
-  double result = calculate(expr.c_str());
+static inline std::string calculate(std::string expr, std::string path) {
+  double result = (path.find("meval") != std::string::npos)
+                      ? calculate_via_meval(expr.c_str())
+                      : calculate_via_exprtk(expr.c_str());
   return to_string(result, DOUBLE_PRECISION);
 }
 
@@ -30,8 +33,9 @@ inline void get_handler(web::http::http_request request) {
 }
 
 inline void post_handler(web::http::http_request request) {
+  utility::string_t path = request.relative_uri().path();
   request.extract_string()
-      .then([](utility::string_t expr) { return via_exprtk(expr); })
+      .then([path](utility::string_t expr) { return calculate(expr, path); })
       .then([=](std::string result) {
         request.reply(web::http::status_codes::OK, result, TEXT_PLAIN);
       });

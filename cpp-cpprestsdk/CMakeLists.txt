@@ -6,7 +6,7 @@ project(${project_name})
 
 include(GNUInstallDirs)
 include_directories("src")
-add_executable(${project_name} app.cpp)
+add_executable(${project_name} ${project_name}.cpp)
 
 find_package(cpprestsdk REQUIRED)
 find_package(OpenSSL REQUIRED)
@@ -16,6 +16,7 @@ target_link_libraries(${project_name}
         cpprestsdk::cpprest
         OpenSSL::Crypto
         c-exprtk-adapter
+        c-meval-adapter
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

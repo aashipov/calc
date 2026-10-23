@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Build adapter `../c-exprtk-adapter`, Google Test `../test/build-googletest.sh` first
+Build [c-exprtk-adapter](../c-exprtk-adapter), [c-meval-adapter](../c-meval-adapter), Google Test `../test/build-googletest.sh` first
 
 ## Build
 
