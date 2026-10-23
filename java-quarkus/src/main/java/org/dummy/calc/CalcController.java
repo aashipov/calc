@@ -1,8 +1,5 @@
 package org.dummy.calc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -15,13 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 @ApplicationScoped
 public class CalcController {
 
-    private static final Logger LOGGER = Logger.getLogger(CalcController.class.getSimpleName());
     public static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
-    private static final String NAN = "NaN";
-
-    public CalcController() {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
@@ -33,40 +24,38 @@ public class CalcController {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String evalex(String expr) {
-        String result = NAN;
-        try {
-            result = new com.udojava.evalex.Expression(expr).eval().toString();
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e);
-        }
-        return result;
+        return "" + JavaExprAdapterManaged.calculateViaEvalEx(expr);
     }
 
     @POST
-    @Path("/mxparser")
+    @Path("/" + JavaExprAdapter.EVALEX)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String evalexEvalex(String expr) {
+        return "" + JavaExprAdapterManaged.calculateViaEvalEx(expr);
+    }
+
+    @POST
+    @Path("/" + JavaExprAdapter.MXPARSER)
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String mxparser(String expr) {
-        String result = NAN;
-        try {
-            result = String.valueOf(new org.mariuszgromada.math.mxparser.Expression(expr).calculate());
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e);
-        }
-        return result;
+        return "" + JavaExprAdapterManaged.calculateViamXparser(expr);
     }
 
     @POST
-    @Path("/exprtk")
+    @Path("/" + JavaExprAdapter.EXPRTK)
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public String exprtk(String expr) {
-        String result = NAN;
-        try {
-            result = String.valueOf(JavaExprtkAdapter.calculate(expr));
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e);
-        }
-        return result;
+        return "" + JavaExprAdapter.calculateViaExprtk(expr);
+    }
+
+    @POST
+    @Path("/" + JavaExprAdapter.MEVAL)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public String meval(String expr) {
+        return "" + JavaExprAdapter.calculateViaMeval(expr);
     }
 }

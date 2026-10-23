@@ -1,6 +1,5 @@
 package org.dummy.calc;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.smallrye.mutiny.Uni;
@@ -20,10 +19,6 @@ public class CalcController {
     public static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
     private static final String NAN = "NaN";
 
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
-
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> welcome() {
@@ -34,40 +29,43 @@ public class CalcController {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> evalex(String expression) {
-        String result = NAN;
-        try {
-            result = "" + new com.udojava.evalex.Expression(expression).eval();
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e);
-        }
+        String result = "" + JavaExprAdapterManaged.calculateViaEvalEx(expression);
         return Uni.createFrom().item(result);
     }
 
     @POST
-    @Path("/mxparser")
+    @Path("/" + JavaExprAdapter.EVALEX)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Uni<String> evalexEvalex(String expression) {
+        String result = "" + JavaExprAdapterManaged.calculateViaEvalEx(expression);
+        return Uni.createFrom().item(result);
+    }
+
+    @POST
+    @Path("/" + JavaExprAdapter.MXPARSER)
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> mxparser(String expression) {
-        String result = NAN;
-        try {
-            result = "" + new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e);
-        }
+        String result = "" + JavaExprAdapterManaged.calculateViamXparser(expression);
         return Uni.createFrom().item(result);
     }
 
     @POST
-    @Path("/exprtk")
+    @Path("/" + JavaExprAdapter.EXPRTK)
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> exprtk(String expression) {
-        String result = NAN;
-        try {
-            result = "" + JavaExprtkAdapter.calculate(expression);
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e);
-        }
+        String result = "" + JavaExprAdapter.calculateViaExprtk(expression);
+        return Uni.createFrom().item(result);
+    }
+
+    @POST
+    @Path("/" + JavaExprAdapter.MEVAL)
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Uni<String> meval(String expression) {
+        String result = "" + JavaExprAdapter.calculateViaMeval(expression);
         return Uni.createFrom().item(result);
     }
 }

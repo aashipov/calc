@@ -35,6 +35,7 @@
             <artifactId>java-expr-adapter</artifactId>
             <version>${java-expr-adapter.version}</version>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
