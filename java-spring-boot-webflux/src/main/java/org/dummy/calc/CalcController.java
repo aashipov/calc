@@ -1,8 +1,5 @@
 package org.dummy.calc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,13 +13,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/")
 public class CalcController {
 
-    private static final Logger LOGGER = Logger.getLogger(CalcController.class.getSimpleName());
     public static final String WELCOME = "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)";
-    private static final String NAN = "NaN";
-
-    static {
-        org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy");
-    }
 
     @GetMapping()
     public Mono<String> get() {
@@ -30,35 +21,32 @@ public class CalcController {
     }
 
     @PostMapping(consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public Mono<String> evalex(@RequestBody String expression) {
-        String result = NAN;
-        try {
-            result = "" + new com.udojava.evalex.Expression(expression).eval();
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e.getMessage());
-        }
+    public Mono<String> evalex(@RequestBody(required = false) String expression) {
+        String result = "" + JavaExprAdapterManaged.calculateViaEvalEx(expression);
         return Mono.just(result);
     }
 
-    @PostMapping(value = "/mxparser", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public Mono<String> mxparser(@RequestBody String expression) {
-        String result = NAN;
-        try {
-            result = "" + new org.mariuszgromada.math.mxparser.Expression(expression).calculate();
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e.getMessage());
-        }
+    @PostMapping(path = "/" + JavaExprAdapter.EVALEX, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public Mono<String> evalexEvalex(@RequestBody(required = false) String expression) {
+        String result = "" + JavaExprAdapterManaged.calculateViaEvalEx(expression);
         return Mono.just(result);
     }
 
-    @PostMapping(value = "/exprtk", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public Mono<String> exprtk(@RequestBody String expression) {
-        String result = NAN;
-        try {
-            result = "" + JavaExprtkAdapter.calculate(expression);
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, null, e.getMessage());
-        }
+    @PostMapping(path = "/" + JavaExprAdapter.MXPARSER, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public Mono<String> mxparser(@RequestBody(required = false) String expression) {
+        String result = "" + JavaExprAdapterManaged.calculateViamXparser(expression);
+        return Mono.just(result);
+    }
+
+    @PostMapping(path = "/" + JavaExprAdapter.EXPRTK, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public Mono<String> exprtk(@RequestBody(required = false) String expression) {
+        String result = "" + JavaExprAdapter.calculateViaExprtk(expression);
+        return Mono.just(result);
+    }
+
+    @PostMapping(path = "/" + JavaExprAdapter.MEVAL, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+    public Mono<String> meval(@RequestBody(required = false) String expression) {
+        String result = "" + JavaExprAdapter.calculateViaMeval(expression);
         return Mono.just(result);
     }
 }

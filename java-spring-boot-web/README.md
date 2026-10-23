@@ -1,19 +1,35 @@
 # Spring Boot flavor
 
-## Native Build
+Build `../java-expr-adapter` first
 
-```shell
-mvn native:compile -Dnative -DskipTests
+## Build & run via make
+
+### JNI
+
+```sh
+make && make run
 ```
 
-## Run
+### FFM
 
-```shell
-java -Dserver.tomcat.threads.max=`getconf _NPROCESSORS_ONLN` -jar target/calc-shaded.jar
+```sh
+make && make run SHARED_LIBRARY_HARNESS=FFM
 ```
 
-```shell
-java -Djdk.virtualThreadScheduler.parallelism=`getconf _NPROCESSORS_ONLN` -Dspring.threads.virtual.enabled=true -jar target/calc-shaded.jar
+## Build & run with console
+
+### JNI
+
+```sh
+mvn clean package
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -jar target/calc-shaded.jar
+```
+
+### FFM
+
+```sh
+mvn clean package
+SHARED_LIBRARY_HARNESS=FFM java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -jar target/calc-shaded.jar
 ```
 
 ## Swagger UI
