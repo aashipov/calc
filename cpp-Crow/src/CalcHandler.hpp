@@ -2,6 +2,7 @@
 #define CPP_CROW_CALC_HANDLER_H
 
 #include "c-exprtk-adapter.h"
+#include "c-meval-adapter.h"
 #include "crow.h"
 #include <crow/app.h>
 #include <crow/common.h>
@@ -29,7 +30,9 @@ static inline void handler(const crow::request &req, crow::response &res) {
   res.body = WELCOME;
   if (crow::HTTPMethod::POST == req.method) {
     std::string expression = req.body;
-    double result = calculate(expression.c_str());
+    double result = (req.url.find("meval") != std::string::npos)
+                        ? calculate_via_meval(expression.c_str())
+                        : calculate_via_exprtk(expression.c_str());
     res.body = to_string(result, DOUBLE_PRECISION);
   }
   res.code = 200;

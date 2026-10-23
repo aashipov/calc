@@ -22,6 +22,7 @@ target_link_libraries(${project_name}
         ZLIB::ZLIB
         Crow::Crow
         c-exprtk-adapter
+        c-meval-adapter
         GTest::gtest_main
 )
 

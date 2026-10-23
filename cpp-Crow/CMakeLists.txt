@@ -8,7 +8,7 @@ include(GNUInstallDirs)
 
 include_directories("src")
 
-add_executable(${project_name} app.cpp)
+add_executable(${project_name} ${project_name}.cpp)
 
 find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -21,6 +21,7 @@ target_link_libraries(${project_name}
         ZLIB::ZLIB
         Crow::Crow
         c-exprtk-adapter
+        c-meval-adapter
 )
 
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)

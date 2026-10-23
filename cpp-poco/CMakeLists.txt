@@ -8,7 +8,7 @@ include(GNUInstallDirs)
 
 find_package(Poco REQUIRED COMPONENTS Foundation Util Net)
 
-add_executable(${project_name} app.cpp)
+add_executable(${project_name} ${project_name}.cpp)
 
 target_include_directories(${project_name} PRIVATE "src")
 

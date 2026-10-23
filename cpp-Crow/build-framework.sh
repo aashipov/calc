@@ -31,7 +31,7 @@ closure() {
     local BUILD_DIR_NAME="build"
     local FRAMEWORK_NAME=Crow
     local CLONE_URL=https://github.com/CrowCpp/Crow.git
-    local TAG_TO_BUILD="v1.3.1"
+    local TAG_TO_BUILD="v1.3.4"
 
     clone_framework
     build_framework
