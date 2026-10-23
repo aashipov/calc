@@ -6,6 +6,7 @@
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include "c-exprtk-adapter.h"
+#include "c-meval-adapter.h"
 #include <Poco/StreamCopier.h>
 #include <iomanip>
 
@@ -23,7 +24,10 @@ public:
                      Poco::Net::HTTPServerResponse &response) override {
     std::string expression;
     Poco::StreamCopier::copyToString(request.stream(), expression);
-    double result = calculate(expression.c_str());
+    std::string uri = request.getURI();
+    double result = (uri.find("meval") != std::string::npos)
+                        ? calculate_via_meval(expression.c_str())
+                        : calculate_via_exprtk(expression.c_str());
     std::string result_string = to_string(result, DOUBLE_PRECISION);
     response.setContentType(TEXT_PLAIN);
     std::ostream &responseBodyStream = response.send();

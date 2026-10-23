@@ -20,6 +20,7 @@ target_link_libraries(${project_name}
         Poco::Net
         Poco::Util
         c-exprtk-adapter
+        c-meval-adapter
         GTest::gtest_main
 )
 
