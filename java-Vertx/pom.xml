@@ -4,19 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.dummy</groupId>
-    <artifactId>calc</artifactId>
+    <groupId>org.dummy.calc</groupId>
+    <artifactId>calc-java-vertx</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>
-        <evalex.version>2.7</evalex.version>
+        <java-expr-adapter.version>0.1.0-SNAPSHOT</java-expr-adapter.version>
         <java.version>25</java.version>
         <junit5-version>5.14.3</junit5-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.shade.plugin.version>3.4.1</maven.shade.plugin.version>
-        <mxparxer.version>6.1.0</mxparxer.version>
         <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,14 +37,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.udojava</groupId>
-            <artifactId>EvalEx</artifactId>
-            <version>${evalex.version}</version>
+            <groupId>org.dummy</groupId>
+            <artifactId>java-expr-adapter</artifactId>
+            <version>${java-expr-adapter.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mariuszgromada.math</groupId>
-            <artifactId>MathParser.org-mXparser</artifactId>
-            <version>${mxparxer.version}</version>
+            <groupId>org.dummy</groupId>
+            <artifactId>java-expr-adapter</artifactId>
+            <version>${java-expr-adapter.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -98,7 +99,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
-                            <outputFile>${project.build.directory}/${project.artifactId}-shaded.jar
+                            <outputFile>${project.build.directory}/calc-shaded.jar
                             </outputFile>
                         </configuration>
                     </execution>
