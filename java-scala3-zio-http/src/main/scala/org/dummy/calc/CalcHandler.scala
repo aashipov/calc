@@ -7,54 +7,81 @@ object CalcHandler {
 
   org.mariuszgromada.math.mxparser.License.iConfirmNonCommercialUse("dummy")
 
-  val WELCOME: String =
+  private val WELCOME: String =
     "Welcome to calc service\nHTTP POST your expression / (via evalex) or /mxparser (via mxparser)"
-  val MXPARSER_PATH: String = "mxparser"
-  val EXPRTK_PATH: String = "exprtk"
-  val NAN: String = "NaN"
+  private val NAN: String = "NaN"
 
   private val welcome: Route[Any, Nothing] =
     Method.GET / zio.http.trailing -> handler(Response.text(WELCOME))
 
-  private val viaEvalex: Route[Any, Nothing] =
+  private val evalex: Route[Any, Nothing] =
     Method.POST / zio.http.trailing ->
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
           result <- ZIO
-            .attempt(com.udojava.evalex.Expression(expr).eval())
+            .attempt(JavaExprAdapterManaged.calculateViaEvalEx(expr))
             .catchAll(_ => ZIO.succeed(NAN))
         } yield Response.text(result.toString)
       }.sandbox
 
-  private val viaMxparser: Route[Any, Nothing] =
-    Method.POST / MXPARSER_PATH ->
+  private val evalexEvalex: Route[Any, Nothing] =
+    Method.POST / JavaExprAdapter.EVALEX ->
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
           result <- ZIO
             .attempt(
-              org.mariuszgromada.math.mxparser.Expression(expr).calculate()
+              JavaExprAdapterManaged.calculateViaEvalEx(expr)
             )
             .catchAll(_ => ZIO.succeed(NAN))
         } yield Response.text(result.toString)
       }.sandbox
 
-  private val viaExprtk: Route[Any, Nothing] =
-    Method.POST / EXPRTK_PATH ->
+  private val mxparser: Route[Any, Nothing] =
+    Method.POST / JavaExprAdapter.MXPARSER ->
       handler { (req: Request) =>
         for {
           expr <- req.body.asString
           result <- ZIO
-            .attempt(JavaExprtkAdapter.calculate(expr))
+            .attempt(
+              JavaExprAdapterManaged.calculateViamXparser(expr)
+            )
+            .catchAll(_ => ZIO.succeed(NAN))
+        } yield Response.text(result.toString)
+      }.sandbox
+
+  private val exprtk: Route[Any, Nothing] =
+    Method.POST / JavaExprAdapter.EXPRTK ->
+      handler { (req: Request) =>
+        for {
+          expr <- req.body.asString
+          result <- ZIO
+            .attempt(
+              JavaExprAdapter.calculateViaExprtk(expr)
+            )
+            .catchAll(_ => ZIO.succeed(NAN))
+        } yield Response.text(result.toString)
+      }.sandbox
+
+  private val meval: Route[Any, Nothing] =
+    Method.POST / JavaExprAdapter.MEVAL ->
+      handler { (req: Request) =>
+        for {
+          expr <- req.body.asString
+          result <- ZIO
+            .attempt(
+              JavaExprAdapter.calculateViaMeval(expr)
+            )
             .catchAll(_ => ZIO.succeed(NAN))
         } yield Response.text(result.toString)
       }.sandbox
 
   val routes: Routes[Any, Nothing] = zio.http.Routes(
     welcome,
-    viaEvalex,
-    viaMxparser,
-    viaExprtk
+    evalex,
+    mxparser,
+    exprtk,
+    meval
   )
 }

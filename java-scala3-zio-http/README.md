@@ -2,18 +2,34 @@
 
 Even weirder 'meaningless semantics excess' than `../ktor` (Kotlin)
 
-## Requirements
+Build `../java-expr-adapter` first
 
-Build `../c-exprtk-adapter` first
+## Build & run via make
 
-## Build & run
+### JNI
 
-```shell
-mvn clean package
+```sh
+make && make run
 ```
 
-or
+### FFM
 
-```shell
-./build.sh
+```sh
+make && make run SHARED_LIBRARY_HARNESS=FFM
+```
+
+## Build & run with console
+
+### JNI
+
+```sh
+mvn clean package
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -jar target/calc-shaded.jar
+```
+
+### FFM
+
+```sh
+mvn clean package
+SHARED_LIBRARY_HARNESS=FFM java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -jar target/calc-shaded.jar
 ```

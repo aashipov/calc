@@ -1,21 +1,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.dummy</groupId>
-    <artifactId>calc</artifactId>
+    <artifactId>calc-java-scala3-zio-http</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
     <name>${project.artifactId}</name>
 
     <properties>
-        <evalex.version>2.7</evalex.version>
+        <java-expr-adapter.version>0.1.0-SNAPSHOT</java-expr-adapter.version>
         <java.version>25</java.version>
         <junit5-version>5.14.3</junit5-version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.shade.plugin.version>3.4.1</maven.shade.plugin.version>
-        <mxparxer.version>6.1.0</mxparxer.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <scala-maven-plugin.version>4.9.10</scala-maven-plugin.version>
@@ -27,14 +27,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.udojava</groupId>
-            <artifactId>EvalEx</artifactId>
-            <version>${evalex.version}</version>
+            <groupId>org.dummy</groupId>
+            <artifactId>java-expr-adapter</artifactId>
+            <version>${java-expr-adapter.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mariuszgromada.math</groupId>
-            <artifactId>MathParser.org-mXparser</artifactId>
-            <version>${mxparxer.version}</version>
+            <groupId>org.dummy</groupId>
+            <artifactId>java-expr-adapter</artifactId>
+            <version>${java-expr-adapter.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
