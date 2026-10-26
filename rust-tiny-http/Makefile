@@ -8,7 +8,7 @@ endif
 CARGO        := cargo
 TARGET_DIR   := target
 
-.PHONY: all clean build test
+.PHONY: all clean build test run
 
 all: build test
 
