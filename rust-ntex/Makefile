@@ -20,3 +20,6 @@ build:
 
 test:
 	$(CARGO) test $(CARGO_FLAGS)
+
+run:
+	$(TARGET_DIR)/$(PROFILE)/calc
