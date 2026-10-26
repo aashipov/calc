@@ -3,6 +3,7 @@ package main
 import (
 	"io"
 	"net/http"
+	"strings"
 
 	_ "bitbucket.org/anatoly_a_shipov/calc-go-echo/swagger"
 	"github.com/labstack/echo/v5"
@@ -10,7 +11,7 @@ import (
 )
 
 const (
-	WELCOME    = "Welcome to calc service\nHTTP POST your expression"
+	WELCOME = "Welcome to calc service\nHTTP POST your expression"
 )
 
 // @Summary      Welcome
@@ -34,9 +35,15 @@ func evaluate(c *echo.Context) error {
 	if err != nil {
 		c.String(http.StatusOK, NaN)
 	}
+	path := c.Path()
 	expression := string(bodyBytes)
-	resultString := CalculateViaExprtk(expression)
-	return c.String(http.StatusOK, resultString)
+	var result string
+	if strings.HasPrefix(path, "/meval") {
+		result = CalculateViaMeval(expression)
+	} else {
+		result = CalculateViaExprtk(expression)
+	}
+	return c.String(http.StatusOK, result)
 }
 
 func CalcHandler(server *echo.Echo) {
@@ -45,4 +52,5 @@ func CalcHandler(server *echo.Echo) {
 	server.POST("/", evaluate)
 	server.POST("/mxparser", evaluate)
 	server.POST("/exprtk", evaluate)
+	server.POST("/meval", evaluate)
 }
