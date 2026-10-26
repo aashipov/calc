@@ -31,4 +31,6 @@ paths:
           schema:
             type: string
       summary: Evaluate
+      tags:
+      - Calc
 swagger: "2.0"

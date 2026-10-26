@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	_ "bitbucket.org/anatoly_a_shipov/calc-go-gin/swagger"
 	"github.com/gin-gonic/gin"
@@ -36,9 +37,15 @@ func evaluate(ctx *gin.Context) {
 		ctx.String(http.StatusOK, NaN)
 		return
 	}
+	path := ctx.Request.URL.Path
 	expression := string(bodyBytes)
-	resultString := CalculateViaExprtk(expression)
-	ctx.String(http.StatusOK, resultString)
+	var result string
+	if strings.HasPrefix(path, "/meval") {
+		result = CalculateViaMeval(expression)
+	} else {
+		result = CalculateViaExprtk(expression)
+	}
+	ctx.String(http.StatusOK, result)
 }
 
 func CalcHandler(engine *gin.Engine) {
@@ -48,5 +55,6 @@ func CalcHandler(engine *gin.Engine) {
 		engine.POST("/", evaluate)
 		engine.POST("/mxparser", evaluate)
 		engine.POST("/exprtk", evaluate)
+		engine.POST("/meval", evaluate)
 	}
 }

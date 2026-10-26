@@ -1,16 +1,22 @@
 # Go Gin flavor #
 
-[C++ Mathematical Expression Parsing And Evaluation Library](https://github.com/ArashPartow/exprtk) RESTFul adapter in Go
+[c-exprtk-adapter](../c-exprtk-adapter) and [c-meval-adapter](../c-meval-adapter) RESTFul adapter in Go FastHTTP
 
-## Requirements ##
+## Requirements
 
-`go 1.26`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
+`go`, `gcc-go`, [swag](https://github.com/swaggo/swag), [dlv](https://github.com/go-delve/delve) in `${PATH}`
 
-Build the native `../c-exprtk-adapter` library first.
+```sh
+go install github.com/go-delve/delve/cmd/dlv@latest && go install github.com/swaggo/swag/cmd/swag@latest
+```
 
-## Build ##
+Build `../c-exprtk-adapter` and `../c-meval-adapter` first
 
-### Debug ###
+## Build
+
+Call `make` to test & build everything or follow paragraphs below
+
+### Debug
 
 ```shell
 swag init --output ./swagger && go build -gcflags "all=-N -l" -o app-debug && go test
@@ -22,13 +28,13 @@ dlv exec --listen=:2345 --headless --api-version=2 --accept-multiclient --contin
 
 Use remote debug
 
-### Release ###
+### Release
 
 ```shell
 swag init --output ./swagger && go build -o app && go test
 ```
 
-## Run ##
+## Run
 
 `app` or `app-debug`
 

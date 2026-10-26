@@ -2,8 +2,7 @@ package main
 
 import "testing"
 
-func TestCalculateViaExprtk(t *testing.T) {
-	t.Helper()
+func TestExprAdapter(t *testing.T) {
 	tests := []struct {
 		name       string
 		expression string
@@ -18,7 +17,11 @@ func TestCalculateViaExprtk(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := CalculateViaExprtk(tt.expression)
 			if actual != tt.expected {
-				t.Errorf("expected %s, got %s", tt.expected, actual)
+				t.FailNow()
+			}
+			actual = CalculateViaMeval(tt.expression)
+			if actual != tt.expected {
+				t.FailNow()
 			}
 		})
 	}

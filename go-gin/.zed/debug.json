@@ -1,5 +1,16 @@
 [
   {
+    "label": "Debug",
+    "type": "go",
+    "adapter": "Delve",
+    "request": "launch",
+    "mode": "debug",
+    //"mode": "test",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    //"program": "$ZED_FILE",
+    "program": "$ZED_DIRNAME",
+  },
+  {
     "label": "Remote Debug",
     "adapter": "Delve",
     "request": "attach",
@@ -8,11 +19,5 @@
       "host": "0.0.0.0",
       "port": 2345,
     },
-    "substitutePath": [
-      {
-        "from": "$ZED_WORKTREE_ROOT",
-        "to": "$ZED_WORKTREE_ROOT",
-      },
-    ],
   },
 ]

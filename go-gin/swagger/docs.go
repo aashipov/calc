@@ -39,6 +39,9 @@ const docTemplate = `{
                 "produces": [
                     "text/plain"
                 ],
+                "tags": [
+                    "Calc"
+                ],
                 "summary": "Evaluate",
                 "parameters": [
                     {
