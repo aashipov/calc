@@ -48,7 +48,6 @@ bool is_null_or_blank_c_string(const char *str) {
 template <typename T>
 [[nodiscard]] inline T calculate_inner(const char *expression) {
   if (is_null_or_blank_c_string(expression)) {
-    double my_nan = std::numeric_limits<double>::quiet_NaN();
     return std::numeric_limits<T>::quiet_NaN();
   }
   try {
