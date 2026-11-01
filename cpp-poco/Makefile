@@ -1,6 +1,6 @@
 # Project variables
 TARGET_NAME = calc
-TEST_TARGET_NAME = run_tests
+TEST_TARGET_NAME = $(TARGET_NAME)_tests
 HTTPLIB_H_NAME = httplib.h
 
 # Core files (Looks for source files inside src/ or root)
@@ -19,7 +19,7 @@ BINDIR = $(PREFIX)/bin
 
 # Build Profile Configuration (Default to Release)
 PROFILE ?= Release
-BUILD_DIR = build/$(PROFILE)
+BUILD_DIR = $(PROFILE)
 
 ifeq ($(PROFILE), Debug)
     CXXFLAGS += -g -O0 -DDEBUG
@@ -60,7 +60,7 @@ test: $(TEST_TARGET)
 
 # Wipe everything out completely
 clean:
-	rm -rf build
+	rm -rf $(PROFILE)
 
 download-httplib:
 	@if [ ! -f $(HTTPLIB_H_NAME) ]; then \

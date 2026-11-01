@@ -4,7 +4,6 @@
 #include "CalcServer.hpp"
 #include "c-exprtk-adapter.h"
 #include <httplib.h>
-#include <pthread.h>
 #include <string>
 #include <thread>
 
@@ -22,24 +21,26 @@ protected:
 
   inline static const std::string NOT_AN_EXPRESSION = "nan";
 
-  web::http::experimental::listener::http_listener server;
-  std::thread server_thread;
+  // Must be static so they persist across individual test instances
+  inline static decltype(calc::build_calc_app()) server;
 
-  void SetUp() override {
+  static void SetUpTestSuite() {
     server = calc::build_calc_app();
-    // pristine server.run_async() or wrapped into std::async(...) block forever
-    server_thread = std::thread([&]() {
-      try {
-        server.open().wait();
-      } catch (std::exception const &e) {
-        std::cerr << e.what() << std::endl;
-      }
-    });
+    try {
+      server.open().wait();
+    } catch (std::exception const &e) {
+      std::cerr << "Global Server Setup Failed: " << e.what() << std::endl;
+      throw;
+    }
   }
 
-  void TearDown() override {
-    server.close();
-    server_thread.join();
+  // Equivalent to @AfterAll / @AfterClass
+  static void TearDownTestSuite() {
+    try {
+      server.close().wait();
+    } catch (std::exception const &e) {
+      std::cerr << "Global Server Teardown Failed: " << e.what() << std::endl;
+    }
   }
 
   void do_request(std::string path, std::string requestBody,
