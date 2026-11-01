@@ -6,12 +6,22 @@ Build [c-exprtk-adapter](../c-exprtk-adapter), [c-meval-adapter](../c-meval-adap
 
 ## Build
 
-```shell
+### Wrapped cmake
+
+```sh
 ./release.sh
 ```
 
+### Pure make
+
+```sh
+make clean && make
+```
+
+###
+
 ## Run
 
-```shell
+```sh
 ./Release/calc
 ```

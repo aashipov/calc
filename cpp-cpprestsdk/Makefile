@@ -64,6 +64,6 @@ clean:
 
 download-httplib:
 	@if [ ! -f $(HTTPLIB_H_NAME) ]; then \
-		echo "Downloading exprtk.hpp..."; \
+		echo "Downloading $(HTTPLIB_H_NAME)..."; \
 		curl -L -o $(HTTPLIB_H_NAME) https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h ; \
 	fi
