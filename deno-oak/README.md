@@ -1,31 +1,34 @@
 # Deno Oak Flavor
 
+[c-exprtk-adapter](../c-exprtk-adapter) and [c-meval-adapter](../c-meval-adapter) RESTFul adapter in Deno Oak.
+
 ## Requirements
 
-Build `../c-exprtk-adapter` first
+[Deno](https://github.com/denoland/deno/releases/latest/download/deno-x86_64-unknown-linux-gnu.zip) and Rust in `${PATH}`
 
-[Deno](https://github.com/denoland/deno/releases) and Rust in `${PATH}`
+Build `../c-exprtk-adapter` and `../c-meval-adapter` first
 
-## Build & run
+## Build
 
-```shell
+```sh
 deno install
+deno run build
 ```
 
-```shell
-deno serve --parallel --allow-all calc.ts
+### Wrapper
+
+```sh
+./build.sh
 ```
 
-```shell
-deno run dev
+## Run
+
+```sh
+deno serve --allow-all calc.ts
 ```
 
-```shell
-deno run start
-```
+### Platform-specific executable
 
-Platform-specific executable:
-
-```shell
-deno run build && ./calc --parallel
+```sh
+./calc --parallel
 ```
