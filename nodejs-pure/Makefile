@@ -9,7 +9,8 @@ all: build test
 
 clean:
 	rm -rf $(NODE_MODULES)
-	rm $(SERVER_JS)
+	rm -rf dist/
+	rm -f $(SERVER_JS)
 
 $(NODE_MODULES):
 	$(NPM) install
@@ -23,5 +24,5 @@ test: $(NODE_MODULES)
 dev: $(NODE_MODULES)
 	$(NPM) $(RUN) dev
 
-run: build
+run:
 	$(NPM) $(RUN) start
