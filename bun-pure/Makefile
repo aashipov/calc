@@ -33,8 +33,5 @@ test-cluster: $(NODE_MODULES)
 	../test/calc-test.sh
 	pkill -f bun
 
-run: test
-	./$(TARGET)
-
-run-cluster: test-cluster
+run:
 	bun $(TARGET_CLUSTER)
