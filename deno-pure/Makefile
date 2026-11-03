@@ -24,5 +24,5 @@ test: $(TARGET)
 	../test/calc-test.sh
 	pkill -f $(TARGET_IT)
 
-run: test
-	./$(TARGET)
+run:
+	./$(TARGET) --parallel
