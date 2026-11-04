@@ -2,8 +2,8 @@ PREFIX ?= ${HOME}/.local
 RUNNABLE_TARGETS := build-baremetal test-baremetal native-client jmeter
 JMETER := jmeter
 JMETER_VERSION ?= 5.6.3
-JMETER_TAR_GZ_URL := "https://dlcdn.apache.org//jmeter/binaries/apache-$(JMETER)-$(JMETER_VERSION).tgz"
-JMETER_TAR_GZ_FILE := "apache-$(JMETER)-$(JMETER_VERSION).tgz"
+JMETER_TGZ_URL := "https://dlcdn.apache.org//jmeter/binaries/apache-$(JMETER)-$(JMETER_VERSION).tgz"
+JMETER_TGZ_FILE := "apache-$(JMETER)-$(JMETER_VERSION).tgz"
 
 .DEFAULT_GOAL := help
 
@@ -47,14 +47,14 @@ native-client:
 	$(MAKE) -C ./test/native-client
 	./test/native-client/native-client
 
-$(JMETER_TAR_GZ_FILE):
-	@if [ ! -f $(JMETER_TAR_GZ_FILE) ]; then \
-		echo "Downloading $(JMETER_TAR_GZ_FILE)..."; \
-		curl -L -o $(JMETER_TAR_GZ_FILE) $(JMETER_TAR_GZ_URL) ; \
+$(JMETER_TGZ_FILE):
+	@if [ ! -f $(JMETER_TGZ_FILE) ]; then \
+		echo "Downloading $(JMETER_TGZ_FILE)..."; \
+		curl -L -o $(JMETER_TGZ_FILE) $(JMETER_TGZ_URL) ; \
 	fi
 
-jmeter: $(JMETER_TAR_GZ_FILE)
+jmeter: $(JMETER_TGZ_FILE)
 	rm -rf $(JMETER)
 	mkdir $(JMETER)
-	tar -xzf $(JMETER_TAR_GZ_FILE) -C $(JMETER) --strip-components=1
+	tar -xzf $(JMETER_TGZ_FILE) -C $(JMETER) --strip-components=1
 	cp -r ./test/. $(JMETER)
