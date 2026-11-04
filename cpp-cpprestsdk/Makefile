@@ -34,7 +34,7 @@ TEST_OBJS = $(addprefix $(BUILD_DIR)/, $(TEST_SRCS:.cpp=.o))
 TARGET = $(BUILD_DIR)/$(TARGET_NAME)
 TEST_TARGET = $(BUILD_DIR)/$(TEST_TARGET_NAME)
 
-.PHONY: all download-httplib clean test
+.PHONY: all download-httplib clean test run
 
 # Default target: builds main application and test binaries side-by-side
 all: download-httplib $(TARGET) $(TEST_TARGET) test
@@ -67,3 +67,6 @@ download-httplib:
 		echo "Downloading $(HTTPLIB_H_NAME)..."; \
 		curl -L -o $(HTTPLIB_H_NAME) https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.h ; \
 	fi
+
+run:
+	./$(TARGET)

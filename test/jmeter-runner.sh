@@ -4,11 +4,34 @@
 # 127.0.0.1 jmeter-server{1,2,3} alias will produce three times larger request time.
 # No such issue with different host IPs (like dockerized or baremetal multihost)
 # Submaximal load of 10k per round will produce cleaner throughput comparison
-# 
+#
 # sh -c "DISTRO=arch IMPLEMENTATION=cpp-cpprestsdk ./jmeter-runner.sh"
-# 
-# Put following line to /etc/hosts (without opening #) 
+#
+# Put following line to /etc/hosts (without opening #)
 # 127.0.0.1 host.to.test
+
+guess_distro() {
+    DISTRO=debian
+    if [ -e "/etc/os-release" ]
+    then
+        if grep -q "Ubuntu" "/etc/os-release"
+        then
+            DISTRO=ubuntu
+        elif grep -q "AlmaLinux" "/etc/os-release"
+        then
+            DISTRO=alma
+        elif grep -q "RED " "/etc/os-release"
+        then
+            DISTRO=redos
+        elif grep -q "Astra" "/etc/os-release"
+        then
+            DISTRO=astra
+        elif grep -q "Fedora" "/etc/os-release"
+        then
+            DISTRO=fedora
+        fi
+    fi
+}
 
 kill_jmeter_leftovers() {
     pkill -f "JMeter"
@@ -21,14 +44,14 @@ run_jmeter() {
     while [ ${take_no} -le ${TAKES_COUNT} ]
     do
         kill_jmeter_leftovers
-        set -e  
+        set -e
         rm -rf ./stats/${IMPLEMENTATION}-${DISTRO}-${take_no}.jtl
         rm -rf ./client/web-report-${IMPLEMENTATION}-${DISTRO}-${take_no}
-        
+
         ./bin/jmeter -n -t ./bin/calc-load-test/calc-load-test.jmx -l ./stats/${IMPLEMENTATION}-${DISTRO}-${take_no}.jtl -j ./client/jmeter-client-${IMPLEMENTATION}-${DISTRO}-${take_no}.log -e -o ./client/web-report-${IMPLEMENTATION}-${DISTRO}-${take_no}
-        
+
         set +e
-        
+
         ((take_no=${take_no} + 1))
         kill_jmeter_leftovers
     done
@@ -48,8 +71,7 @@ closure() {
 
     if [ -z ${DISTRO} ]
     then
-        printf "Define DISTRO variable\n"
-        exit 1
+        guess_distro
     fi
 
     if [ -z ${IMPLEMENTATION} ]
