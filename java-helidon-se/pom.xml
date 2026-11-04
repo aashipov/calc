@@ -6,13 +6,13 @@
     
     <parent>
         <groupId>io.helidon.applications</groupId>
-        <artifactId>calc-java-helidon-se</artifactId>
+        <artifactId>helidon-se</artifactId>
         <version>4.3.4</version>
         <relativePath/>
     </parent>
     
     <groupId>org.dummy</groupId>
-    <artifactId>calc</artifactId>
+    <artifactId>calc-java-calc</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>

@@ -44,7 +44,7 @@ build:
 test:
 	$(CARGO) test $(CARGO_FLAGS)
 
-install:
+install: build
 	install -d $(INCDIR)
 	install -d $(LIBDIR)
 	install -m 644 $(HEADERS) $(INCDIR)/

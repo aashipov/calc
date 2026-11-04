@@ -33,9 +33,9 @@ LDLIBS   = -lc-exprtk-adapter -lc-meval-adapter
 JAVA_TARGET := java-build
 JAVA_BUILD_CMD := mvn surefire-report:report install
 
-.PHONY: all clean generate-jni-header install-native $(JAVA_TARGET)
+.PHONY: all clean generate-jni-header install-native $(JAVA_TARGET) install
 
-all: clean generate-jni-header $(TARGET) install-native $(JAVA_TARGET)
+all: clean generate-jni-header $(TARGET) install-native $(JAVA_TARGET) install
 
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
@@ -60,3 +60,5 @@ install-native:
 $(JAVA_TARGET):
 	$(JAVA_BUILD_CMD)
 	SHARED_LIBRARY_HARNESS=FFM $(JAVA_BUILD_CMD)
+
+install: generate-jni-header $(TARGET) install-native $(JAVA_TARGET)
