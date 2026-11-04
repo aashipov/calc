@@ -31,7 +31,7 @@ test-cluster: $(NODE_MODULES)
 	bun $(TARGET_CLUSTER) &
 	sleep 5
 	../test/calc-test.sh
-	pkill -f bun
+	pkill -f $(TARGET_TS)
 
 run:
 	bun $(TARGET_CLUSTER)
