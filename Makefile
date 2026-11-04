@@ -1,10 +1,13 @@
 PREFIX ?= ${HOME}/.local
-
-RUNNABLE_TARGETS := build-baremetal test-baremetal native-client
+RUNNABLE_TARGETS := build-baremetal test-baremetal native-client jmeter
+JMETER := jmeter
+JMETER_VERSION ?= 5.6.3
+JMETER_TAR_GZ_URL := "https://dlcdn.apache.org//jmeter/binaries/apache-$(JMETER)-$(JMETER_VERSION).tgz"
+JMETER_TAR_GZ_FILE := "apache-$(JMETER)-$(JMETER_VERSION).tgz"
 
 .DEFAULT_GOAL := help
 
-.PHONY: help clean-install clean-build build-baremetal test-baremetal
+.PHONY: help clean-install clean-build build-baremetal test-baremetal jmeter
 
 help:
 	@echo "Available targets: $(RUNNABLE_TARGETS)"
@@ -43,3 +46,15 @@ native-client:
 	$(MAKE) -C ./test/native-client clean
 	$(MAKE) -C ./test/native-client
 	./test/native-client/native-client
+
+$(JMETER_TAR_GZ_FILE):
+	@if [ ! -f $(JMETER_TAR_GZ_FILE) ]; then \
+		echo "Downloading $(JMETER_TAR_GZ_FILE)..."; \
+		curl -L -o $(JMETER_TAR_GZ_FILE) $(JMETER_TAR_GZ_URL) ; \
+	fi
+
+jmeter: $(JMETER_TAR_GZ_FILE)
+	rm -rf $(JMETER)
+	mkdir $(JMETER)
+	tar -xzf $(JMETER_TAR_GZ_FILE) -C $(JMETER) --strip-components=1
+	cp -r ./test/. $(JMETER)

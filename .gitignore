@@ -31,3 +31,5 @@ nohup.out
 test/native-client/main.o
 test/native-client/native-client
 cpp-Crow/httplib.h
+*.tgz
+jmeter/
