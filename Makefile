@@ -69,12 +69,14 @@ $(JMETER): $(JMETER_TGZ_FILE)
 flavor-baremetal-load-test:
 	for IMPLEMENTATION in $(IMPLEMENTATIONS); \
 	do \
-		$(MAKE) -C $$IMPLEMENTATION run & \
-		    PID=$$! ;\
-		echo "PID $$PID" ; \
+		$(MAKE) -C $$IMPLEMENTATION run >/dev/null 2>&1 & \
+		    impl_ppid=$$! ;\
+		echo "PPID $$impl_ppid" ; \
 	    IMPLEMENTATION=$$IMPLEMENTATION ./jmeter/jmeter-runner.sh ;\
-		echo "Killing $$PID" ;\
-		kill $$PID || true ;\
+		echo "Killing PPID $$impl_ppid" ;\
+		pkill -P $$impl_ppid ;\
+		pkill -P $$impl_ppid ;\
+		pkill -P $$impl_ppid ;\
 		sleep 5 ;\
 	done
 
