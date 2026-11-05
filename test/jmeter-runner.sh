@@ -29,6 +29,9 @@ guess_distro() {
         elif grep -q "Fedora" "/etc/os-release"
         then
             DISTRO=fedora
+        elif grep -q "archlinux" "/etc/os-release"
+        then
+            DISTRO=arch
         fi
     fi
 }

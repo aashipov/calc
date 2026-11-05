@@ -74,7 +74,8 @@ flavor-baremetal-load-test:
 		echo "PID $$PID" ; \
 	    IMPLEMENTATION=$$IMPLEMENTATION ./jmeter/jmeter-runner.sh ;\
 		echo "Killing $$PID" ;\
-		kill $$PID ;\
+		kill $$PID || true ;\
+		sleep 5 ;\
 	done
 
 baremetal-load-test:
