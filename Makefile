@@ -74,10 +74,7 @@ flavor-baremetal-load-test:
 		echo "PPID $$impl_ppid" ; \
 	    IMPLEMENTATION=$$IMPLEMENTATION ./jmeter/jmeter-runner.sh ;\
 		echo "Killing PPID $$impl_ppid" ;\
-		pkill -P $$impl_ppid ;\
-		pkill -P $$impl_ppid ;\
-		pkill -P $$impl_ppid ;\
-		sleep 5 ;\
+		while kill -0 $$impl_ppid 2>/dev/null; do pkill -P $$impl_ppid; sleep 5; done ;\
 	done
 
 baremetal-load-test:
