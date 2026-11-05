@@ -35,5 +35,5 @@ debug-run: debug-build
 release-build:
 	go build -o app
 
-release-run: release-build
+run: release-build
 	./app
