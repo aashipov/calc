@@ -1,5 +1,5 @@
 PREFIX ?= ${HOME}/.local
-RUNNABLE_TARGETS := build-baremetal test-baremetal native-client jmeter baremetal-load-test
+RUNNABLE_TARGETS := build-baremetal test-baremetal native-client stats baremetal-load-test jmeter-runner
 JMETER := jmeter
 JMETER_VERSION ?= 5.6.3
 JMETER_TGZ_URL := "https://dlcdn.apache.org//jmeter/binaries/apache-$(JMETER)-$(JMETER_VERSION).tgz"
@@ -79,6 +79,9 @@ flavor-baremetal-load-test:
 		while kill -0 $$impl_ppid 2>/dev/null; do pkill -P $$impl_ppid; sleep 5; done ;\
 	done
 
+stats: $(JMETER)
+	./$(JMETER)/stats/do-stats.sh
+
 baremetal-load-test: $(JMETER)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(CPP_FLAVORS)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(JAVA_FLAFORS)
@@ -88,4 +91,8 @@ baremetal-load-test: $(JMETER)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(PYTHON_FLAVORS)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(NODEJS_FLAVORS)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(ALTERNATIVE_JS_FLAVORS)
-	./$(JMETER)/stats/do-stats.sh
+	$(MAKE) stats
+
+jmeter-runner: $(JMETER)
+	./$(JMETER)/$(JMETER)-runner.sh
+	$(MAKE) stats
