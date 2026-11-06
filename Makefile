@@ -60,10 +60,12 @@ $(JMETER_TGZ_FILE):
 	fi
 
 $(JMETER): $(JMETER_TGZ_FILE)
-	rm -rf $(JMETER)
-	mkdir $(JMETER)
-	tar -xzf $(JMETER_TGZ_FILE) -C $(JMETER) --strip-components=1
-	cp -r ./test/. $(JMETER)
+	@if [ ! -d $(JMETER) ] ;\
+	then \
+	    mkdir -p $(JMETER) ;\
+		tar -xzf $(JMETER_TGZ_FILE) -C $(JMETER) --strip-components=1 ;\
+	fi
+	cp -r ./test/. $(JMETER) ;\
 
 
 flavor-baremetal-load-test:
@@ -77,10 +79,7 @@ flavor-baremetal-load-test:
 		while kill -0 $$impl_ppid 2>/dev/null; do pkill -P $$impl_ppid; sleep 5; done ;\
 	done
 
-baremetal-load-test:
-	@if [ ! -d $(JMETER) ]; then \
-		make $(JMETER) ;\
-	fi
+baremetal-load-test: $(JMETER)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(CPP_FLAVORS)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(JAVA_FLAFORS)
 	$(MAKE) flavor-baremetal-load-test IMPLEMENTATIONS=$(GO_FLAVORS)
