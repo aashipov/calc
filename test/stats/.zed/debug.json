@@ -1,0 +1,11 @@
+[
+  {
+    "label": "Debug stats.py",
+    "type": "python",
+    "adapter": "Debugpy",
+    "request": "launch",
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "program": "$ZED_WORKTREE_ROOT/stats.py",
+    "python": "$ZED_WORKTREE_ROOT/.venv/bin/python3",
+  },
+]

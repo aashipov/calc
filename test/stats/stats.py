@@ -82,7 +82,7 @@ def count_lines(filename: os.PathLike[str]) -> int:
         return sum(1 for _ in f)
 
 
-def do_catplot(df_melt: pandas.DataFrame, num_lines: int) -> None:
+def do_catplot(df_melt: pandas.DataFrame) -> None:
     cp: FacetGrid = seaborn.catplot(
         data=df_melt, kind="bar", x="value", y="variable", palette="deep"
     )
@@ -92,21 +92,23 @@ def do_catplot(df_melt: pandas.DataFrame, num_lines: int) -> None:
     )
     for i in range(0, 30, 5):
         _ = cp.ax.axvline(x=i + 5, color="red", linestyle="--")
-    matplotlib.pyplot.gcf().set_size_inches(7, 5)
+
+    num_categories = df_melt["variable"].nunique()
+    calculated_height = max(5, num_categories * 0.4)
+    matplotlib.pyplot.gcf().set_size_inches(7, calculated_height)
     matplotlib.pyplot.savefig(CATPLOT_REPORT_PNG)
 
 
 # Based on https://www.reneshbedre.com/blog/anova.html
 def main() -> None:
     source_file: pathlib.Path = pathlib.Path(PASTE_CSV)
-    num_lines: int = count_lines(source_file)
     df: pandas.DataFrame = read_csv(source_file)
     do_descriptive_stats(df)
     df_melt: pandas.DataFrame = melt_df(df)
     do_ks(df_melt)
     do_anova(df_melt)
     do_tukey(df_melt)
-    do_catplot(df_melt, num_lines)
+    do_catplot(df_melt)
 
 
 if __name__ == "__main__":
